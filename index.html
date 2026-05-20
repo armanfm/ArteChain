@@ -881,7 +881,9 @@ async function conectar(){
     document.getElementById("setup").style.display   = "block";
     const saved = JSON.parse(localStorage.getItem(SK)||"{}");
     if(saved.arte)   document.getElementById("a-arte").value   = saved.arte;
+    else             document.getElementById("a-arte").value   = "0xe332025a1B24f27e096Fe2fBbf7AA195d685959b";
     if(saved.nft)    document.getElementById("a-nft").value    = saved.nft;
+    else             document.getElementById("a-nft").value    = "0x939ebf6dcE99b7d4d66044dB4a30F4FcAC9Bf919";
     const jwt = sessionStorage.getItem("ac_pinata");
     if(jwt){ document.getElementById("a-pinata").value = jwt; document.getElementById("save-pinata").checked = true; }
     window.ethereum.on("accountsChanged",()=>location.reload());
