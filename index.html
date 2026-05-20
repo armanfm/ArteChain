@@ -917,13 +917,64 @@ async function ligar(){
     PINATA_JWT = jp;
     if(document.getElementById("save-pinata").checked) sessionStorage.setItem("ac_pinata", jp);
     localStorage.setItem(SK, JSON.stringify({arte:aa, nft:an}));
-    // Tenta conectar oracle se existir
+
+    // Conecta Oracle
+    const ORACLE_ADDRESS = "0xEa5B03FbF6eA5C030bAdF8274EfDBAbC04e3d13d";
+    CO = new ethers.Contract(ethers.getAddress(ORACLE_ADDRESS), ABI_ORACLE, signer);
+
+    // Auto-configura contratos se ainda não estiverem configurados
     try {
-      const oa = await CA.contratoOracle();
-      if(oa && oa !== ethers.ZeroAddress){
-        CO = new ethers.Contract(ethers.getAddress(oa), ABI_ORACLE, signer);
+      lg("Verificando configurações...","p");
+
+      // Arte.sol → setContratoOracle
+      const oracleNoArte = await CA.contratoOracle();
+      if(!oracleNoArte || oracleNoArte === ethers.ZeroAddress) {
+        lg("Configurando Oracle no Arte...","p");
+        const tx1 = await CA.setContratoOracle(ORACLE_ADDRESS);
+        await tx1.wait();
+        lg("Oracle configurado no Arte ✅","s");
       }
-    } catch{}
+
+      // Arte.sol → setContratoNFT
+      const nftNoArte = await CA.contratoNFT();
+      if(!nftNoArte || nftNoArte === ethers.ZeroAddress) {
+        lg("Configurando NFT no Arte...","p");
+        const tx2 = await CA.setContratoNFT(an);
+        await tx2.wait();
+        lg("NFT configurado no Arte ✅","s");
+      }
+
+      // ArteOracle → setContratoArte
+      const arteNoOracle = await CO.contratoArte();
+      if(!arteNoOracle || arteNoOracle === ethers.ZeroAddress) {
+        lg("Configurando Arte no Oracle...","p");
+        const tx3 = await CO.setContratoArte(aa);
+        await tx3.wait();
+        lg("Arte configurado no Oracle ✅","s");
+      }
+
+      // ArteOracle → setContratoNFT
+      const nftNoOracle = await CO.contratoNFT();
+      if(!nftNoOracle || nftNoOracle === ethers.ZeroAddress) {
+        lg("Configurando NFT no Oracle...","p");
+        const tx4 = await CO.setContratoNFT(an);
+        await tx4.wait();
+        lg("NFT configurado no Oracle ✅","s");
+      }
+
+      // ArteNFT → setContratoOracle
+      const oracleNoNFT = await CN.contratoOracle();
+      if(!oracleNoNFT || oracleNoNFT === ethers.ZeroAddress) {
+        lg("Configurando Oracle no NFT...","p");
+        const tx5 = await CN.setContratoOracle(ORACLE_ADDRESS);
+        await tx5.wait();
+        lg("Oracle configurado no NFT ✅","s");
+      }
+
+    } catch(configErr) {
+      lg("Config parcial: "+fe2(configErr),"i");
+    }
+
     document.getElementById("setup").style.display = "none";
     document.getElementById("main").style.display  = "block";
     await refresh();
