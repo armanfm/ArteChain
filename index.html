@@ -392,13 +392,6 @@ header {
       <div class="fg"><label>Arte.sol *</label><input id="a-arte" spellcheck="false" placeholder="0x..."/></div>
       <div class="fg"><label>ArteNFT.sol *</label><input id="a-nft" spellcheck="false" placeholder="0x..."/></div>
     </div>
-    <div class="fg" style="margin-bottom:16px">
-      <label>Pinata JWT *</label>
-      <input id="a-pinata" type="password" placeholder="eyJhbGci..."/>
-      <label style="display:flex;align-items:center;gap:8px;margin-top:6px;cursor:pointer;font-size:.75rem;color:var(--muted)">
-        <input type="checkbox" id="save-pinata" onchange="salvarPinata()"/> salvar nesta sessão
-      </label>
-    </div>
     <div id="setup-err" class="alert-err" style="display:none;margin-bottom:12px"></div>
     <button class="btn btn-gold" onclick="ligar()">Entrar no app</button>
   </div>
@@ -631,7 +624,6 @@ const ABI_ORACLE = [
 const SK = "ac_v1";
 let prov, signer, me = "";
 let CA = null, CN = null, CO = null;
-let PINATA_JWT = "";
 let selectedFile = null;
 
 /* ── Utils ── */
@@ -758,7 +750,6 @@ async function pinataUpload(file, titulo, desc){
 /* ── Registrar obra ── */
 async function registrarObra(){
   if(!selectedFile){ toast("Selecione uma imagem","","e"); return; }
-  if(!PINATA_JWT){ toast("Configure o Pinata JWT","No setup ou Admin","e"); return; }
 
   const titulo = document.getElementById("r-titulo").value.trim() || selectedFile.name;
   const desc   = document.getElementById("r-desc").value.trim();
@@ -888,17 +879,9 @@ async function conectar(){
     else             document.getElementById("a-arte").value   = "0xe332025a1B24f27e096Fe2fBbf7AA195d685959b";
     if(saved.nft)    document.getElementById("a-nft").value    = saved.nft;
     else             document.getElementById("a-nft").value    = "0x939ebf6dcE99b7d4d66044dB4a30F4FcAC9Bf919";
-    const jwt = sessionStorage.getItem("ac_pinata");
-    if(jwt){ document.getElementById("a-pinata").value = jwt; document.getElementById("save-pinata").checked = true; }
     window.ethereum.on("accountsChanged",()=>location.reload());
     window.ethereum.on("chainChanged",()=>location.reload());
   } catch(e){ lg("Erro: "+fe2(e),"e"); toast("Erro",fe2(e),"e"); }
-}
-
-function salvarPinata(){
-  const v = (document.getElementById("a-pinata").value||"").trim();
-  if(document.getElementById("save-pinata").checked && v) sessionStorage.setItem("ac_pinata", v);
-  else sessionStorage.removeItem("ac_pinata");
 }
 
 async function ligar(){
@@ -906,10 +889,8 @@ async function ligar(){
   try {
     const aa = document.getElementById("a-arte").value.trim();
     const an = document.getElementById("a-nft").value.trim();
-    const jp = document.getElementById("a-pinata").value.trim();
     if(!aa) throw new Error("Cole o endereço do Arte.sol");
     if(!an) throw new Error("Cole o endereço do ArteNFT.sol");
-    if(!jp) throw new Error("Informe o Pinata JWT");
     if(!ethers.isAddress(aa)) throw new Error("Endereço Arte.sol inválido");
     if(!ethers.isAddress(an)) throw new Error("Endereço ArteNFT.sol inválido");
     const ca = await prov.getCode(aa);
@@ -918,8 +899,6 @@ async function ligar(){
     if(cn==="0x") throw new Error("ArteNFT.sol: sem contrato nesse endereço");
     CA = new ethers.Contract(ethers.getAddress(aa), ABI_ARTE, signer);
     CN = new ethers.Contract(ethers.getAddress(an), ABI_NFT,  signer);
-    PINATA_JWT = jp;
-    if(document.getElementById("save-pinata").checked) sessionStorage.setItem("ac_pinata", jp);
     localStorage.setItem(SK, JSON.stringify({arte:aa, nft:an}));
 
     // Conecta Oracle
