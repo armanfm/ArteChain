@@ -474,13 +474,7 @@ header {
             <div class="step-desc" id="step-chainlink-desc">Aguardando...</div>
           </div>
         </div>
-        <div class="step" id="step-nft">
-          <span class="step-icon">🏷</span>
-          <div class="step-text">
-            <div class="step-label">NFT mintado</div>
-            <div class="step-desc" id="step-nft-desc">Aguardando...</div>
-          </div>
-        </div>
+
       </div>
 
       <div id="r-resultado" style="display:none;margin-top:14px"></div>
@@ -619,6 +613,7 @@ const ABI_NFT = [
   "function tokenDaObra(string) view returns (uint256)",
   "function getToken(uint256 tokenId) view returns (string cidObra, string cidAnalise, address autor, uint256 timestamp)",
   "function tokenURI(uint256) view returns (string)",
+  "function mint(string cidObra, string cidAnalise) external",
   "function setContratoOracle(address)",
   "function mint(string cidObra, string cidAnalise) external",
   "event ObraMintada(string indexed cidObra, string cidAnalise, address indexed autor, uint256 tokenId)"
@@ -1073,20 +1068,24 @@ async function renderCards(el, cids, mostrarNFT){
 
     const ipfsLink   = `https://ipfs.io/ipfs/${cid}`;
     const analiseLink = o.cidAnalise ? `https://ipfs.io/ipfs/${o.cidAnalise}` : null;
+    const imgSrc     = `https://gateway.pinata.cloud/ipfs/${cid}`;
+    const pHashChip  = o.pHash ? `<span class="chip chip-blue" title="${o.pHash}">🔑 ${o.pHash.slice(0,8)}...</span>` : "";
 
     return `
       <div class="obra-card">
-        <div class="obra-thumb-placeholder">🖼</div>
+        <img class="obra-thumb" src="${imgSrc}" alt="obra" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="obra-thumb-placeholder" style="display:none">🖼</div>
         <div class="obra-info">
           <div class="obra-titulo">${cid.slice(0,10)}...${cid.slice(-6)}</div>
           <div class="obra-autor">${sh(o.autor)}</div>
           <div class="obra-chips">
             ${chipHtml}
             ${tokenHtml}
+            ${pHashChip}
           </div>
           <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
             <a href="${ipfsLink}" target="_blank" style="font-size:.72rem;color:var(--gold);text-decoration:none">🔗 Ver obra</a>
-            ${analiseLink?`<a href="${analiseLink}" target="_blank" style="font-size:.72rem;color:var(--muted2);text-decoration:none">📋 Ver análise</a>`:""}
+            ${analiseLink?`<a href="${analiseLink}" target="_blank" style="font-size:.72rem;color:var(--muted2);text-decoration:none">📋 Análise</a>`:""}
           </div>
           ${mintBtnHtml}
         </div>
