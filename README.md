@@ -161,7 +161,7 @@ Quando um artista registra uma obra:
 
 Projeto desenvolvido para o **Hackweb 2026** como solução original para o problema de autoria e plágio no mercado de arte digital brasileiro.
 
-Armando Freire e Izabella Fernantdez 
+Armando Freire e Izabella Fernandez
 
 ---
 
