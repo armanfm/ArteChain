@@ -383,14 +383,21 @@ header {
   <button class="btn btn-gold" style="font-size:.95rem;padding:13px 36px;margin-top:8px" onclick="conectar()">Conectar MetaMask</button>
 </section>
 
-<!-- SETUP (sem campo JWT) -->
+<!-- SETUP -->
 <section id="setup">
   <div class="setup-box">
     <div class="setup-title">Configurar contratos</div>
-    <div class="setup-sub">Cole os endereços dos contratos após o deploy no Remix.</div>
+    <div class="setup-sub">Cole os endereços após o deploy no Remix.</div>
     <div class="grid">
       <div class="fg"><label>Arte.sol *</label><input id="a-arte" spellcheck="false" placeholder="0x..."/></div>
       <div class="fg"><label>ArteNFT.sol *</label><input id="a-nft" spellcheck="false" placeholder="0x..."/></div>
+    </div>
+    <div class="fg" style="margin-bottom:16px">
+      <label>Pinata JWT *</label>
+      <input id="a-pinata" type="password" placeholder="eyJhbGci..."/>
+      <label style="display:flex;align-items:center;gap:8px;margin-top:6px;cursor:pointer;font-size:.75rem;color:var(--muted)">
+        <input type="checkbox" id="save-pinata" onchange="salvarPinata()"/> salvar nesta sessão
+      </label>
     </div>
     <div id="setup-err" class="alert-err" style="display:none;margin-bottom:12px"></div>
     <button class="btn btn-gold" onclick="ligar()">Entrar no app</button>
@@ -613,6 +620,7 @@ const ABI_NFT = [
   "function getToken(uint256 tokenId) view returns (string cidObra, string cidAnalise, address autor, uint256 timestamp)",
   "function tokenURI(uint256) view returns (string)",
   "function setContratoOracle(address)",
+  "function mint(string cidObra, string cidAnalise) external",
   "event ObraMintada(string indexed cidObra, string cidAnalise, address indexed autor, uint256 tokenId)"
 ];
 
@@ -628,6 +636,7 @@ const ABI_ORACLE = [
 const SK = "ac_v1";
 let prov, signer, me = "";
 let CA = null, CN = null, CO = null;
+let PINATA_JWT = "";
 let selectedFile = null;
 
 /* ── Utils ── */
@@ -719,36 +728,34 @@ function setStep(id, estado, desc){
   if(desc) document.getElementById(id+"-desc").textContent = desc;
 }
 
-/* ── NOVA FUNÇÃO pinataUpload com Supabase (SEM JWT NO FRONT) ── */
+/* ── Pinata upload ── */
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxc29vcGdtemR3dHR3dmVkbmdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NjIxNTEsImV4cCI6MjA5NDUzODE1MX0.LaHuxJVFJI9SkGHFmapSpkUYBC5plB9oPuDXIXJXsN0";
+
 async function pinataUpload(file, titulo, desc){
   const mensagem = "ArteChain upload autorizado";
-  
-  // Assinatura da wallet
   const assinatura = await signer.signMessage(mensagem);
-  
+
   const formData = new FormData();
   formData.append("file", file);
-  // Opcional: você pode enviar título e descrição se sua Edge Function precisar
-  // formData.append("titulo", titulo);
-  // formData.append("descricao", desc);
-  
+
   const res = await fetch(
     "https://tqsoopgmzdwttwvedngk.supabase.co/functions/v1/upload-ipfs",
     {
       method: "POST",
       headers: {
         "x-wallet-address": me,
-        "x-wallet-signature": assinatura
+        "x-wallet-signature": assinatura,
+        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
       },
       body: formData
     }
   );
-  
+
   if(!res.ok){
     const txt = await res.text();
     throw new Error(txt);
   }
-  
+
   const data = await res.json();
   return data.IpfsHash;
 }
@@ -756,6 +763,7 @@ async function pinataUpload(file, titulo, desc){
 /* ── Registrar obra ── */
 async function registrarObra(){
   if(!selectedFile){ toast("Selecione uma imagem","","e"); return; }
+  if(!PINATA_JWT){ toast("Configure o Pinata JWT","No setup ou Admin","e"); return; }
 
   const titulo = document.getElementById("r-titulo").value.trim() || selectedFile.name;
   const desc   = document.getElementById("r-desc").value.trim();
@@ -768,11 +776,11 @@ async function registrarObra(){
   let cidObra = "";
 
   try {
-    // Step 1 — Upload via Supabase (valida assinatura, JWT fica no backend)
-    setStep("step-upload","active","Validando assinatura e enviando para IPFS...");
+    // Step 1 — Upload Pinata
+    setStep("step-upload","active","Enviando para o IPFS...");
     cidObra = await pinataUpload(selectedFile, titulo, desc);
     setStep("step-upload","done","CID: "+cidObra.slice(0,16)+"...");
-    lg("Upload concluído: "+cidObra.slice(0,12)+"...","s");
+    lg("Pinata: "+cidObra.slice(0,12)+"...","s");
 
     // Step 2 — Transação on-chain
     setStep("step-tx","active","Confirme no MetaMask...");
@@ -781,9 +789,9 @@ async function registrarObra(){
     setStep("step-tx","active","Aguardando confirmação...");
     await tx.wait();
     setStep("step-tx","done","Tx: "+tx.hash.slice(0,16)+"...");
-    lg("Registrado on-chain: "+cidObra.slice(0,10),"s");
+    lg("On-chain: "+cidObra.slice(0,10),"s");
 
-    // Step 3 — Aguarda Chainlink/Gemini
+    // Step 3 — Aguarda Chainlink
     setStep("step-chainlink","active","Gemini Vision analisando sua obra...");
     toast("Chainlink","Análise de originalidade em andamento...","p");
 
@@ -805,11 +813,12 @@ async function esperarCallback(cidObra){
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(()=>{
       CA.off("ObraAprovada"); CA.off("ObraRejeitada");
+      // Mesmo sem evento, marca como pendente
       setStep("step-chainlink","done","Pendente — callback chegará em breve");
       setStep("step-nft","active","Aguardando mint...");
       mostrarResultadoPendente(cidObra);
       resolve();
-    }, 120000);
+    }, 120000); // 2 min timeout
 
     CA.on("ObraAprovada", (cid, cidAnalise) => {
       if(cid !== cidObra) return;
@@ -884,9 +893,17 @@ async function conectar(){
     else             document.getElementById("a-arte").value   = "0xe332025a1B24f27e096Fe2fBbf7AA195d685959b";
     if(saved.nft)    document.getElementById("a-nft").value    = saved.nft;
     else             document.getElementById("a-nft").value    = "0x939ebf6dcE99b7d4d66044dB4a30F4FcAC9Bf919";
+    const jwt = sessionStorage.getItem("ac_pinata");
+    if(jwt){ document.getElementById("a-pinata").value = jwt; document.getElementById("save-pinata").checked = true; }
     window.ethereum.on("accountsChanged",()=>location.reload());
     window.ethereum.on("chainChanged",()=>location.reload());
   } catch(e){ lg("Erro: "+fe2(e),"e"); toast("Erro",fe2(e),"e"); }
+}
+
+function salvarPinata(){
+  const v = (document.getElementById("a-pinata").value||"").trim();
+  if(document.getElementById("save-pinata").checked && v) sessionStorage.setItem("ac_pinata", v);
+  else sessionStorage.removeItem("ac_pinata");
 }
 
 async function ligar(){
@@ -894,8 +911,10 @@ async function ligar(){
   try {
     const aa = document.getElementById("a-arte").value.trim();
     const an = document.getElementById("a-nft").value.trim();
+    const jp = document.getElementById("a-pinata").value.trim();
     if(!aa) throw new Error("Cole o endereço do Arte.sol");
     if(!an) throw new Error("Cole o endereço do ArteNFT.sol");
+    if(!jp) throw new Error("Informe o Pinata JWT");
     if(!ethers.isAddress(aa)) throw new Error("Endereço Arte.sol inválido");
     if(!ethers.isAddress(an)) throw new Error("Endereço ArteNFT.sol inválido");
     const ca = await prov.getCode(aa);
@@ -904,15 +923,19 @@ async function ligar(){
     if(cn==="0x") throw new Error("ArteNFT.sol: sem contrato nesse endereço");
     CA = new ethers.Contract(ethers.getAddress(aa), ABI_ARTE, signer);
     CN = new ethers.Contract(ethers.getAddress(an), ABI_NFT,  signer);
-    
+    PINATA_JWT = jp;
+    if(document.getElementById("save-pinata").checked) sessionStorage.setItem("ac_pinata", jp);
+    localStorage.setItem(SK, JSON.stringify({arte:aa, nft:an}));
+
     // Conecta Oracle
     const ORACLE_ADDRESS = "0xEa5B03FbF6eA5C030bAdF8274EfDBAbC04e3d13d";
     CO = new ethers.Contract(ethers.getAddress(ORACLE_ADDRESS), ABI_ORACLE, signer);
 
-    // Auto-configura contratos
+    // Auto-configura contratos se ainda não estiverem configurados
     try {
       lg("Verificando configurações...","p");
 
+      // Arte.sol → setContratoOracle
       const oracleNoArte = await CA.contratoOracle();
       if(!oracleNoArte || oracleNoArte === ethers.ZeroAddress) {
         lg("Configurando Oracle no Arte...","p");
@@ -921,6 +944,7 @@ async function ligar(){
         lg("Oracle configurado no Arte ✅","s");
       }
 
+      // Arte.sol → setContratoNFT
       const nftNoArte = await CA.contratoNFT();
       if(!nftNoArte || nftNoArte === ethers.ZeroAddress) {
         lg("Configurando NFT no Arte...","p");
@@ -929,6 +953,7 @@ async function ligar(){
         lg("NFT configurado no Arte ✅","s");
       }
 
+      // ArteOracle → setContratoArte
       const arteNoOracle = await CO.contratoArte();
       if(!arteNoOracle || arteNoOracle === ethers.ZeroAddress) {
         lg("Configurando Arte no Oracle...","p");
@@ -937,6 +962,7 @@ async function ligar(){
         lg("Arte configurado no Oracle ✅","s");
       }
 
+      // ArteOracle → setContratoNFT
       const nftNoOracle = await CO.contratoNFT();
       if(!nftNoOracle || nftNoOracle === ethers.ZeroAddress) {
         lg("Configurando NFT no Oracle...","p");
@@ -945,6 +971,7 @@ async function ligar(){
         lg("NFT configurado no Oracle ✅","s");
       }
 
+      // ArteNFT → setContratoOracle
       const oracleNoNFT = await CN.contratoOracle();
       if(!oracleNoNFT || oracleNoNFT === ethers.ZeroAddress) {
         lg("Configurando Oracle no NFT...","p");
@@ -957,7 +984,6 @@ async function ligar(){
       lg("Config parcial: "+fe2(configErr),"i");
     }
 
-    localStorage.setItem(SK, JSON.stringify({arte:aa, nft:an}));
     document.getElementById("setup").style.display = "none";
     document.getElementById("main").style.display  = "block";
     await refresh();
@@ -1022,23 +1048,30 @@ async function renderCards(el, cids, mostrarNFT){
     const o = await CA.getObra(cid).catch(()=>null);
     if(!o) return "";
     const isPendente = o.pendente;
-    const isAprovada = o.aprovada;
-    const status = isPendente ? "pendente" : (isAprovada ? "aprovada" : "rejeitada");
+    const isAprovada = !isPendente && o.aprovada;
+    const isRejeitada = !isPendente && !o.aprovada && o.cidAnalise;
+    const status = isPendente ? "pendente" : (isAprovada ? "aprovada" : isRejeitada ? "rejeitada" : "pendente");
+
     const chipHtml = status==="aprovada"
       ? `<span class="chip chip-green">✅ Aprovada</span>`
       : status==="pendente"
       ? `<span class="chip chip-amber">⏳ Pendente</span>`
       : `<span class="chip chip-red">❌ Rejeitada</span>`;
 
+    // Verifica se já tem NFT
     let tokenHtml = "";
-    if(mostrarNFT && CN && o.cidAnalise){
+    let mintBtnHtml = "";
+    if(CN && isAprovada){
       const tokenId = await CN.tokenDaObra(cid).catch(()=>0n);
       if(tokenId > 0n){
         tokenHtml = `<span class="chip chip-gold">🏷 Token #${tokenId}</span>`;
+      } else if(o.autor.toLowerCase() === me.toLowerCase()){
+        // Só o dono pode mintar
+        mintBtnHtml = `<button class="btn btn-gold btn-sm" onclick="mintarObra('${cid}')" style="margin-top:8px;width:100%">🏷 Mintar NFT</button>`;
       }
     }
 
-    const ipfsLink = `https://ipfs.io/ipfs/${cid}`;
+    const ipfsLink   = `https://ipfs.io/ipfs/${cid}`;
     const analiseLink = o.cidAnalise ? `https://ipfs.io/ipfs/${o.cidAnalise}` : null;
 
     return `
@@ -1051,14 +1084,30 @@ async function renderCards(el, cids, mostrarNFT){
             ${chipHtml}
             ${tokenHtml}
           </div>
-          <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+          <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
             <a href="${ipfsLink}" target="_blank" style="font-size:.72rem;color:var(--gold);text-decoration:none">🔗 Ver obra</a>
             ${analiseLink?`<a href="${analiseLink}" target="_blank" style="font-size:.72rem;color:var(--muted2);text-decoration:none">📋 Ver análise</a>`:""}
           </div>
+          ${mintBtnHtml}
         </div>
       </div>`;
   }));
   el.innerHTML = `<div class="obras-grid">${cards.join("")}</div>`;
+}
+
+async function mintarObra(cidObra){
+  if(!CN){ toast("ArteNFT não configurado","","e"); return; }
+  try {
+    const o = await CA.getObra(cidObra);
+    if(!o.aprovada){ toast("Obra não aprovada","","e"); return; }
+    toast("MetaMask","Confirme o mint do NFT","p");
+    const tx = await CN.mint(cidObra, o.cidAnalise);
+    lg("Mintando NFT...","p");
+    await tx.wait();
+    toast("NFT Mintado!","Obra registrada como NFT 🎨","s");
+    lg("NFT mintado ✅","s");
+    await refresh();
+  } catch(e){ toast("Erro",fe2(e),"e"); lg("Erro mint: "+fe2(e),"e"); }
 }
 
 /* ── Admin ── */
@@ -1081,7 +1130,6 @@ async function setOracleNoNFT(){
   if(!ethers.isAddress(v)){ toast("Endereço inválido","","e"); return; }
   await txSend("Oracle no NFT...", ()=>CN.setContratoOracle(v), "Oracle definido no NFT!", "");
 }
-
 /* ── Verificar plágio ── */
 let vSelectedFile = null;
 let vSelectedBase64 = null;
@@ -1135,6 +1183,7 @@ async function verificarPlagio(){
   document.getElementById("btn-verificar").disabled = true;
 
   try {
+    // 1. Busca todas obras registradas
     const total = Number(await CA.totalObras());
     if(!total){
       document.getElementById("v-status").textContent = "Nenhuma obra registrada para comparar.";
@@ -1145,8 +1194,10 @@ async function verificarPlagio(){
     document.getElementById("v-status").textContent = `⏳ Comparando com ${cids.length} obras via Gemini Vision...`;
     lg("Verificando plágio contra "+cids.length+" obras","p");
 
+    // 2. Monta lista de URLs IPFS
     const urlsIPFS = cids.map(cid => `https://ipfs.io/ipfs/${cid}`).join("\n");
 
+    // 3. Chama Gemini Vision com a imagem suspeita
     const prompt = `You are an art plagiarism detector.
 I will show you an image that may be plagiarized.
 Compare it against these registered artworks on IPFS:
@@ -1179,14 +1230,17 @@ Sort by similarity descending. Only include works with similarity > 10%.`;
     const data = await res.json();
     const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
+    // 4. Parse resultado
     let resultados = [];
     try {
       const clean = rawText.replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();
       resultados = JSON.parse(clean);
     } catch(e){
+      // fallback — tenta extrair do texto
       resultados = [];
     }
 
+    // 5. Renderiza resultado
     if(!resultados.length){
       document.getElementById("v-status").innerHTML =
         `<span style="color:var(--green)">✅ Nenhuma similaridade significativa encontrada. Obra possivelmente original!</span>`;
