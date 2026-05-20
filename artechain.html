@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ArteChain — Registro Descentralizado de Arte</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:       #0c0c0e;
+  --surface:  #131316;
+  --card:     #1a1a1f;
+  --border:   #2a2a32;
+  --border2:  #3a3a48;
+  --gold:     #c8a96e;
+  --gold2:    #e8c98e;
+  --cream:    #f0e6d0;
+  --green:    #4ecb8d;
+  --red:      #e05c5c;
+  --amber:    #e89a3a;
+  --blue:     #5b8af0;
+  --purple:   #9b6ef3;
+  --text:     #e8e4dc;
+  --muted:    #6b6878;
+  --muted2:   #928fa0;
+  --r:        12px;
+}
+* { margin:0; padding:0; box-sizing:border-box }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Background texture ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 20%, rgba(200,169,110,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(155,110,243,.04) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Header ── */
+header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(12,12,14,.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px; height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem; letter-spacing: -.02em;
+}
+.logo span { color: var(--gold); font-style: italic; }
+.hright { display: flex; gap: 8px; align-items: center; }
+.badge {
+  font-family: 'Space Mono', monospace;
+  font-size: .68rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 5px 10px; border-radius: 20px;
+  display: none; color: var(--muted2);
+}
+
+/* ── Buttons ── */
+.btn {
+  padding: 10px 20px; border: none; border-radius: var(--r);
+  cursor: pointer; font-size: .85rem; font-weight: 500;
+  font-family: 'DM Sans', sans-serif; transition: all .15s;
+}
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #0c0c0e; font-weight: 700;
+}
+.btn-gold:hover { opacity: .9; transform: translateY(-1px); }
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border2); color: var(--text);
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+.btn:disabled { opacity: .35; cursor: not-allowed; transform: none !important; }
+
+/* ── Layout ── */
+#app { max-width: 1100px; margin: 0 auto; padding: 32px 20px 80px; position: relative; z-index: 1; }
+
+/* ── Splash ── */
+#splash {
+  min-height: 82vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 24px; text-align: center;
+}
+.splash-icon {
+  width: 90px; height: 90px;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.4rem;
+  box-shadow: 0 0 60px rgba(200,169,110,.12);
+  animation: pulse 3s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 60px rgba(200,169,110,.12); }
+  50%      { box-shadow: 0 0 80px rgba(200,169,110,.22); }
+}
+#splash h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.2rem; line-height: 1.1; letter-spacing: -.03em;
+}
+#splash h1 em { color: var(--gold); font-style: italic; }
+#splash p { color: var(--muted2); max-width: 420px; line-height: 1.8; font-size: .95rem; }
+.splash-pills { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.pill {
+  font-size: .72rem; padding: 5px 14px;
+  border: 1px solid var(--border2); border-radius: 20px;
+  color: var(--muted2); font-family: 'Space Mono', monospace;
+}
+
+/* ── Setup ── */
+#setup { display: none; }
+.setup-box {
+  max-width: 640px; margin: 60px auto;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 32px;
+}
+.setup-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 6px; }
+.setup-sub { color: var(--muted2); font-size: .84rem; margin-bottom: 24px; line-height: 1.6; }
+
+/* ── Main ── */
+#main { display: none; }
+
+/* ── Tabs ── */
+.tabs {
+  display: flex; gap: 4px; margin-bottom: 28px;
+  background: var(--surface); padding: 5px;
+  border-radius: var(--r); width: fit-content;
+}
+.tab {
+  padding: 8px 22px; border-radius: 8px;
+  cursor: pointer; font-size: .84rem; font-weight: 500;
+  color: var(--muted2); border: none; background: transparent;
+  transition: all .15s; font-family: 'DM Sans', sans-serif;
+}
+.tab.on {
+  background: var(--card); color: var(--text);
+  border: 1px solid var(--border2); font-weight: 600;
+}
+.tc { display: none; } .tc.on { display: block; }
+
+/* ── Stats ── */
+.statbar {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr));
+  gap: 12px; margin-bottom: 28px;
+}
+.stat {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px 18px;
+}
+.stat-v {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem; color: var(--gold);
+}
+.stat-l {
+  font-size: .68rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .6px; margin-top: 3px;
+}
+
+/* ── Cards ── */
+.sec {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 24px; margin-bottom: 18px;
+}
+.sec-title {
+  font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 4px;
+}
+.sec-sub { color: var(--muted2); font-size: .82rem; line-height: 1.6; margin-bottom: 18px; }
+
+/* ── Form ── */
+.fg { display: flex; flex-direction: column; gap: 6px; }
+.fg label {
+  font-size: .7rem; color: var(--muted);
+  font-weight: 600; text-transform: uppercase; letter-spacing: .5px;
+}
+.fg input, .fg textarea {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); padding: 10px 14px; border-radius: 8px;
+  font-size: .88rem; font-family: 'Space Mono', monospace;
+  outline: none; transition: border .15s; resize: vertical;
+}
+.fg input:focus, .fg textarea:focus { border-color: var(--gold); }
+.fg input::placeholder, .fg textarea::placeholder {
+  color: var(--muted); font-family: 'DM Sans', sans-serif;
+}
+.grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 14px; margin-bottom: 16px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+
+/* ── Upload zone ── */
+.upload-zone {
+  border: 2px dashed var(--border2);
+  border-radius: 16px; padding: 40px 20px;
+  text-align: center; cursor: pointer;
+  transition: all .2s; position: relative;
+  background: var(--surface);
+}
+.upload-zone:hover, .upload-zone.drag { border-color: var(--gold); background: rgba(200,169,110,.04); }
+.upload-zone input[type=file] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.upload-icon { font-size: 2.8rem; margin-bottom: 10px; }
+.upload-text { color: var(--muted2); font-size: .88rem; line-height: 1.6; }
+.upload-text strong { color: var(--gold); }
+
+/* ── Preview ── */
+.preview-box {
+  display: none; position: relative; border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border); background: var(--surface);
+}
+.preview-box img {
+  width: 100%; max-height: 320px; object-fit: contain;
+  display: block; background: #0c0c0e;
+}
+.preview-info {
+  padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;
+}
+.preview-name { font-size: .82rem; color: var(--muted2); font-family: 'Space Mono', monospace; }
+.preview-size { font-size: .75rem; color: var(--muted); }
+
+/* ── Status steps ── */
+.steps { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
+.step {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; border-radius: 8px;
+  background: var(--surface); border: 1px solid var(--border);
+  font-size: .82rem; transition: all .3s;
+}
+.step.active { border-color: var(--gold); background: rgba(200,169,110,.06); }
+.step.done   { border-color: var(--green); background: rgba(78,203,141,.06); }
+.step.error  { border-color: var(--red); background: rgba(224,92,92,.06); }
+.step-icon { font-size: 1rem; width: 24px; text-align: center; }
+.step-text { flex: 1; }
+.step-label { font-weight: 600; color: var(--text); }
+.step-desc  { color: var(--muted2); font-size: .75rem; margin-top: 1px; font-family: 'Space Mono', monospace; }
+
+/* ── Obra cards ── */
+.obras-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
+  gap: 16px;
+}
+.obra-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden;
+  transition: all .2s; cursor: pointer;
+}
+.obra-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+.obra-thumb {
+  width: 100%; height: 180px; object-fit: cover;
+  background: var(--card); display: block;
+}
+.obra-thumb-placeholder {
+  width: 100%; height: 180px;
+  background: linear-gradient(135deg, var(--card), var(--surface));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.4rem;
+}
+.obra-info { padding: 14px; }
+.obra-titulo {
+  font-family: 'Playfair Display', serif; font-size: .95rem;
+  margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.obra-autor {
+  font-family: 'Space Mono', monospace; font-size: .7rem;
+  color: var(--muted2); margin-bottom: 8px;
+}
+.obra-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  font-size: .68rem; padding: 3px 8px; border-radius: 20px; font-weight: 600;
+}
+.chip-green  { background: rgba(78,203,141,.1); color: var(--green); border: 1px solid rgba(78,203,141,.25); }
+.chip-amber  { background: rgba(232,154,58,.1); color: var(--amber); border: 1px solid rgba(232,154,58,.25); }
+.chip-gold   { background: rgba(200,169,110,.1); color: var(--gold); border: 1px solid rgba(200,169,110,.25); }
+.chip-blue   { background: rgba(91,138,240,.1); color: var(--blue); border: 1px solid rgba(91,138,240,.25); }
+.chip-red    { background: rgba(224,92,92,.1); color: var(--red); border: 1px solid rgba(224,92,92,.25); }
+
+/* ── Alerts ── */
+.alert-err {
+  background: rgba(224,92,92,.06); border: 1px solid rgba(224,92,92,.2);
+  border-left: 3px solid var(--red); padding: 10px 14px;
+  border-radius: 8px; font-size: .82rem; color: var(--red);
+}
+.alert-ok {
+  background: rgba(78,203,141,.06); border: 1px solid rgba(78,203,141,.2);
+  border-left: 3px solid var(--green); padding: 10px 14px;
+  border-radius: 8px; font-size: .82rem; color: var(--green);
+}
+.notice {
+  background: rgba(255,255,255,.02); border: 1px dashed var(--border2);
+  border-radius: 8px; padding: 11px 14px;
+  color: var(--muted2); font-size: .82rem; line-height: 1.6;
+}
+.cells { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 8px; margin: 10px 0; }
+.cell { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.cell-l { font-size: .67rem; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; margin-bottom: 3px; }
+.cell-v { font-size: .84rem; word-break: break-all; font-family: 'Space Mono', monospace; }
+
+/* ── Toast ── */
+#toast-c {
+  position: fixed; top: 72px; right: 16px;
+  display: flex; flex-direction: column; gap: 8px; z-index: 300;
+}
+.toast {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 12px 16px; font-size: .82rem;
+  max-width: 320px; display: flex; align-items: flex-start; gap: 10px;
+  animation: ts .2s;
+}
+.toast.ts { border-color: var(--green); }
+.toast.te { border-color: var(--red); }
+.toast.tp { border-color: var(--gold); }
+.toast-title { font-weight: 700; font-size: .73rem; text-transform: uppercase; margin-bottom: 2px; }
+@keyframes ts { from { opacity:0; transform: translateX(24px); } to { opacity:1; } }
+
+/* ── Statusbar ── */
+#statusbar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(19,19,22,.96); backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  padding: 9px 24px; display: flex; align-items: center; gap: 12px;
+  z-index: 200; min-height: 44px;
+}
+.sbl { font-size: .67rem; text-transform: uppercase; font-weight: 700; color: var(--muted); letter-spacing: .6px; white-space: nowrap; }
+#sbm { flex:1; overflow-x: auto; display: flex; gap: 6px; scrollbar-width: none; }
+.sbe { font-size: .75rem; white-space: nowrap; padding: 3px 10px; border-radius: 20px; animation: fi .25s; font-family: 'Space Mono', monospace; }
+.sbe-i { background: rgba(91,138,240,.12); color: var(--blue); }
+.sbe-s { background: rgba(78,203,141,.12); color: var(--green); }
+.sbe-e { background: rgba(224,92,92,.12); color: var(--red); }
+.sbe-p { background: rgba(200,169,110,.12); color: var(--gold); }
+@keyframes fi { from { opacity:0; transform: translateY(3px); } to { opacity:1; } }
+
+.empty { text-align: center; padding: 40px; color: var(--muted); font-size: .85rem; }
+.empty-ico { font-size: 2.8rem; margin-bottom: 10px; }
+
+@media(max-width:640px) {
+  #splash h1 { font-size: 2.2rem; }
+  .tabs { width: 100%; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Arte<span>Chain</span></div>
+  <div class="hright">
+    <span class="badge" id="bnet"></span>
+    <span class="badge" id="bbal"></span>
+    <span class="badge" id="bwallet"></span>
+  </div>
+</header>
+<div id="toast-c"></div>
+
+<div id="app">
+
+<!-- SPLASH -->
+<section id="splash">
+  <div class="splash-icon">🎨</div>
+  <h1>Registro Descentralizado<br>de <em>Arte Digital</em></h1>
+  <p>Registre sua obra on-chain. Análise de originalidade via IA. NFT com royalties automáticos.</p>
+  <div class="splash-pills">
+    <span class="pill">🎨 Upload → IPFS</span>
+    <span class="pill">🤖 Gemini Vision</span>
+    <span class="pill">⛓ Chainlink</span>
+    <span class="pill">🏷 NFT ERC-721</span>
+    <span class="pill">💰 Royalties ERC-2981</span>
+  </div>
+  <button class="btn btn-gold" style="font-size:.95rem;padding:13px 36px;margin-top:8px" onclick="conectar()">Conectar MetaMask</button>
+</section>
+
+<!-- SETUP -->
+<section id="setup">
+  <div class="setup-box">
+    <div class="setup-title">Configurar contratos</div>
+    <div class="setup-sub">Cole os endereços após o deploy no Remix.</div>
+    <div class="grid">
+      <div class="fg"><label>Arte.sol *</label><input id="a-arte" spellcheck="false" placeholder="0x..."/></div>
+      <div class="fg"><label>ArteNFT.sol *</label><input id="a-nft" spellcheck="false" placeholder="0x..."/></div>
+    </div>
+    <div class="fg" style="margin-bottom:16px">
+      <label>Pinata JWT *</label>
+      <input id="a-pinata" type="password" placeholder="eyJhbGci..."/>
+      <label style="display:flex;align-items:center;gap:8px;margin-top:6px;cursor:pointer;font-size:.75rem;color:var(--muted)">
+        <input type="checkbox" id="save-pinata" onchange="salvarPinata()"/> salvar nesta sessão
+      </label>
+    </div>
+    <div id="setup-err" class="alert-err" style="display:none;margin-bottom:12px"></div>
+    <button class="btn btn-gold" onclick="ligar()">Entrar no app</button>
+  </div>
+</section>
+
+<!-- MAIN -->
+<main id="main">
+  <div class="statbar">
+    <div class="stat"><div class="stat-v" id="st-obras">—</div><div class="stat-l">Obras registradas</div></div>
+    <div class="stat"><div class="stat-v" id="st-minhas">—</div><div class="stat-l">Minhas obras</div></div>
+    <div class="stat"><div class="stat-v" id="st-bal" style="color:var(--green)">—</div><div class="stat-l">Saldo ETH</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="tab('registrar')">🎨 Registrar obra</button>
+    <button class="tab" onclick="tab('verificar')">🔍 Verificar plágio</button>
+    <button class="tab" onclick="tab('galeria')">🖼 Galeria</button>
+    <button class="tab" onclick="tab('minha')">📁 Minhas obras</button>
+    <button class="tab" onclick="tab('admin')">⚙️ Admin</button>
+  </div>
+
+  <!-- REGISTRAR -->
+  <div id="tp-registrar" class="tc on">
+    <div class="sec">
+      <div class="sec-title">Registrar nova obra</div>
+      <div class="sec-sub">Faça upload da sua arte. O sistema analisa automaticamente com IA e emite um NFT com royalties.</div>
+
+      <!-- Upload zone -->
+      <div class="upload-zone" id="upload-zone" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event)">
+        <input type="file" accept="image/*" id="file-input" onchange="arquivoSelecionado(this.files[0])"/>
+        <div class="upload-icon">🖼</div>
+        <div class="upload-text">
+          <strong>Arraste sua obra aqui</strong><br>
+          ou clique para selecionar · PNG, JPG, GIF, WEBP · máx 10MB
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div class="preview-box" id="preview-box" style="margin-top:14px">
+        <img id="preview-img" src="" alt="preview"/>
+        <div class="preview-info">
+          <span class="preview-name" id="preview-name">—</span>
+          <span class="preview-size" id="preview-size">—</span>
+        </div>
+      </div>
+
+      <!-- Metadados -->
+      <div class="grid" style="margin-top:16px">
+        <div class="fg"><label>Título da obra *</label><input id="r-titulo" placeholder="ex: Composição em Azul"/></div>
+        <div class="fg"><label>Descrição</label><input id="r-desc" placeholder="Breve descrição da obra"/></div>
+      </div>
+
+      <!-- Steps de progresso -->
+      <div class="steps" id="steps" style="display:none">
+        <div class="step" id="step-upload">
+          <span class="step-icon">📤</span>
+          <div class="step-text">
+            <div class="step-label">Upload na Pinata</div>
+            <div class="step-desc" id="step-upload-desc">Aguardando...</div>
+          </div>
+        </div>
+        <div class="step" id="step-tx">
+          <span class="step-icon">⛓</span>
+          <div class="step-text">
+            <div class="step-label">Registrar on-chain</div>
+            <div class="step-desc" id="step-tx-desc">Aguardando...</div>
+          </div>
+        </div>
+        <div class="step" id="step-chainlink">
+          <span class="step-icon">🤖</span>
+          <div class="step-text">
+            <div class="step-label">Análise Gemini Vision</div>
+            <div class="step-desc" id="step-chainlink-desc">Aguardando...</div>
+          </div>
+        </div>
+        <div class="step" id="step-nft">
+          <span class="step-icon">🏷</span>
+          <div class="step-text">
+            <div class="step-label">NFT mintado</div>
+            <div class="step-desc" id="step-nft-desc">Aguardando...</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="r-resultado" style="display:none;margin-top:14px"></div>
+      <div id="r-err" class="alert-err" style="display:none;margin-top:12px"></div>
+
+      <div class="row" style="margin-top:16px">
+        <button class="btn btn-gold" id="btn-registrar" onclick="registrarObra()" disabled>🎨 Registrar obra</button>
+        <button class="btn btn-ghost" onclick="limparForm()">↺ Limpar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GALERIA -->
+  <div id="tp-galeria" class="tc">
+    <div class="sec">
+      <div class="sec-title">Galeria de obras registradas</div>
+      <div id="galeria-lista"><div class="empty"><div class="empty-ico">🖼</div>Carregando obras...</div></div>
+    </div>
+  </div>
+
+  <!-- MINHAS OBRAS -->
+  <div id="tp-minha" class="tc">
+    <div class="sec">
+      <div class="sec-title">Minhas obras</div>
+      <div id="minha-lista"><div class="empty"><div class="empty-ico">🎨</div>Nenhuma obra encontrada.</div></div>
+    </div>
+  </div>
+
+  <!-- VERIFICAR PLÁGIO -->
+  <div id="tp-verificar" class="tc">
+    <div class="sec">
+      <div class="sec-title">🔍 Verificar plágio</div>
+      <div class="sec-sub">Faça upload de uma imagem suspeita. O sistema compara com todas as obras registradas on-chain usando Gemini Vision.</div>
+
+      <div class="fg" style="margin-bottom:16px">
+        <label>Gemini API Key</label>
+        <input id="v-gemini-key" type="password" placeholder="AIzaSy..."/>
+        <label style="display:flex;align-items:center;gap:8px;margin-top:6px;cursor:pointer;font-size:.75rem;color:var(--muted)">
+          <input type="checkbox" id="v-save-key" onchange="salvarGeminiKey()"/> salvar nesta sessão
+        </label>
+      </div>
+
+      <div class="upload-zone" id="v-upload-zone"
+           ondragover="vDragOver(event)" ondragleave="vDragLeave(event)" ondrop="vDragDrop(event)">
+        <input type="file" accept="image/*" id="v-file-input" onchange="vArquivoSelecionado(this.files[0])"/>
+        <div class="upload-icon">🕵️</div>
+        <div class="upload-text">
+          <strong>Arraste a imagem suspeita aqui</strong><br>
+          ou clique para selecionar
+        </div>
+      </div>
+
+      <div class="preview-box" id="v-preview-box" style="margin-top:14px">
+        <img id="v-preview-img" src="" alt="preview"/>
+        <div class="preview-info">
+          <span class="preview-name" id="v-preview-name">—</span>
+          <span class="preview-size" id="v-preview-size">—</span>
+        </div>
+      </div>
+
+      <div id="v-err" class="alert-err" style="display:none;margin-top:12px"></div>
+
+      <div class="row" style="margin-top:16px">
+        <button class="btn btn-gold" id="btn-verificar" onclick="verificarPlagio()" disabled>🔍 Verificar plágio</button>
+        <button class="btn btn-ghost" onclick="limparVerificar()">↺ Limpar</button>
+      </div>
+    </div>
+
+    <!-- Resultado -->
+    <div id="v-resultado" style="display:none">
+      <div class="sec">
+        <div class="sec-title">Resultado da análise</div>
+        <div id="v-status" class="notice" style="margin-bottom:14px">Analisando...</div>
+        <div id="v-lista"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="tp-admin" class="tc">
+    <div class="sec">
+      <div class="sec-title">⚙️ Configuração</div>
+      <div class="cells" id="admin-info"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-title">Configurar endereços</div>
+      <div class="grid">
+        <div class="fg"><label>ArteOracle.sol</label><input id="adm-oracle" spellcheck="false" placeholder="0x..."/></div>
+      </div>
+      <div class="row">
+        <button class="btn btn-ghost" style="font-size:.78rem" onclick="setOracle()">Definir Oracle no Arte.sol</button>
+        <button class="btn btn-ghost" style="font-size:.78rem" onclick="setNFTnoOracle()">Definir NFT no Oracle</button>
+        <button class="btn btn-ghost" style="font-size:.78rem" onclick="setArteNoOracle()">Definir Arte no Oracle</button>
+        <button class="btn btn-ghost" style="font-size:.78rem" onclick="setOracleNoNFT()">Definir Oracle no NFT</button>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-title">Utilitários</div>
+      <div class="row">
+        <button class="btn btn-ghost" style="font-size:.78rem" onclick="refresh()">↻ Atualizar</button>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+
+<div id="statusbar">
+  <span class="sbl">Status</span>
+  <div id="sbm"><span class="sbe sbe-i">Aguardando conexão...</span></div>
+</div>
+
+<script>
+"use strict";
+
+/* ── ABIs ── */
+const ABI_ARTE = [
+  "function owner() view returns (address)",
+  "function contratoOracle() view returns (address)",
+  "function contratoNFT() view returns (address)",
+  "function totalObras() view returns (uint256)",
+  "function registrar(string cidObra)",
+  "function getObra(string cidObra) view returns (address autor, string pHash, string cidAnalise, bool aprovada, uint256 timestamp, bool pendente)",
+  "function getObrasAprovadas() view returns (string[] cids, string[] pHashes)",
+  "function getObrasPorPagina(uint256 offset, uint256 limit) view returns (string[])",
+  "function setContratoOracle(address)",
+  "function setContratoNFT(address)",
+  "event ObraRegistrada(string indexed cidObra, address indexed autor)",
+  "event ObraAprovada(string indexed cidObra, string cidAnalise)",
+  "event ObraRejeitada(string indexed cidObra, string cidAnalise)"
+];
+
+const ABI_NFT = [
+  "function owner() view returns (address)",
+  "function contratoOracle() view returns (address)",
+  "function totalMintado() view returns (uint256)",
+  "function tokenDaObra(string) view returns (uint256)",
+  "function getToken(uint256 tokenId) view returns (string cidObra, string cidAnalise, address autor, uint256 timestamp)",
+  "function tokenURI(uint256) view returns (string)",
+  "function setContratoOracle(address)",
+  "event ObraMintada(string indexed cidObra, string cidAnalise, address indexed autor, uint256 tokenId)"
+];
+
+const ABI_ORACLE = [
+  "function owner() view returns (address)",
+  "function contratoArte() view returns (address)",
+  "function contratoNFT() view returns (address)",
+  "function setContratoArte(address)",
+  "function setContratoNFT(address)",
+  "function setFunctionsSource(string)"
+];
+
+const SK = "ac_v1";
+let prov, signer, me = "";
+let CA = null, CN = null, CO = null;
+let PINATA_JWT = "";
+let selectedFile = null;
+
+/* ── Utils ── */
+const H   = v => String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const sh  = a => (!a||a==="0x0000000000000000000000000000000000000000")?"—":a.slice(0,6)+"…"+a.slice(-4);
+const fe  = w => { try{return Number(ethers.formatEther(w)).toFixed(4)}catch{return"0"} };
+const fd  = t => (!t||Number(t)===0)?"—":new Date(Number(t)*1000).toLocaleDateString("pt-BR");
+
+function fe2(e){
+  if(!e) return "Erro desconhecido";
+  if(String(e.code)==="4001") return "Recusado no MetaMask.";
+  const r = e.shortMessage||e.reason||e.info?.error?.message||e.message||String(e);
+  return String(r).replace(/^execution reverted:\s*/i,"").trim();
+}
+
+function lg(m, t="i"){
+  const b = document.getElementById("sbm");
+  const el = document.createElement("span");
+  el.className = "sbe sbe-"+({"i":"i","s":"s","e":"e","p":"p"}[t]||"i");
+  el.textContent = m; b.insertBefore(el, b.firstChild);
+  while(b.children.length > 8) b.removeChild(b.lastChild);
+}
+
+function toast(title, msg, type="i"){
+  const icons = {i:"ℹ️",s:"✅",e:"❌",p:"⏳"};
+  const map   = {s:"ts",e:"te",p:"tp"};
+  const c = document.getElementById("toast-c");
+  const el = document.createElement("div");
+  el.className = "toast "+(map[type]||"");
+  el.innerHTML = `<span>${icons[type]||"ℹ️"}</span><div><div class="toast-title">${H(title)}</div><div style="color:var(--muted2);font-size:.79rem">${H(msg)}</div></div>`;
+  c.appendChild(el); setTimeout(()=>el.remove(), 5000);
+}
+
+async function txSend(msg, fn, okTitle, okMsg){
+  lg(msg, "p"); toast("MetaMask","Confirme a transação.","p");
+  try {
+    const t = await fn(); lg("Tx enviada...","p");
+    await t.wait();
+    lg(okTitle,"s"); toast(okTitle, okMsg,"s");
+    await new Promise(r=>setTimeout(r,1500));
+    await refresh();
+  } catch(e) {
+    const m2 = fe2(e); lg("Erro: "+m2,"e"); toast("Erro",m2,"e");
+  }
+}
+
+/* ── Upload drag/drop ── */
+function dragOver(e){ e.preventDefault(); document.getElementById("upload-zone").classList.add("drag"); }
+function dragLeave(){ document.getElementById("upload-zone").classList.remove("drag"); }
+function dragDrop(e){
+  e.preventDefault(); dragLeave();
+  const f = e.dataTransfer.files[0];
+  if(f) arquivoSelecionado(f);
+}
+
+function arquivoSelecionado(file){
+  if(!file || !file.type.startsWith("image/")){ toast("Arquivo inválido","Apenas imagens são aceitas","e"); return; }
+  if(file.size > 10*1024*1024){ toast("Arquivo grande demais","Máximo 10MB","e"); return; }
+  selectedFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById("preview-img").src = e.target.result;
+    document.getElementById("preview-box").style.display = "block";
+    document.getElementById("preview-name").textContent = file.name;
+    document.getElementById("preview-size").textContent = (file.size/1024).toFixed(1)+" KB";
+    document.getElementById("btn-registrar").disabled = false;
+    document.getElementById("upload-zone").style.display = "none";
+  };
+  reader.readAsDataURL(file);
+}
+
+function limparForm(){
+  selectedFile = null;
+  document.getElementById("preview-box").style.display = "none";
+  document.getElementById("upload-zone").style.display = "block";
+  document.getElementById("file-input").value = "";
+  document.getElementById("r-titulo").value = "";
+  document.getElementById("r-desc").value = "";
+  document.getElementById("steps").style.display = "none";
+  document.getElementById("r-resultado").style.display = "none";
+  document.getElementById("r-err").style.display = "none";
+  document.getElementById("btn-registrar").disabled = true;
+}
+
+/* ── Steps UI ── */
+function setStep(id, estado, desc){
+  const el = document.getElementById(id);
+  el.className = "step " + estado;
+  if(desc) document.getElementById(id+"-desc").textContent = desc;
+}
+
+/* ── Pinata upload ── */
+async function pinataUpload(file, titulo, desc){
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("pinataMetadata", JSON.stringify({
+    name: `artechain-${titulo}-${Date.now()}`,
+    keyvalues: { titulo, descricao: desc, autor: me, rede: "sepolia" }
+  }));
+  formData.append("pinataOptions", JSON.stringify({ cidVersion: 0 }));
+
+  const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${PINATA_JWT}` },
+    body: formData
+  });
+
+  if(!res.ok){
+    const err = await res.json().catch(()=>({}));
+    throw new Error("Pinata: " + (err.error?.details || res.status));
+  }
+  const data = await res.json();
+  return data.IpfsHash;
+}
+
+/* ── Registrar obra ── */
+async function registrarObra(){
+  if(!selectedFile){ toast("Selecione uma imagem","","e"); return; }
+  if(!PINATA_JWT){ toast("Configure o Pinata JWT","No setup ou Admin","e"); return; }
+
+  const titulo = document.getElementById("r-titulo").value.trim() || selectedFile.name;
+  const desc   = document.getElementById("r-desc").value.trim();
+
+  document.getElementById("steps").style.display = "flex";
+  document.getElementById("r-err").style.display = "none";
+  document.getElementById("r-resultado").style.display = "none";
+  document.getElementById("btn-registrar").disabled = true;
+
+  let cidObra = "";
+
+  try {
+    // Step 1 — Upload Pinata
+    setStep("step-upload","active","Enviando para o IPFS...");
+    cidObra = await pinataUpload(selectedFile, titulo, desc);
+    setStep("step-upload","done","CID: "+cidObra.slice(0,16)+"...");
+    lg("Pinata: "+cidObra.slice(0,12)+"...","s");
+
+    // Step 2 — Transação on-chain
+    setStep("step-tx","active","Confirme no MetaMask...");
+    toast("MetaMask","Confirme a transação de registro","p");
+    const tx = await CA.registrar(cidObra);
+    setStep("step-tx","active","Aguardando confirmação...");
+    await tx.wait();
+    setStep("step-tx","done","Tx: "+tx.hash.slice(0,16)+"...");
+    lg("On-chain: "+cidObra.slice(0,10),"s");
+
+    // Step 3 — Aguarda Chainlink
+    setStep("step-chainlink","active","Gemini Vision analisando sua obra...");
+    toast("Chainlink","Análise de originalidade em andamento...","p");
+
+    // Escuta evento ObraAprovada ou ObraRejeitada
+    await esperarCallback(cidObra);
+
+  } catch(e) {
+    const msg = fe2(e);
+    const stepAtivo = ["step-upload","step-tx","step-chainlink","step-nft"].find(s => document.getElementById(s).classList.contains("active"));
+    if(stepAtivo) setStep(stepAtivo,"error",msg);
+    document.getElementById("r-err").textContent = msg;
+    document.getElementById("r-err").style.display = "block";
+    document.getElementById("btn-registrar").disabled = false;
+    lg("Erro: "+msg,"e");
+  }
+}
+
+async function esperarCallback(cidObra){
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(()=>{
+      CA.off("ObraAprovada"); CA.off("ObraRejeitada");
+      // Mesmo sem evento, marca como pendente
+      setStep("step-chainlink","done","Pendente — callback chegará em breve");
+      setStep("step-nft","active","Aguardando mint...");
+      mostrarResultadoPendente(cidObra);
+      resolve();
+    }, 120000); // 2 min timeout
+
+    CA.on("ObraAprovada", (cid, cidAnalise) => {
+      if(cid !== cidObra) return;
+      clearTimeout(timeout);
+      CA.off("ObraAprovada"); CA.off("ObraRejeitada");
+      setStep("step-chainlink","done","Aprovada pelo Gemini Vision ✅");
+      setStep("step-nft","done","NFT mintado! CID: "+cidAnalise.slice(0,14)+"...");
+      mostrarResultadoAprovado(cidObra, cidAnalise);
+      refresh();
+      resolve();
+    });
+
+    CA.on("ObraRejeitada", (cid, motivo) => {
+      if(cid !== cidObra) return;
+      clearTimeout(timeout);
+      CA.off("ObraAprovada"); CA.off("ObraRejeitada");
+      setStep("step-chainlink","error","Rejeitada: "+motivo);
+      setStep("step-nft","error","NFT não emitido");
+      reject(new Error("Obra rejeitada: "+motivo));
+    });
+  });
+}
+
+function mostrarResultadoAprovado(cidObra, cidAnalise){
+  const el = document.getElementById("r-resultado");
+  el.innerHTML = `
+    <div class="alert-ok">
+      🎉 Obra aprovada e NFT mintado com sucesso!<br>
+      <a href="https://ipfs.io/ipfs/${cidAnalise}" target="_blank" style="color:var(--green)">
+        Ver análise no IPFS →
+      </a>
+    </div>
+  `;
+  el.style.display = "block";
+  toast("NFT mintado!", "Obra registrada com sucesso 🎨", "s");
+}
+
+function mostrarResultadoPendente(cidObra){
+  const el = document.getElementById("r-resultado");
+  el.innerHTML = `
+    <div class="notice">
+      ⏳ Obra registrada on-chain. O Chainlink está analisando...<br>
+      <small>O NFT será mintado automaticamente quando a análise terminar.</small><br><br>
+      CID da obra: <code style="color:var(--gold)">${cidObra}</code><br>
+      <a href="https://ipfs.io/ipfs/${cidObra}" target="_blank" style="color:var(--gold)">Ver obra no IPFS →</a>
+    </div>
+  `;
+  el.style.display = "block";
+}
+
+/* ── Connect ── */
+async function conectar(){
+  if(!window.ethereum){ toast("MetaMask não encontrada","Instale a extensão","e"); return; }
+  try {
+    await window.ethereum.request({method:"eth_requestAccounts"});
+    prov   = new ethers.BrowserProvider(window.ethereum);
+    signer = await prov.getSigner();
+    me     = await signer.getAddress();
+    const chain = await prov.getNetwork();
+    document.getElementById("bnet").textContent = chain.name;
+    document.getElementById("bnet").style.display = "inline";
+    document.getElementById("bwallet").textContent = sh(me);
+    document.getElementById("bwallet").style.display = "inline";
+    const bal = await prov.getBalance(me);
+    document.getElementById("bbal").textContent = fe(bal)+" ETH";
+    document.getElementById("bbal").style.display = "inline";
+    lg("Conectado: "+sh(me),"s");
+    document.getElementById("splash").style.display = "none";
+    document.getElementById("setup").style.display   = "block";
+    const saved = JSON.parse(localStorage.getItem(SK)||"{}");
+    if(saved.arte)   document.getElementById("a-arte").value   = saved.arte;
+    if(saved.nft)    document.getElementById("a-nft").value    = saved.nft;
+    const jwt = sessionStorage.getItem("ac_pinata");
+    if(jwt){ document.getElementById("a-pinata").value = jwt; document.getElementById("save-pinata").checked = true; }
+    window.ethereum.on("accountsChanged",()=>location.reload());
+    window.ethereum.on("chainChanged",()=>location.reload());
+  } catch(e){ lg("Erro: "+fe2(e),"e"); toast("Erro",fe2(e),"e"); }
+}
+
+function salvarPinata(){
+  const v = (document.getElementById("a-pinata").value||"").trim();
+  if(document.getElementById("save-pinata").checked && v) sessionStorage.setItem("ac_pinata", v);
+  else sessionStorage.removeItem("ac_pinata");
+}
+
+async function ligar(){
+  const eb = document.getElementById("setup-err"); eb.style.display = "none";
+  try {
+    const aa = document.getElementById("a-arte").value.trim();
+    const an = document.getElementById("a-nft").value.trim();
+    const jp = document.getElementById("a-pinata").value.trim();
+    if(!aa) throw new Error("Cole o endereço do Arte.sol");
+    if(!an) throw new Error("Cole o endereço do ArteNFT.sol");
+    if(!jp) throw new Error("Informe o Pinata JWT");
+    if(!ethers.isAddress(aa)) throw new Error("Endereço Arte.sol inválido");
+    if(!ethers.isAddress(an)) throw new Error("Endereço ArteNFT.sol inválido");
+    const ca = await prov.getCode(aa);
+    const cn = await prov.getCode(an);
+    if(ca==="0x") throw new Error("Arte.sol: sem contrato nesse endereço");
+    if(cn==="0x") throw new Error("ArteNFT.sol: sem contrato nesse endereço");
+    CA = new ethers.Contract(ethers.getAddress(aa), ABI_ARTE, signer);
+    CN = new ethers.Contract(ethers.getAddress(an), ABI_NFT,  signer);
+    PINATA_JWT = jp;
+    if(document.getElementById("save-pinata").checked) sessionStorage.setItem("ac_pinata", jp);
+    localStorage.setItem(SK, JSON.stringify({arte:aa, nft:an}));
+    // Tenta conectar oracle se existir
+    try {
+      const oa = await CA.contratoOracle();
+      if(oa && oa !== ethers.ZeroAddress){
+        CO = new ethers.Contract(ethers.getAddress(oa), ABI_ORACLE, signer);
+      }
+    } catch{}
+    document.getElementById("setup").style.display = "none";
+    document.getElementById("main").style.display  = "block";
+    await refresh();
+    toast("Pronto!","Contratos conectados 🎨","s");
+  } catch(e){ eb.textContent = fe2(e); eb.style.display = "block"; }
+}
+
+/* ── Refresh ── */
+async function refresh(){
+  if(!CA) return;
+  try {
+    const total = await CA.totalObras();
+    document.getElementById("st-obras").textContent = total.toString();
+    const bal = await prov.getBalance(me);
+    document.getElementById("bbal").textContent = fe(bal)+" ETH";
+    document.getElementById("st-bal").textContent = fe(bal);
+    renderAdminInfo();
+    if(document.getElementById("tp-galeria").classList.contains("on")) await renderGaleria();
+    if(document.getElementById("tp-minha").classList.contains("on"))   await renderMinhas();
+  } catch{}
+}
+
+function renderAdminInfo(){
+  document.getElementById("admin-info").innerHTML = `
+    <div class="cell"><div class="cell-l">Owner Arte</div><div class="cell-v">${sh(me)}</div></div>
+    <div class="cell"><div class="cell-l">Oracle</div><div class="cell-v" id="adm-oracle-addr">—</div></div>
+    <div class="cell"><div class="cell-l">NFT</div><div class="cell-v">${CN?sh(CN.target):"—"}</div></div>
+  `;
+  if(CA) CA.contratoOracle().then(a=>{ const el=document.getElementById("adm-oracle-addr"); if(el) el.textContent=sh(a); }).catch(()=>{});
+}
+
+/* ── Galeria ── */
+async function renderGaleria(){
+  const el = document.getElementById("galeria-lista");
+  try {
+    const total = Number(await CA.totalObras());
+    if(!total){ el.innerHTML=`<div class="empty"><div class="empty-ico">🖼</div>Nenhuma obra registrada ainda.</div>`; return; }
+    const obras = await CA.getObrasPorPagina(0, Math.min(total, 20));
+    await renderCards(el, obras, false);
+  } catch(e){ el.innerHTML=`<div class="empty">${fe2(e)}</div>`; }
+}
+
+async function renderMinhas(){
+  const el = document.getElementById("minha-lista");
+  try {
+    const total = Number(await CA.totalObras());
+    if(!total){ el.innerHTML=`<div class="empty"><div class="empty-ico">🎨</div>Nenhuma obra registrada.</div>`; return; }
+    const todas = await CA.getObrasPorPagina(0, Math.min(total, 50));
+    const minhas = [];
+    for(const cid of todas){
+      const o = await CA.getObra(cid);
+      if(o.autor.toLowerCase() === me.toLowerCase()) minhas.push(cid);
+    }
+    document.getElementById("st-minhas").textContent = minhas.length;
+    if(!minhas.length){ el.innerHTML=`<div class="empty"><div class="empty-ico">🎨</div>Você ainda não registrou obras.</div>`; return; }
+    await renderCards(el, minhas, true);
+  } catch(e){ el.innerHTML=`<div class="empty">${fe2(e)}</div>`; }
+}
+
+async function renderCards(el, cids, mostrarNFT){
+  const cards = await Promise.all(cids.map(async cid => {
+    const o = await CA.getObra(cid).catch(()=>null);
+    if(!o) return "";
+    const isPendente = o.pendente;
+    const isAprovada = o.aprovada;
+    const status = isPendente ? "pendente" : (isAprovada ? "aprovada" : "rejeitada");
+    const chipHtml = status==="aprovada"
+      ? `<span class="chip chip-green">✅ Aprovada</span>`
+      : status==="pendente"
+      ? `<span class="chip chip-amber">⏳ Pendente</span>`
+      : `<span class="chip chip-red">❌ Rejeitada</span>`;
+
+    let tokenHtml = "";
+    if(mostrarNFT && CN && o.cidAnalise){
+      const tokenId = await CN.tokenDaObra(cid).catch(()=>0n);
+      if(tokenId > 0n){
+        tokenHtml = `<span class="chip chip-gold">🏷 Token #${tokenId}</span>`;
+      }
+    }
+
+    const ipfsLink = `https://ipfs.io/ipfs/${cid}`;
+    const analiseLink = o.cidAnalise ? `https://ipfs.io/ipfs/${o.cidAnalise}` : null;
+
+    return `
+      <div class="obra-card">
+        <div class="obra-thumb-placeholder">🖼</div>
+        <div class="obra-info">
+          <div class="obra-titulo">${cid.slice(0,10)}...${cid.slice(-6)}</div>
+          <div class="obra-autor">${sh(o.autor)}</div>
+          <div class="obra-chips">
+            ${chipHtml}
+            ${tokenHtml}
+          </div>
+          <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+            <a href="${ipfsLink}" target="_blank" style="font-size:.72rem;color:var(--gold);text-decoration:none">🔗 Ver obra</a>
+            ${analiseLink?`<a href="${analiseLink}" target="_blank" style="font-size:.72rem;color:var(--muted2);text-decoration:none">📋 Ver análise</a>`:""}
+          </div>
+        </div>
+      </div>`;
+  }));
+  el.innerHTML = `<div class="obras-grid">${cards.join("")}</div>`;
+}
+
+/* ── Admin ── */
+async function setOracle(){
+  const v = document.getElementById("adm-oracle").value.trim();
+  if(!ethers.isAddress(v)){ toast("Endereço inválido","","e"); return; }
+  if(!CO) CO = new ethers.Contract(ethers.getAddress(v), ABI_ORACLE, signer);
+  await txSend("Configurando Oracle...", ()=>CA.setContratoOracle(v), "Oracle definido!", sh(v));
+}
+async function setNFTnoOracle(){
+  if(!CO){ toast("Configure o Oracle primeiro","","e"); return; }
+  await txSend("NFT no Oracle...", ()=>CO.setContratoNFT(CN.target), "NFT definido no Oracle!", "");
+}
+async function setArteNoOracle(){
+  if(!CO){ toast("Configure o Oracle primeiro","","e"); return; }
+  await txSend("Arte no Oracle...", ()=>CO.setContratoArte(CA.target), "Arte definido no Oracle!", "");
+}
+async function setOracleNoNFT(){
+  const v = document.getElementById("adm-oracle").value.trim();
+  if(!ethers.isAddress(v)){ toast("Endereço inválido","","e"); return; }
+  await txSend("Oracle no NFT...", ()=>CN.setContratoOracle(v), "Oracle definido no NFT!", "");
+}
+/* ── Verificar plágio ── */
+let vSelectedFile = null;
+let vSelectedBase64 = null;
+
+function vDragOver(e){ e.preventDefault(); document.getElementById("v-upload-zone").classList.add("drag"); }
+function vDragLeave(){ document.getElementById("v-upload-zone").classList.remove("drag"); }
+function vDragDrop(e){ e.preventDefault(); vDragLeave(); const f=e.dataTransfer.files[0]; if(f) vArquivoSelecionado(f); }
+
+function vArquivoSelecionado(file){
+  if(!file||!file.type.startsWith("image/")){ toast("Arquivo inválido","Apenas imagens","e"); return; }
+  vSelectedFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    vSelectedBase64 = e.target.result.split(",")[1];
+    document.getElementById("v-preview-img").src = e.target.result;
+    document.getElementById("v-preview-box").style.display = "block";
+    document.getElementById("v-preview-name").textContent = file.name;
+    document.getElementById("v-preview-size").textContent = (file.size/1024).toFixed(1)+" KB";
+    document.getElementById("v-upload-zone").style.display = "none";
+    document.getElementById("btn-verificar").disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+function salvarGeminiKey(){
+  const v = (document.getElementById("v-gemini-key").value||"").trim();
+  if(document.getElementById("v-save-key").checked && v) sessionStorage.setItem("ac_gemini", v);
+  else sessionStorage.removeItem("ac_gemini");
+}
+
+function limparVerificar(){
+  vSelectedFile = null; vSelectedBase64 = null;
+  document.getElementById("v-preview-box").style.display = "none";
+  document.getElementById("v-upload-zone").style.display = "block";
+  document.getElementById("v-file-input").value = "";
+  document.getElementById("v-resultado").style.display = "none";
+  document.getElementById("v-err").style.display = "none";
+  document.getElementById("btn-verificar").disabled = true;
+}
+
+async function verificarPlagio(){
+  if(!vSelectedBase64){ toast("Selecione uma imagem","","e"); return; }
+  const geminiKey = (document.getElementById("v-gemini-key").value||sessionStorage.getItem("ac_gemini")||"").trim();
+  if(!geminiKey){ toast("Informe a Gemini API Key","","e"); return; }
+  salvarGeminiKey();
+
+  document.getElementById("v-err").style.display = "none";
+  document.getElementById("v-resultado").style.display = "block";
+  document.getElementById("v-status").textContent = "⏳ Buscando obras registradas on-chain...";
+  document.getElementById("v-lista").innerHTML = "";
+  document.getElementById("btn-verificar").disabled = true;
+
+  try {
+    // 1. Busca todas obras registradas
+    const total = Number(await CA.totalObras());
+    if(!total){
+      document.getElementById("v-status").textContent = "Nenhuma obra registrada para comparar.";
+      document.getElementById("btn-verificar").disabled = false;
+      return;
+    }
+    const cids = await CA.getObrasPorPagina(0, Math.min(total, 30));
+    document.getElementById("v-status").textContent = `⏳ Comparando com ${cids.length} obras via Gemini Vision...`;
+    lg("Verificando plágio contra "+cids.length+" obras","p");
+
+    // 2. Monta lista de URLs IPFS
+    const urlsIPFS = cids.map(cid => `https://ipfs.io/ipfs/${cid}`).join("\n");
+
+    // 3. Chama Gemini Vision com a imagem suspeita
+    const prompt = `You are an art plagiarism detector.
+I will show you an image that may be plagiarized.
+Compare it against these registered artworks on IPFS:
+${urlsIPFS}
+
+For each artwork URL, estimate the visual similarity percentage (0-100%) to the uploaded image.
+Consider: composition, style, colors, subject matter, overall impression.
+
+Respond ONLY with valid JSON array, no markdown:
+[
+  {"cid": "Qm...", "similaridade": 85, "motivo": "brief reason in Portuguese"},
+  ...
+]
+Sort by similarity descending. Only include works with similarity > 10%.`;
+
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            { inline_data: { mime_type: vSelectedFile.type, data: vSelectedBase64 } },
+            { text: prompt }
+          ]
+        }],
+        generationConfig: { maxOutputTokens: 800, temperature: 0.1 }
+      })
+    });
+
+    const data = await res.json();
+    const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+    // 4. Parse resultado
+    let resultados = [];
+    try {
+      const clean = rawText.replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();
+      resultados = JSON.parse(clean);
+    } catch(e){
+      // fallback — tenta extrair do texto
+      resultados = [];
+    }
+
+    // 5. Renderiza resultado
+    if(!resultados.length){
+      document.getElementById("v-status").innerHTML =
+        `<span style="color:var(--green)">✅ Nenhuma similaridade significativa encontrada. Obra possivelmente original!</span>`;
+      document.getElementById("btn-verificar").disabled = false;
+      return;
+    }
+
+    const temAlto = resultados.some(r => r.similaridade >= 70);
+    document.getElementById("v-status").innerHTML = temAlto
+      ? `<span style="color:var(--red)">🚨 Possível plágio detectado! Similaridade alta com obra(s) registrada(s).</span>`
+      : `<span style="color:var(--amber)">⚠️ Similaridade baixa encontrada. Pode ser coincidência de estilo.</span>`;
+
+    document.getElementById("v-lista").innerHTML = resultados.map(r => {
+      const cor = r.similaridade >= 70 ? "var(--red)" : r.similaridade >= 40 ? "var(--amber)" : "var(--green)";
+      const cidCurto = r.cid ? r.cid.slice(0,10)+"..."+r.cid.slice(-6) : "—";
+      return `
+        <div class="match-resultado" style="background:var(--surface);border:1px solid var(--border);border-left:3px solid ${cor};border-radius:10px;padding:14px;margin-bottom:10px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <span style="font-family:'Space Mono',monospace;font-size:.82rem;color:var(--text)">${cidCurto}</span>
+            <span style="font-family:'Space Mono',monospace;font-size:1.1rem;font-weight:700;color:${cor}">${r.similaridade}%</span>
+          </div>
+          <div style="height:4px;background:var(--border);border-radius:2px;margin-bottom:8px">
+            <div style="height:100%;width:${r.similaridade}%;background:${cor};border-radius:2px;transition:width .5s"></div>
+          </div>
+          <div style="font-size:.78rem;color:var(--muted2)">${r.motivo||""}</div>
+          <a href="https://ipfs.io/ipfs/${r.cid}" target="_blank"
+             style="font-size:.72rem;color:var(--gold);text-decoration:none;display:inline-block;margin-top:6px">
+            🔗 Ver obra registrada →
+          </a>
+        </div>`;
+    }).join("");
+
+    lg("Verificação concluída","s");
+
+  } catch(e){
+    const msg = fe2(e);
+    document.getElementById("v-err").textContent = msg;
+    document.getElementById("v-err").style.display = "block";
+    document.getElementById("v-resultado").style.display = "none";
+    lg("Erro: "+msg,"e");
+  } finally {
+    document.getElementById("btn-verificar").disabled = false;
+  }
+}
+
+/* ── Tabs ── */
+function tab(n){
+  const ns = ["registrar","verificar","galeria","minha","admin"];
+  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("on",ns[i]===n));
+  document.querySelectorAll(".tc").forEach(c=>c.classList.remove("on"));
+  document.getElementById("tp-"+n).classList.add("on");
+  if(n==="galeria") renderGaleria();
+  if(n==="minha")   renderMinhas();
+  if(n==="verificar"){
+    const k = sessionStorage.getItem("ac_gemini");
+    if(k){ document.getElementById("v-gemini-key").value = k; document.getElementById("v-save-key").checked = true; }
+  }
+}
+</script>
+</body>
+</html>
