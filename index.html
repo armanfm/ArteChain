@@ -15,19 +15,16 @@
   --border2:  #3a3a48;
   --gold:     #c8a96e;
   --gold2:    #e8c98e;
-  --cream:    #f0e6d0;
   --green:    #4ecb8d;
   --red:      #e05c5c;
   --amber:    #e89a3a;
   --blue:     #5b8af0;
-  --purple:   #9b6ef3;
   --text:     #e8e4dc;
   --muted:    #6b6878;
   --muted2:   #928fa0;
   --r:        12px;
 }
 * { margin:0; padding:0; box-sizing:border-box }
-
 body {
   background: var(--bg);
   color: var(--text);
@@ -35,7 +32,6 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
 }
-
 body::before {
   content: '';
   position: fixed;
@@ -46,7 +42,6 @@ body::before {
   pointer-events: none;
   z-index: 0;
 }
-
 header {
   position: sticky; top: 0; z-index: 100;
   background: rgba(12,12,14,.92);
@@ -55,10 +50,7 @@ header {
   padding: 0 32px; height: 64px;
   display: flex; align-items: center; justify-content: space-between;
 }
-.logo {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.4rem; letter-spacing: -.02em;
-}
+.logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; letter-spacing: -.02em; }
 .logo span { color: var(--gold); font-style: italic; }
 .hright { display: flex; gap: 8px; align-items: center; }
 .badge {
@@ -69,7 +61,6 @@ header {
   padding: 5px 10px; border-radius: 20px;
   display: none; color: var(--muted2);
 }
-
 .btn {
   padding: 10px 20px; border: none; border-radius: var(--r);
   cursor: pointer; font-size: .85rem; font-weight: 500;
@@ -87,9 +78,7 @@ header {
 .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
 .btn:disabled { opacity: .35; cursor: not-allowed; transform: none !important; }
 .btn-sm { padding: 6px 12px; font-size: .75rem; }
-
 #app { max-width: 1100px; margin: 0 auto; padding: 32px 20px 80px; position: relative; z-index: 1; }
-
 #splash {
   min-height: 82vh;
   display: flex; flex-direction: column;
@@ -103,11 +92,6 @@ header {
   display: flex; align-items: center; justify-content: center;
   font-size: 2.4rem;
   box-shadow: 0 0 60px rgba(200,169,110,.12);
-  animation: pulse 3s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%,100% { box-shadow: 0 0 60px rgba(200,169,110,.12); }
-  50%      { box-shadow: 0 0 80px rgba(200,169,110,.22); }
 }
 #splash h1 {
   font-family: 'Playfair Display', serif;
@@ -121,18 +105,7 @@ header {
   border: 1px solid var(--border2); border-radius: 20px;
   color: var(--muted2); font-family: 'Space Mono', monospace;
 }
-
-#setup { display: none; }
-.setup-box {
-  max-width: 640px; margin: 60px auto;
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 20px; padding: 32px;
-}
-.setup-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 6px; }
-.setup-sub { color: var(--muted2); font-size: .84rem; margin-bottom: 24px; line-height: 1.6; }
-
 #main { display: none; }
-
 .tabs {
   display: flex; gap: 4px; margin-bottom: 28px;
   background: var(--surface); padding: 5px;
@@ -142,14 +115,13 @@ header {
   padding: 8px 22px; border-radius: 8px;
   cursor: pointer; font-size: .84rem; font-weight: 500;
   color: var(--muted2); border: none; background: transparent;
-  transition: all .15s; font-family: 'DM Sans', sans-serif;
+  font-family: 'DM Sans', sans-serif;
 }
 .tab.on {
   background: var(--card); color: var(--text);
   border: 1px solid var(--border2); font-weight: 600;
 }
 .tc { display: none; } .tc.on { display: block; }
-
 .statbar {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr));
   gap: 12px; margin-bottom: 28px;
@@ -158,42 +130,15 @@ header {
   background: var(--card); border: 1px solid var(--border);
   border-radius: var(--r); padding: 16px 18px;
 }
-.stat-v {
-  font-family: 'Playfair Display', serif;
-  font-size: 2rem; color: var(--gold);
-}
-.stat-l {
-  font-size: .68rem; color: var(--muted);
-  text-transform: uppercase; letter-spacing: .6px; margin-top: 3px;
-}
-
+.stat-v { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold); }
+.stat-l { font-size: .68rem; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-top: 3px; }
 .sec {
   background: var(--card); border: 1px solid var(--border);
   border-radius: 16px; padding: 24px; margin-bottom: 18px;
 }
-.sec-title {
-  font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 4px;
-}
+.sec-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 4px; }
 .sec-sub { color: var(--muted2); font-size: .82rem; line-height: 1.6; margin-bottom: 18px; }
-
-.fg { display: flex; flex-direction: column; gap: 6px; }
-.fg label {
-  font-size: .7rem; color: var(--muted);
-  font-weight: 600; text-transform: uppercase; letter-spacing: .5px;
-}
-.fg input, .fg textarea {
-  background: var(--surface); border: 1px solid var(--border);
-  color: var(--text); padding: 10px 14px; border-radius: 8px;
-  font-size: .88rem; font-family: 'Space Mono', monospace;
-  outline: none; transition: border .15s; resize: vertical;
-}
-.fg input:focus, .fg textarea:focus { border-color: var(--gold); }
-.fg input::placeholder, .fg textarea::placeholder {
-  color: var(--muted); font-family: 'DM Sans', sans-serif;
-}
-.grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 14px; margin-bottom: 16px; }
 .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
-
 .upload-zone {
   border: 2px dashed var(--border2);
   border-radius: 16px; padding: 40px 20px;
@@ -202,27 +147,18 @@ header {
   background: var(--surface);
 }
 .upload-zone:hover, .upload-zone.drag { border-color: var(--gold); background: rgba(200,169,110,.04); }
-.upload-zone input[type=file] {
-  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
-}
+.upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
 .upload-icon { font-size: 2.8rem; margin-bottom: 10px; }
 .upload-text { color: var(--muted2); font-size: .88rem; line-height: 1.6; }
 .upload-text strong { color: var(--gold); }
-
 .preview-box {
-  display: none; position: relative; border-radius: 12px; overflow: hidden;
+  display: none; border-radius: 12px; overflow: hidden;
   border: 1px solid var(--border); background: var(--surface);
 }
-.preview-box img {
-  width: 100%; max-height: 320px; object-fit: contain;
-  display: block; background: #0c0c0e;
-}
-.preview-info {
-  padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;
-}
+.preview-box img { width: 100%; max-height: 320px; object-fit: contain; display: block; background: #0c0c0e; }
+.preview-info { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
 .preview-name { font-size: .82rem; color: var(--muted2); font-family: 'Space Mono', monospace; }
 .preview-size { font-size: .75rem; color: var(--muted); }
-
 .steps { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
 .step {
   display: flex; align-items: center; gap: 12px;
@@ -237,7 +173,6 @@ header {
 .step-text { flex: 1; }
 .step-label { font-weight: 600; color: var(--text); }
 .step-desc  { color: var(--muted2); font-size: .75rem; margin-top: 1px; font-family: 'Space Mono', monospace; }
-
 .obras-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
   gap: 20px;
@@ -248,10 +183,7 @@ header {
   transition: all .2s;
 }
 .obra-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
-.obra-thumb {
-  width: 100%; height: 200px; object-fit: cover;
-  background: var(--card); display: block;
-}
+.obra-thumb { width: 100%; height: 200px; object-fit: cover; background: var(--card); display: block; }
 .obra-thumb-placeholder {
   width: 100%; height: 200px;
   background: linear-gradient(135deg, var(--card), var(--surface));
@@ -259,33 +191,18 @@ header {
   font-size: 2.4rem;
 }
 .obra-info { padding: 14px; }
-.obra-titulo {
-  font-family: 'Playfair Display', serif; font-size: .95rem;
-  margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.obra-autor {
-  font-family: 'Space Mono', monospace; font-size: .7rem;
-  color: var(--muted2); margin-bottom: 8px;
-}
+.obra-titulo { font-family: 'Playfair Display', serif; font-size: .95rem; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.obra-autor { font-family: 'Space Mono', monospace; font-size: .7rem; color: var(--muted2); margin-bottom: 8px; }
 .obra-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
-.chip {
-  font-size: .68rem; padding: 3px 8px; border-radius: 20px; font-weight: 600;
-}
-.chip-green  { background: rgba(78,203,141,.1); color: var(--green); border: 1px solid rgba(78,203,141,.25); }
-.chip-amber  { background: rgba(232,154,58,.1); color: var(--amber); border: 1px solid rgba(232,154,58,.25); }
-.chip-gold   { background: rgba(200,169,110,.1); color: var(--gold); border: 1px solid rgba(200,169,110,.25); }
-.chip-blue   { background: rgba(91,138,240,.1); color: var(--blue); border: 1px solid rgba(91,138,240,.25); }
-.chip-red    { background: rgba(224,92,92,.1); color: var(--red); border: 1px solid rgba(224,92,92,.25); }
-
+.chip { font-size: .68rem; padding: 3px 8px; border-radius: 20px; font-weight: 600; }
+.chip-green { background: rgba(78,203,141,.1); color: var(--green); border: 1px solid rgba(78,203,141,.25); }
+.chip-amber { background: rgba(232,154,58,.1); color: var(--amber); border: 1px solid rgba(232,154,58,.25); }
+.chip-blue  { background: rgba(91,138,240,.1); color: var(--blue); border: 1px solid rgba(91,138,240,.25); }
+.chip-red   { background: rgba(224,92,92,.1); color: var(--red); border: 1px solid rgba(224,92,92,.25); }
 .alert-err {
   background: rgba(224,92,92,.06); border: 1px solid rgba(224,92,92,.2);
   border-left: 3px solid var(--red); padding: 10px 14px;
   border-radius: 8px; font-size: .82rem; color: var(--red);
-}
-.alert-ok {
-  background: rgba(78,203,141,.06); border: 1px solid rgba(78,203,141,.2);
-  border-left: 3px solid var(--green); padding: 10px 14px;
-  border-radius: 8px; font-size: .82rem; color: var(--green);
 }
 .notice {
   background: rgba(255,255,255,.02); border: 1px dashed var(--border2);
@@ -296,33 +213,16 @@ header {
 .cell { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
 .cell-l { font-size: .67rem; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; margin-bottom: 3px; }
 .cell-v { font-size: .84rem; word-break: break-all; font-family: 'Space Mono', monospace; }
-
-.match-resultado {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 14px;
-  margin-bottom: 10px;
-  transition: all .2s;
-}
-.match-resultado:hover { transform: translateX(4px); }
-
-#toast-c {
-  position: fixed; top: 72px; right: 16px;
-  display: flex; flex-direction: column; gap: 8px; z-index: 300;
-}
+#toast-c { position: fixed; top: 72px; right: 16px; display: flex; flex-direction: column; gap: 8px; z-index: 300; }
 .toast {
   background: var(--card); border: 1px solid var(--border);
   border-radius: 14px; padding: 12px 16px; font-size: .82rem;
   max-width: 320px; display: flex; align-items: flex-start; gap: 10px;
-  animation: ts .2s;
 }
 .toast.ts { border-color: var(--green); }
 .toast.te { border-color: var(--red); }
 .toast.tp { border-color: var(--gold); }
 .toast-title { font-weight: 700; font-size: .73rem; text-transform: uppercase; margin-bottom: 2px; }
-@keyframes ts { from { opacity:0; transform: translateX(24px); } to { opacity:1; } }
-
 #statusbar {
   position: fixed; bottom: 0; left: 0; right: 0;
   background: rgba(19,19,22,.96); backdrop-filter: blur(12px);
@@ -332,16 +232,13 @@ header {
 }
 .sbl { font-size: .67rem; text-transform: uppercase; font-weight: 700; color: var(--muted); letter-spacing: .6px; white-space: nowrap; }
 #sbm { flex:1; overflow-x: auto; display: flex; gap: 6px; scrollbar-width: none; }
-.sbe { font-size: .75rem; white-space: nowrap; padding: 3px 10px; border-radius: 20px; animation: fi .25s; font-family: 'Space Mono', monospace; }
+.sbe { font-size: .75rem; white-space: nowrap; padding: 3px 10px; border-radius: 20px; font-family: 'Space Mono', monospace; }
 .sbe-i { background: rgba(91,138,240,.12); color: var(--blue); }
 .sbe-s { background: rgba(78,203,141,.12); color: var(--green); }
 .sbe-e { background: rgba(224,92,92,.12); color: var(--red); }
 .sbe-p { background: rgba(200,169,110,.12); color: var(--gold); }
-@keyframes fi { from { opacity:0; transform: translateY(3px); } to { opacity:1; } }
-
 .empty { text-align: center; padding: 40px; color: var(--muted); font-size: .85rem; }
 .empty-ico { font-size: 2.8rem; margin-bottom: 10px; }
-
 @media(max-width:640px) {
   #splash h1 { font-size: 2.2rem; }
   .tabs { width: 100%; overflow-x: auto; }
@@ -365,28 +262,14 @@ header {
 <section id="splash">
   <div class="splash-icon">🎨</div>
   <h1>Registro Descentralizado<br>de <em>Arte Digital</em></h1>
-  <p>Registre sua obra on-chain. Match de similaridade calculado on-chain. Análise visual por IA.</p>
+  <p>Upload no Supabase. 10 variações pHash. Hamming on-chain. Gemini Vision via Chainlink.</p>
   <div class="splash-pills">
-    <span class="pill">🎨 Upload → IPFS</span>
-    <span class="pill">🔑 pHash on-chain</span>
+    <span class="pill">🖼 Supabase Storage</span>
+    <span class="pill">🔑 10 variações pHash</span>
     <span class="pill">⛓ Hamming Solidity</span>
     <span class="pill">🤖 Gemini Vision</span>
-    <span class="pill">🏷 NFT ERC-721</span>
   </div>
   <button class="btn btn-gold" style="font-size:.95rem;padding:13px 36px;margin-top:8px" onclick="conectar()">Conectar MetaMask</button>
-</section>
-
-<section id="setup">
-  <div class="setup-box">
-    <div class="setup-title">Configurar contratos</div>
-    <div class="setup-sub">Cole os endereços após o deploy no Remix.</div>
-    <div class="grid">
-      <div class="fg"><label>Arte.sol *</label><input id="a-arte" spellcheck="false" placeholder="0x..."/></div>
-      <div class="fg"><label>ArteNFT.sol *</label><input id="a-nft" spellcheck="false" placeholder="0x..."/></div>
-    </div>
-    <div id="setup-err" class="alert-err" style="display:none;margin-bottom:12px"></div>
-    <button class="btn btn-gold" onclick="ligar()">Entrar no app</button>
-  </div>
 </section>
 
 <main id="main">
@@ -398,7 +281,6 @@ header {
 
   <div class="tabs">
     <button class="tab on" onclick="tab('registrar')">🎨 Registrar obra</button>
-    <button class="tab" onclick="tab('verificar')">🔍 Verificar plágio</button>
     <button class="tab" onclick="tab('galeria')">🖼 Galeria</button>
     <button class="tab" onclick="tab('minha')">📁 Minhas obras</button>
     <button class="tab" onclick="tab('admin')">⚙️ Admin</button>
@@ -407,7 +289,7 @@ header {
   <div id="tp-registrar" class="tc on">
     <div class="sec">
       <div class="sec-title">Registrar nova obra</div>
-      <div class="sec-sub">ETAPA 1 — Faça upload e o Chainlink calcula o pHash da sua obra on-chain. Depois você pode iniciar a análise pelo botão na galeria.</div>
+      <div class="sec-sub">Upload no Supabase. Edge Function calcula 10 variações de pHash. Tudo salvo on-chain.</div>
 
       <div class="upload-zone" id="upload-zone" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event)">
         <input type="file" accept="image/*" id="file-input" onchange="arquivoSelecionado(this.files[0])"/>
@@ -426,17 +308,19 @@ header {
         </div>
       </div>
 
-      <div class="grid" style="margin-top:16px">
-        <div class="fg"><label>Título da obra *</label><input id="r-titulo" placeholder="ex: Composição em Azul"/></div>
-        <div class="fg"><label>Descrição</label><input id="r-desc" placeholder="Breve descrição da obra"/></div>
-      </div>
-
       <div class="steps" id="steps" style="display:none">
-        <div class="step" id="step-upload">
-          <span class="step-icon">📤</span>
+        <div class="step" id="step-assinar">
+          <span class="step-icon">✍️</span>
           <div class="step-text">
-            <div class="step-label">Upload na Pinata</div>
-            <div class="step-desc" id="step-upload-desc">Aguardando...</div>
+            <div class="step-label">Assinar mensagem na wallet</div>
+            <div class="step-desc" id="step-assinar-desc">Aguardando...</div>
+          </div>
+        </div>
+        <div class="step" id="step-supabase">
+          <span class="step-icon">☁️</span>
+          <div class="step-text">
+            <div class="step-label">Supabase: upload + 10 hashes</div>
+            <div class="step-desc" id="step-supabase-desc">Aguardando...</div>
           </div>
         </div>
         <div class="step" id="step-tx">
@@ -444,13 +328,6 @@ header {
           <div class="step-text">
             <div class="step-label">Registrar on-chain</div>
             <div class="step-desc" id="step-tx-desc">Aguardando...</div>
-          </div>
-        </div>
-        <div class="step" id="step-phash">
-          <span class="step-icon">🔑</span>
-          <div class="step-text">
-            <div class="step-label">Chainlink calculando pHash</div>
-            <div class="step-desc" id="step-phash-desc">Aguardando...</div>
           </div>
         </div>
       </div>
@@ -479,54 +356,6 @@ header {
     </div>
   </div>
 
-  <div id="tp-verificar" class="tc">
-    <div class="sec">
-      <div class="sec-title">🔍 Verificar plágio</div>
-      <div class="sec-sub">Faça upload de uma imagem suspeita. O sistema compara com todas as obras registradas on-chain usando Gemini Vision.</div>
-
-      <div class="fg" style="margin-bottom:16px">
-        <label>Gemini API Key</label>
-        <input id="v-gemini-key" type="password" placeholder="AIzaSy..."/>
-        <label style="display:flex;align-items:center;gap:8px;margin-top:6px;cursor:pointer;font-size:.75rem;color:var(--muted)">
-          <input type="checkbox" id="v-save-key" onchange="salvarGeminiKey()"/> salvar nesta sessão
-        </label>
-      </div>
-
-      <div class="upload-zone" id="v-upload-zone"
-           ondragover="vDragOver(event)" ondragleave="vDragLeave(event)" ondrop="vDragDrop(event)">
-        <input type="file" accept="image/*" id="v-file-input" onchange="vArquivoSelecionado(this.files[0])"/>
-        <div class="upload-icon">🕵️</div>
-        <div class="upload-text">
-          <strong>Arraste a imagem suspeita aqui</strong><br>
-          ou clique para selecionar
-        </div>
-      </div>
-
-      <div class="preview-box" id="v-preview-box" style="margin-top:14px">
-        <img id="v-preview-img" src="" alt="preview"/>
-        <div class="preview-info">
-          <span class="preview-name" id="v-preview-name">—</span>
-          <span class="preview-size" id="v-preview-size">—</span>
-        </div>
-      </div>
-
-      <div id="v-err" class="alert-err" style="display:none;margin-top:12px"></div>
-
-      <div class="row" style="margin-top:16px">
-        <button class="btn btn-gold" id="btn-verificar" onclick="verificarPlagio()" disabled>🔍 Verificar plágio</button>
-        <button class="btn btn-ghost" onclick="limparVerificar()">↺ Limpar</button>
-      </div>
-    </div>
-
-    <div id="v-resultado" style="display:none">
-      <div class="sec">
-        <div class="sec-title">Resultado da análise</div>
-        <div id="v-status" class="notice" style="margin-bottom:14px">Analisando...</div>
-        <div id="v-lista"></div>
-      </div>
-    </div>
-  </div>
-
   <div id="tp-admin" class="tc">
     <div class="sec">
       <div class="sec-title">⚙️ Configuração</div>
@@ -550,39 +379,26 @@ header {
 <script>
 "use strict";
 
-/* ── Endereços (novos contratos) ── */
-const ARTE_DEFAULT   = "0xB1d9581398e527b33Dd2d3f83433E75B971A1b90";
-const NFT_DEFAULT    = "0xbF8Df2B292c1D6541D24f234aEF8f461C931b7f1";
-const ORACLE_ADDRESS = "0xE7ADED0fE7D0DdD8A4E6EdC261eB84B9390a5dB6";
+const ARTE_ADDRESS   = "0x80Dc05845C4817edFFccd8c2A1d084E4199a9f4C";
+const ORACLE_ADDRESS = "0xDB49fFD14e052a00b02381F1A76d0Dde8F390c50";
 
-/* ── ABIs ── */
+const SUPABASE_URL      = "https://tqsoopgmzdwttwvedngk.supabase.co/functions/v1/calcular-phash";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxc29vcGdtemR3dHR3dmVkbmdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NjIxNTEsImV4cCI6MjA5NDUzODE1MX0.LaHuxJVFJI9SkGHFmapSpkUYBC5plB9oPuDXIXJXsN0";
+
 const ABI_ARTE = [
   "function owner() view returns (address)",
   "function contratoOracle() view returns (address)",
-  "function contratoNFT() view returns (address)",
   "function totalObras() view returns (uint256)",
-  "function registrar(string cidObra)",
-  "function analisarObra(string cidObra)",
-  "function getObra(string cidObra) view returns (address autor, string pHash, string cidAnalise, bool aprovada, uint256 timestamp, bool pendente)",
-  "function getPHash(string cidObra) view returns (string)",
-  "function getObrasAprovadas() view returns (string[] cids, string[] pHashes)",
+  "function registrar(string imageUrl, string[] pHashes)",
+  "function analisarObra(string imageUrl)",
+  "function getObra(string imageUrl) view returns (address autor, string[] pHashes, string cidAnalise, bool aprovada, uint256 timestamp, bool pendente)",
+  "function getPHashes(string imageUrl) view returns (string[])",
   "function getObrasPorPagina(uint256 offset, uint256 limit) view returns (string[])",
+  "function calcularMatch(string imageUrl) view returns (string urlMatch, uint256 score, uint8 variacao1, uint8 variacao2)",
   "function setContratoOracle(address)",
-  "function setContratoNFT(address)",
-  "event ObraRegistrada(string indexed cidObra, address indexed autor)",
-  "event ObraProcessada(string indexed cidObra, string pHash)",
-  "event AnaliseSolicitada(string indexed cidObra)",
-  "event ObraAprovada(string indexed cidObra, string cidAnalise)",
-  "event ObraRejeitada(string indexed cidObra, string cidAnalise)"
-];
-
-const ABI_NFT = [
-  "function owner() view returns (address)",
-  "function totalMintado() view returns (uint256)",
-  "function tokenDaObra(string) view returns (uint256)",
-  "function mintManual(string cidObra) external",
-  "function setContratoArte(address)",
-  "event ObraMintada(string indexed cidObra, string cidAnalise, address indexed autor, uint256 tokenId)"
+  "event ObraRegistrada(string indexed imageUrl, address indexed autor)",
+  "event ObraAprovada(string indexed imageUrl, string cidAnalise)",
+  "event ObraRejeitada(string indexed imageUrl, string cidAnalise)"
 ];
 
 const ABI_ORACLE = [
@@ -591,14 +407,19 @@ const ABI_ORACLE = [
   "function setContratoArte(address)"
 ];
 
-const SK = "ac_v2";
 let prov, signer, me = "";
-let CA = null, CN = null, CO = null;
+let CA = null, CO = null;
 let selectedFile = null;
 
-const H   = v => String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-const sh  = a => (!a||a==="0x0000000000000000000000000000000000000000")?"—":a.slice(0,6)+"…"+a.slice(-4);
-const fe  = w => { try{return Number(ethers.formatEther(w)).toFixed(4)}catch{return"0"} };
+const H  = v => String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const sh = a => (!a||a==="0x0000000000000000000000000000000000000000")?"—":a.slice(0,6)+"…"+a.slice(-4);
+const fe = w => { try{return Number(ethers.formatEther(w)).toFixed(4)}catch{return"0"} };
+
+function nomeDoArquivo(url) {
+  if (!url) return "—";
+  const parts = url.split("/");
+  return parts[parts.length - 1] || url;
+}
 
 function fe2(e){
   if(!e) return "Erro desconhecido";
@@ -610,8 +431,9 @@ function fe2(e){
 function lg(m, t="i"){
   const b = document.getElementById("sbm");
   const el = document.createElement("span");
-  el.className = "sbe sbe-"+({"i":"i","s":"s","e":"e","p":"p"}[t]||"i");
-  el.textContent = m; b.insertBefore(el, b.firstChild);
+  el.className = "sbe sbe-"+t;
+  el.textContent = m;
+  b.insertBefore(el, b.firstChild);
   while(b.children.length > 8) b.removeChild(b.lastChild);
 }
 
@@ -622,7 +444,8 @@ function toast(title, msg, type="i"){
   const el = document.createElement("div");
   el.className = "toast "+(map[type]||"");
   el.innerHTML = `<span>${icons[type]||"ℹ️"}</span><div><div class="toast-title">${H(title)}</div><div style="color:var(--muted2);font-size:.79rem">${H(msg)}</div></div>`;
-  c.appendChild(el); setTimeout(()=>el.remove(), 5000);
+  c.appendChild(el);
+  setTimeout(()=>el.remove(), 5000);
 }
 
 function dragOver(e){ e.preventDefault(); document.getElementById("upload-zone").classList.add("drag"); }
@@ -634,7 +457,7 @@ function dragDrop(e){
 }
 
 function arquivoSelecionado(file){
-  if(!file || !file.type.startsWith("image/")){ toast("Arquivo inválido","Apenas imagens são aceitas","e"); return; }
+  if(!file || !file.type.startsWith("image/")){ toast("Arquivo inválido","Apenas imagens","e"); return; }
   if(file.size > 10*1024*1024){ toast("Arquivo grande demais","Máximo 10MB","e"); return; }
   selectedFile = file;
   const reader = new FileReader();
@@ -654,8 +477,6 @@ function limparForm(){
   document.getElementById("preview-box").style.display = "none";
   document.getElementById("upload-zone").style.display = "block";
   document.getElementById("file-input").value = "";
-  document.getElementById("r-titulo").value = "";
-  document.getElementById("r-desc").value = "";
   document.getElementById("steps").style.display = "none";
   document.getElementById("r-resultado").style.display = "none";
   document.getElementById("r-err").style.display = "none";
@@ -668,35 +489,28 @@ function setStep(id, estado, desc){
   if(desc) document.getElementById(id+"-desc").textContent = desc;
 }
 
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxc29vcGdtemR3dHR3dmVkbmdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NjIxNTEsImV4cCI6MjA5NDUzODE1MX0.LaHuxJVFJI9SkGHFmapSpkUYBC5plB9oPuDXIXJXsN0";
-
-async function pinataUpload(file){
+async function supabaseRegistrar(file){
   const mensagem = "ArteChain upload autorizado";
   const assinatura = await signer.signMessage(mensagem);
 
   const formData = new FormData();
   formData.append("file", file);
 
-  const res = await fetch(
-    "https://tqsoopgmzdwttwvedngk.supabase.co/functions/v1/upload-ipfs",
-    {
-      method: "POST",
-      headers: {
-        "x-wallet-address": me,
-        "x-wallet-signature": assinatura,
-        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-      },
-      body: formData
-    }
-  );
-
-  if(!res.ok){
-    const txt = await res.text();
-    throw new Error(txt);
-  }
+  const res = await fetch(SUPABASE_URL, {
+    method: "POST",
+    headers: {
+      "x-wallet-address":   me,
+      "x-wallet-signature": assinatura,
+      "Authorization":      `Bearer ${SUPABASE_ANON_KEY}`
+    },
+    body: formData
+  });
 
   const data = await res.json();
-  return data.IpfsHash;
+  if(!res.ok || !data.ok){
+    throw new Error(data.erro || data.error || "Erro Supabase");
+  }
+  return { imageUrl: data.imageUrl, variacoes: data.variacoes };
 }
 
 async function registrarObra(){
@@ -707,36 +521,34 @@ async function registrarObra(){
   document.getElementById("r-resultado").style.display = "none";
   document.getElementById("btn-registrar").disabled = true;
 
-  let cidObra = "";
-
   try {
-    setStep("step-upload","active","Validando assinatura e enviando para o IPFS...");
-    cidObra = await pinataUpload(selectedFile);
-    setStep("step-upload","done","CID: "+cidObra.slice(0,16)+"...");
-    lg("Pinata: "+cidObra.slice(0,12)+"...","s");
+    setStep("step-assinar","active","Confirme no MetaMask...");
+    toast("MetaMask","Assine a mensagem de autorização","p");
+
+    setStep("step-supabase","active","Enviando pra Supabase + 10 hashes...");
+    const { imageUrl, variacoes } = await supabaseRegistrar(selectedFile);
+    setStep("step-assinar","done","Assinatura validada");
+    setStep("step-supabase","done",`pHash[0]: ${variacoes[0].slice(0,16)}...`);
+    lg("Supabase OK","s");
 
     setStep("step-tx","active","Confirme no MetaMask...");
     toast("MetaMask","Confirme a transação de registro","p");
-    const tx = await CA.registrar(cidObra);
+    const tx = await CA.registrar(imageUrl, variacoes);
     setStep("step-tx","active","Aguardando confirmação...");
     await tx.wait();
     setStep("step-tx","done","Tx: "+tx.hash.slice(0,16)+"...");
-    lg("On-chain: "+cidObra.slice(0,10),"s");
+    lg("On-chain OK","s");
 
-    setStep("step-phash","active","Chainlink Functions calculando pHash da imagem...");
-    toast("Chainlink","Calculando pHash da obra","p");
-
-    setStep("step-phash","done","pHash será salvo on-chain em alguns segundos");
-    mostrarResultadoPendente(cidObra);
+    mostrarResultado(imageUrl);
 
     setTimeout(() => {
       refresh();
       if(document.getElementById("tp-minha").classList.contains("on")) renderMinhas();
-    }, 5000);
+    }, 2000);
 
   } catch(e) {
     const msg = fe2(e);
-    const stepAtivo = ["step-upload","step-tx","step-phash"].find(s => document.getElementById(s).classList.contains("active"));
+    const stepAtivo = ["step-assinar","step-supabase","step-tx"].find(s => document.getElementById(s).classList.contains("active"));
     if(stepAtivo) setStep(stepAtivo,"error",msg);
     document.getElementById("r-err").textContent = msg;
     document.getElementById("r-err").style.display = "block";
@@ -745,56 +557,39 @@ async function registrarObra(){
   }
 }
 
-function mostrarResultadoPendente(cidObra){
+function mostrarResultado(imageUrl){
   const el = document.getElementById("r-resultado");
   el.innerHTML = `
     <div class="notice">
-      ✅ Obra registrada on-chain. O Chainlink está calculando o pHash agora.<br>
-      <strong>Depois disso vá em "Minhas obras" e clique em "🔍 Analisar obra"</strong> para iniciar a Etapa 2 (Gemini Vision).<br><br>
-      CID da obra: <code style="color:var(--gold)">${cidObra}</code><br>
-      <a href="https://ipfs.io/ipfs/${cidObra}" target="_blank" style="color:var(--gold)">Ver obra no IPFS →</a>
+      ✅ Obra registrada on-chain.<br>
+      <strong>Vá em "Minhas obras" e clique em "🔍 Analisar obra"</strong>.<br><br>
+      URL: <code style="color:var(--gold);font-size:.72rem;word-break:break-all">${H(imageUrl)}</code><br>
+      <a href="${H(imageUrl)}" target="_blank" style="color:var(--gold);font-size:.78rem">Ver imagem →</a>
     </div>
   `;
   el.style.display = "block";
 }
 
-async function analisarObra(cidObra){
+async function analisarObra(imageUrl){
   try {
-    toast("Chainlink","Iniciando análise Gemini...","p");
-    lg(`Analisando ${cidObra.slice(0,10)}...`, "p");
-    
-    const tx = await CA.analisarObra(cidObra);
-    lg("Tx enviada...","p");
+    toast("Chainlink","Disparando análise...","p");
+    lg(`Analisando ${nomeDoArquivo(imageUrl).slice(0,20)}...`, "p");
+
+    const tx = await CA.analisarObra(imageUrl);
+    lg("Tx enviada","p");
     await tx.wait();
-    
-    toast("Análise iniciada","Gemini está processando","s");
-    lg("Análise iniciada ✅","s");
-    
+    lg("Análise disparada ✅","s");
+    toast("Análise iniciada","Aguarde 1-2 minutos pelo Gemini","s");
+
     setTimeout(() => {
       refresh();
       if(document.getElementById("tp-minha").classList.contains("on")) renderMinhas();
       if(document.getElementById("tp-galeria").classList.contains("on")) renderGaleria();
     }, 3000);
   } catch(e){
-    const erro = fe2(e);
-    toast("Erro na análise",erro,"e");
-    lg("Erro: "+erro,"e");
+    toast("Erro",fe2(e),"e");
+    lg("Erro: "+fe2(e),"e");
   }
-}
-
-async function mintarNFT(cidObra){
-  if(!CN){ toast("ArteNFT não configurado","","e"); return; }
-  try {
-    toast("MetaMask","Confirme o mint do NFT","p");
-    const tx = await CN.mintManual(cidObra);
-    lg("Mintando NFT...","p");
-    await tx.wait();
-    toast("NFT Mintado!","Obra registrada como NFT 🎨","s");
-    lg("NFT mintado ✅","s");
-    await refresh();
-    if(document.getElementById("tp-minha").classList.contains("on")) renderMinhas();
-    if(document.getElementById("tp-galeria").classList.contains("on")) renderGaleria();
-  } catch(e){ toast("Erro",fe2(e),"e"); lg("Erro mint: "+fe2(e),"e"); }
 }
 
 async function conectar(){
@@ -813,73 +608,38 @@ async function conectar(){
     document.getElementById("bbal").textContent = fe(bal)+" ETH";
     document.getElementById("bbal").style.display = "inline";
     lg("Conectado: "+sh(me),"s");
-    document.getElementById("splash").style.display = "none";
-    document.getElementById("setup").style.display   = "block";
-    const saved = JSON.parse(localStorage.getItem(SK)||"{}");
-    document.getElementById("a-arte").value = saved.arte || ARTE_DEFAULT;
-    document.getElementById("a-nft").value  = saved.nft  || NFT_DEFAULT;
-    window.ethereum.on("accountsChanged",()=>location.reload());
-    window.ethereum.on("chainChanged",()=>location.reload());
-  } catch(e){ lg("Erro: "+fe2(e),"e"); toast("Erro",fe2(e),"e"); }
-}
 
-async function ligar(){
-  const eb = document.getElementById("setup-err"); eb.style.display = "none";
-  try {
-    const aa = document.getElementById("a-arte").value.trim();
-    const an = document.getElementById("a-nft").value.trim();
-    if(!aa) throw new Error("Cole o endereço do Arte.sol");
-    if(!an) throw new Error("Cole o endereço do ArteNFT.sol");
-    if(!ethers.isAddress(aa)) throw new Error("Endereço Arte.sol inválido");
-    if(!ethers.isAddress(an)) throw new Error("Endereço ArteNFT.sol inválido");
-    const ca = await prov.getCode(aa);
-    const cn = await prov.getCode(an);
-    if(ca==="0x") throw new Error("Arte.sol: sem contrato nesse endereço");
-    if(cn==="0x") throw new Error("ArteNFT.sol: sem contrato nesse endereço");
-    
-    CA = new ethers.Contract(ethers.getAddress(aa), ABI_ARTE, signer);
-    CN = new ethers.Contract(ethers.getAddress(an), ABI_NFT,  signer);
-    CO = new ethers.Contract(ethers.getAddress(ORACLE_ADDRESS), ABI_ORACLE, signer);
+    CA = new ethers.Contract(ARTE_ADDRESS,   ABI_ARTE,   signer);
+    CO = new ethers.Contract(ORACLE_ADDRESS, ABI_ORACLE, signer);
 
-    localStorage.setItem(SK, JSON.stringify({arte:aa, nft:an}));
-
-    // Auto-configura contratos
     try {
-      lg("Verificando configurações...","p");
-
       const oracleNoArte = await CA.contratoOracle();
       if(!oracleNoArte || oracleNoArte === ethers.ZeroAddress) {
         lg("Configurando Oracle no Arte...","p");
         const tx1 = await CA.setContratoOracle(ORACLE_ADDRESS);
         await tx1.wait();
-        lg("Oracle configurado no Arte ✅","s");
+        lg("Oracle configurado ✅","s");
       }
-
-      const nftNoArte = await CA.contratoNFT();
-      if(!nftNoArte || nftNoArte === ethers.ZeroAddress) {
-        lg("Configurando NFT no Arte...","p");
-        const tx2 = await CA.setContratoNFT(an);
-        await tx2.wait();
-        lg("NFT configurado no Arte ✅","s");
-      }
-
       const arteNoOracle = await CO.contratoArte();
       if(!arteNoOracle || arteNoOracle === ethers.ZeroAddress) {
         lg("Configurando Arte no Oracle...","p");
-        const tx3 = await CO.setContratoArte(aa);
-        await tx3.wait();
-        lg("Arte configurado no Oracle ✅","s");
+        const tx2 = await CO.setContratoArte(ARTE_ADDRESS);
+        await tx2.wait();
+        lg("Arte configurado ✅","s");
       }
-
     } catch(configErr) {
       lg("Config: "+fe2(configErr),"i");
     }
 
-    document.getElementById("setup").style.display = "none";
+    document.getElementById("splash").style.display = "none";
     document.getElementById("main").style.display  = "block";
     await refresh();
     toast("Pronto!","Contratos conectados 🎨","s");
-  } catch(e){ eb.textContent = fe2(e); eb.style.display = "block"; }
+
+    window.ethereum.on("accountsChanged",()=>location.reload());
+    window.ethereum.on("chainChanged",()=>location.reload());
+
+  } catch(e){ lg("Erro: "+fe2(e),"e"); toast("Erro",fe2(e),"e"); }
 }
 
 async function refresh(){
@@ -893,15 +653,16 @@ async function refresh(){
     renderAdminInfo();
     if(document.getElementById("tp-galeria").classList.contains("on")) await renderGaleria();
     if(document.getElementById("tp-minha").classList.contains("on"))   await renderMinhas();
-  } catch{}
+  } catch(e){ lg("Refresh erro: "+fe2(e),"e"); }
 }
 
 function renderAdminInfo(){
   document.getElementById("admin-info").innerHTML = `
     <div class="cell"><div class="cell-l">Carteira</div><div class="cell-v">${sh(me)}</div></div>
-    <div class="cell"><div class="cell-l">Arte.sol</div><div class="cell-v">${CA?sh(CA.target):"—"}</div></div>
+    <div class="cell"><div class="cell-l">Arte.sol</div><div class="cell-v">${sh(ARTE_ADDRESS)}</div></div>
     <div class="cell"><div class="cell-l">Oracle</div><div class="cell-v">${sh(ORACLE_ADDRESS)}</div></div>
-    <div class="cell"><div class="cell-l">ArteNFT</div><div class="cell-v">${CN?sh(CN.target):"—"}</div></div>
+    <div class="cell"><div class="cell-l">Edge Function</div><div class="cell-v">calcular-phash</div></div>
+    <div class="cell"><div class="cell-l">Bucket</div><div class="cell-v">artes</div></div>
   `;
 }
 
@@ -909,277 +670,96 @@ async function renderGaleria(){
   const el = document.getElementById("galeria-lista");
   try {
     const total = Number(await CA.totalObras());
-    if(!total){ el.innerHTML=`<div class="empty"><div class="empty-ico">🖼</div>Nenhuma obra registrada ainda.</div>`; return; }
-    const obras = await CA.getObrasPorPagina(0, Math.min(total, 30));
-    await renderCards(el, obras);
-  } catch(e){ el.innerHTML=`<div class="empty">${fe2(e)}</div>`; }
+    if(!total){ el.innerHTML = `<div class="empty"><div class="empty-ico">🖼</div>Nenhuma obra registrada ainda.</div>`; return; }
+    const urls = await CA.getObrasPorPagina(0, Math.min(total, 30));
+    await renderCards(el, urls);
+  } catch(e){ el.innerHTML = `<div class="empty">${H(fe2(e))}</div>`; }
 }
 
 async function renderMinhas(){
   const el = document.getElementById("minha-lista");
   try {
     const total = Number(await CA.totalObras());
-    if(!total){ el.innerHTML=`<div class="empty"><div class="empty-ico">🎨</div>Nenhuma obra registrada.</div>`; return; }
+    if(!total){ el.innerHTML = `<div class="empty"><div class="empty-ico">🎨</div>Nenhuma obra registrada.</div>`; return; }
     const todas = await CA.getObrasPorPagina(0, Math.min(total, 50));
     const minhas = [];
-    for(const cid of todas){
-      const o = await CA.getObra(cid);
-      if(o.autor.toLowerCase() === me.toLowerCase()) minhas.push(cid);
+    for(const url of todas){
+      const o = await CA.getObra(url);
+      if(o.autor.toLowerCase() === me.toLowerCase()) minhas.push(url);
     }
     document.getElementById("st-minhas").textContent = minhas.length;
-    if(!minhas.length){ el.innerHTML=`<div class="empty"><div class="empty-ico">🎨</div>Você ainda não registrou obras.</div>`; return; }
+    if(!minhas.length){ el.innerHTML = `<div class="empty"><div class="empty-ico">🎨</div>Você ainda não registrou obras.</div>`; return; }
     await renderCards(el, minhas);
-  } catch(e){ el.innerHTML=`<div class="empty">${fe2(e)}</div>`; }
+  } catch(e){ el.innerHTML = `<div class="empty">${H(fe2(e))}</div>`; }
 }
 
-async function renderCards(el, cids){
-  const cards = await Promise.all(cids.map(async cid => {
-    const o = await CA.getObra(cid).catch(()=>null);
+async function renderCards(el, urls){
+  const cards = await Promise.all(urls.map(async url => {
+    const o = await CA.getObra(url).catch(()=>null);
     if(!o) return "";
-    
-    const temPHash    = o.pHash && o.pHash.length > 0;
+
     const isPendente  = o.pendente;
     const isAprovada  = !isPendente && o.aprovada;
     const isRejeitada = !isPendente && !o.aprovada && o.cidAnalise && o.cidAnalise.length > 0;
     const ehMeu       = o.autor.toLowerCase() === me.toLowerCase();
-    
+
     let chipHtml = "";
     let borderColor = "var(--border)";
-    
+
     if(isAprovada) {
       chipHtml = `<span class="chip chip-green">✅ Aprovada</span>`;
       borderColor = "var(--green)";
     } else if(isRejeitada) {
       chipHtml = `<span class="chip chip-red">❌ Rejeitada</span>`;
       borderColor = "var(--red)";
-    } else if(temPHash) {
-      chipHtml = `<span class="chip chip-amber">⏳ Aguardando análise</span>`;
-      borderColor = "var(--amber)";
     } else {
-      chipHtml = `<span class="chip chip-blue">🔄 Calculando pHash...</span>`;
-      borderColor = "var(--blue)";
+      chipHtml = `<span class="chip chip-amber">⏳ Pendente</span>`;
+      borderColor = "var(--amber)";
     }
 
     let analisarBtn = "";
-    if(temPHash && isPendente && ehMeu){
+    if(isPendente && ehMeu){
+      const urlSafe = url.replace(/'/g, "\\'");
       analisarBtn = `
-        <button 
-          class="btn btn-sm" 
-          onclick="analisarObra('${cid}')" 
-          style="margin-top:8px;width:100%;background:linear-gradient(135deg, var(--amber), #c47a1f);color:#0c0c0e;border:none;font-weight:700"
-        >
+        <button class="btn btn-sm" onclick="analisarObra('${urlSafe}')"
+          style="margin-top:8px;width:100%;background:linear-gradient(135deg, var(--amber), #c47a1f);color:#0c0c0e;border:none;font-weight:700">
           🔍 Analisar obra
         </button>
       `;
     }
 
-    let mintBtn = "";
-    if(isAprovada && ehMeu && CN){
-      const tokenId = await CN.tokenDaObra(cid).catch(()=>0n);
-      if(tokenId > 0n){
-        mintBtn = `<div class="chip chip-gold" style="margin-top:8px;display:inline-block">🏷 Token #${tokenId}</div>`;
-      } else {
-        mintBtn = `
-          <button 
-            class="btn btn-sm" 
-            onclick="mintarNFT('${cid}')" 
-            style="margin-top:8px;width:100%;background:linear-gradient(135deg, var(--green), #2a9d6e);color:white;border:none;font-weight:700"
-          >
-            🏷 Mintar NFT
-          </button>
-        `;
-      }
-    }
-
-    const ipfsLink   = `https://ipfs.io/ipfs/${cid}`;
     const analiseLink = o.cidAnalise ? `https://ipfs.io/ipfs/${o.cidAnalise}` : null;
-    const imgSrc     = `https://gateway.pinata.cloud/ipfs/${cid}`;
-    const pHashChip  = temPHash ? `<span class="chip chip-blue" title="${o.pHash}">🔑 ${o.pHash.slice(0,8)}...</span>` : "";
+    const phashesChip = o.pHashes && o.pHashes.length === 10
+      ? `<span class="chip chip-blue" title="${o.pHashes.join(', ')}">🔑 10 hashes</span>`
+      : "";
 
     return `
       <div class="obra-card" style="border-left: 3px solid ${borderColor}">
-        <img class="obra-thumb" src="${imgSrc}" alt="obra" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <img class="obra-thumb" src="${H(url)}" alt="obra" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
         <div class="obra-thumb-placeholder" style="display:none">🖼</div>
         <div class="obra-info">
-          <div class="obra-titulo">${cid.slice(0,10)}...${cid.slice(-6)}</div>
+          <div class="obra-titulo">${H(nomeDoArquivo(url))}</div>
           <div class="obra-autor">${sh(o.autor)}</div>
-          <div class="obra-chips">
-            ${chipHtml}
-            ${pHashChip}
-          </div>
+          <div class="obra-chips">${chipHtml}${phashesChip}</div>
           <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
-            <a href="${ipfsLink}" target="_blank" style="font-size:.72rem;color:var(--gold);text-decoration:none">🔗 Ver obra</a>
+            <a href="${H(url)}" target="_blank" style="font-size:.72rem;color:var(--gold);text-decoration:none">🔗 Ver obra</a>
             ${analiseLink?`<a href="${analiseLink}" target="_blank" style="font-size:.72rem;color:var(--muted2);text-decoration:none">📋 Análise</a>`:""}
           </div>
           ${analisarBtn}
-          ${mintBtn}
         </div>
       </div>`;
   }));
   el.innerHTML = `<div class="obras-grid">${cards.join("")}</div>`;
 }
 
-// Verificar plágio
-let vSelectedFile = null;
-let vSelectedBase64 = null;
-
-function vDragOver(e){ e.preventDefault(); document.getElementById("v-upload-zone").classList.add("drag"); }
-function vDragLeave(){ document.getElementById("v-upload-zone").classList.remove("drag"); }
-function vDragDrop(e){ e.preventDefault(); vDragLeave(); const f=e.dataTransfer.files[0]; if(f) vArquivoSelecionado(f); }
-
-function vArquivoSelecionado(file){
-  if(!file||!file.type.startsWith("image/")){ toast("Arquivo inválido","Apenas imagens","e"); return; }
-  vSelectedFile = file;
-  const reader = new FileReader();
-  reader.onload = e => {
-    vSelectedBase64 = e.target.result.split(",")[1];
-    document.getElementById("v-preview-img").src = e.target.result;
-    document.getElementById("v-preview-box").style.display = "block";
-    document.getElementById("v-preview-name").textContent = file.name;
-    document.getElementById("v-preview-size").textContent = (file.size/1024).toFixed(1)+" KB";
-    document.getElementById("v-upload-zone").style.display = "none";
-    document.getElementById("btn-verificar").disabled = false;
-  };
-  reader.readAsDataURL(file);
-}
-
-function salvarGeminiKey(){
-  const v = (document.getElementById("v-gemini-key").value||"").trim();
-  if(document.getElementById("v-save-key").checked && v) sessionStorage.setItem("ac_gemini", v);
-  else sessionStorage.removeItem("ac_gemini");
-}
-
-function limparVerificar(){
-  vSelectedFile = null; vSelectedBase64 = null;
-  document.getElementById("v-preview-box").style.display = "none";
-  document.getElementById("v-upload-zone").style.display = "block";
-  document.getElementById("v-file-input").value = "";
-  document.getElementById("v-resultado").style.display = "none";
-  document.getElementById("v-err").style.display = "none";
-  document.getElementById("btn-verificar").disabled = true;
-}
-
-async function verificarPlagio(){
-  if(!vSelectedBase64){ toast("Selecione uma imagem","","e"); return; }
-  const geminiKey = (document.getElementById("v-gemini-key").value||sessionStorage.getItem("ac_gemini")||"").trim();
-  if(!geminiKey){ toast("Informe a Gemini API Key","","e"); return; }
-  salvarGeminiKey();
-
-  document.getElementById("v-err").style.display = "none";
-  document.getElementById("v-resultado").style.display = "block";
-  document.getElementById("v-status").textContent = "⏳ Buscando obras registradas on-chain...";
-  document.getElementById("v-lista").innerHTML = "";
-  document.getElementById("btn-verificar").disabled = true;
-
-  try {
-    const total = Number(await CA.totalObras());
-    if(!total){
-      document.getElementById("v-status").textContent = "Nenhuma obra registrada para comparar.";
-      document.getElementById("btn-verificar").disabled = false;
-      return;
-    }
-    const cids = await CA.getObrasPorPagina(0, Math.min(total, 30));
-    document.getElementById("v-status").textContent = `⏳ Comparando com ${cids.length} obras via Gemini Vision...`;
-    lg("Verificando plágio contra "+cids.length+" obras","p");
-
-    const urlsIPFS = cids.map(cid => `https://ipfs.io/ipfs/${cid}`).join("\n");
-
-    const prompt = `You are an art plagiarism detector.
-Compare the uploaded image against these registered artworks on IPFS:
-${urlsIPFS}
-
-For each artwork URL, estimate the visual similarity percentage (0-100%).
-Consider: composition, style, colors, subject matter.
-
-Respond ONLY with valid JSON array, no markdown:
-[
-  {"cid": "Qm...", "similaridade": 85, "motivo": "brief reason in Portuguese"}
-]
-Sort by similarity descending. Only include works with similarity > 10%.`;
-
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{
-          parts: [
-            { inline_data: { mime_type: vSelectedFile.type, data: vSelectedBase64 } },
-            { text: prompt }
-          ]
-        }],
-        generationConfig: { maxOutputTokens: 800, temperature: 0.1 }
-      })
-    });
-
-    const data = await res.json();
-    const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-    let resultados = [];
-    try {
-      const clean = rawText.replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();
-      resultados = JSON.parse(clean);
-    } catch(e){
-      resultados = [];
-    }
-
-    if(!resultados.length){
-      document.getElementById("v-status").innerHTML =
-        `<span style="color:var(--green)">✅ Nenhuma similaridade significativa encontrada. Obra possivelmente original!</span>`;
-      document.getElementById("btn-verificar").disabled = false;
-      return;
-    }
-
-    const temAlto = resultados.some(r => r.similaridade >= 70);
-    document.getElementById("v-status").innerHTML = temAlto
-      ? `<span style="color:var(--red)">🚨 Alta similaridade detectada com obra(s) registrada(s)!</span>`
-      : `<span style="color:var(--amber)">⚠️ Similaridade encontrada. Pode ser coincidência de estilo.</span>`;
-
-    document.getElementById("v-lista").innerHTML = resultados.map(r => {
-      const cor = r.similaridade >= 70 ? "var(--red)" : r.similaridade >= 40 ? "var(--amber)" : "var(--green)";
-      const cidCurto = r.cid ? r.cid.slice(0,10)+"..."+r.cid.slice(-6) : "—";
-      return `
-        <div class="match-resultado" style="border-left:3px solid ${cor}">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <span style="font-family:'Space Mono',monospace;font-size:.82rem;color:var(--text)">${cidCurto}</span>
-            <span style="font-family:'Space Mono',monospace;font-size:1.1rem;font-weight:700;color:${cor}">${r.similaridade}%</span>
-          </div>
-          <div style="height:4px;background:var(--border);border-radius:2px;margin-bottom:8px">
-            <div style="height:100%;width:${r.similaridade}%;background:${cor};border-radius:2px;transition:width .5s"></div>
-          </div>
-          <div style="font-size:.78rem;color:var(--muted2)">${r.motivo||""}</div>
-          <a href="https://ipfs.io/ipfs/${r.cid}" target="_blank"
-             style="font-size:.72rem;color:var(--gold);text-decoration:none;display:inline-block;margin-top:6px">
-            🔗 Ver obra registrada →
-          </a>
-        </div>`;
-    }).join("");
-
-    lg("Verificação concluída","s");
-
-  } catch(e){
-    const msg = fe2(e);
-    document.getElementById("v-err").textContent = msg;
-    document.getElementById("v-err").style.display = "block";
-    document.getElementById("v-resultado").style.display = "none";
-    lg("Erro: "+msg,"e");
-  } finally {
-    document.getElementById("btn-verificar").disabled = false;
-  }
-}
-
 function tab(n){
-  const ns = ["registrar","verificar","galeria","minha","admin"];
+  const ns = ["registrar","galeria","minha","admin"];
   document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("on",ns[i]===n));
   document.querySelectorAll(".tc").forEach(c=>c.classList.remove("on"));
   document.getElementById("tp-"+n).classList.add("on");
   if(n==="galeria") renderGaleria();
   if(n==="minha")   renderMinhas();
-  if(n==="verificar"){
-    const k = sessionStorage.getItem("ac_gemini");
-    if(k){ document.getElementById("v-gemini-key").value = k; document.getElementById("v-save-key").checked = true; }
-  }
 }
 </script>
 </body>
 </html>
-
