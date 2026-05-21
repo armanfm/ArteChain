@@ -36,7 +36,6 @@ body {
   overflow-x: hidden;
 }
 
-/* ── Background texture ── */
 body::before {
   content: '';
   position: fixed;
@@ -48,7 +47,6 @@ body::before {
   z-index: 0;
 }
 
-/* ── Header ── */
 header {
   position: sticky; top: 0; z-index: 100;
   background: rgba(12,12,14,.92);
@@ -72,7 +70,6 @@ header {
   display: none; color: var(--muted2);
 }
 
-/* ── Buttons ── */
 .btn {
   padding: 10px 20px; border: none; border-radius: var(--r);
   cursor: pointer; font-size: .85rem; font-weight: 500;
@@ -89,11 +86,10 @@ header {
 }
 .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
 .btn:disabled { opacity: .35; cursor: not-allowed; transform: none !important; }
+.btn-sm { padding: 6px 12px; font-size: .75rem; }
 
-/* ── Layout ── */
 #app { max-width: 1100px; margin: 0 auto; padding: 32px 20px 80px; position: relative; z-index: 1; }
 
-/* ── Splash ── */
 #splash {
   min-height: 82vh;
   display: flex; flex-direction: column;
@@ -126,7 +122,6 @@ header {
   color: var(--muted2); font-family: 'Space Mono', monospace;
 }
 
-/* ── Setup ── */
 #setup { display: none; }
 .setup-box {
   max-width: 640px; margin: 60px auto;
@@ -136,10 +131,8 @@ header {
 .setup-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 6px; }
 .setup-sub { color: var(--muted2); font-size: .84rem; margin-bottom: 24px; line-height: 1.6; }
 
-/* ── Main ── */
 #main { display: none; }
 
-/* ── Tabs ── */
 .tabs {
   display: flex; gap: 4px; margin-bottom: 28px;
   background: var(--surface); padding: 5px;
@@ -157,7 +150,6 @@ header {
 }
 .tc { display: none; } .tc.on { display: block; }
 
-/* ── Stats ── */
 .statbar {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr));
   gap: 12px; margin-bottom: 28px;
@@ -175,7 +167,6 @@ header {
   text-transform: uppercase; letter-spacing: .6px; margin-top: 3px;
 }
 
-/* ── Cards ── */
 .sec {
   background: var(--card); border: 1px solid var(--border);
   border-radius: 16px; padding: 24px; margin-bottom: 18px;
@@ -185,7 +176,6 @@ header {
 }
 .sec-sub { color: var(--muted2); font-size: .82rem; line-height: 1.6; margin-bottom: 18px; }
 
-/* ── Form ── */
 .fg { display: flex; flex-direction: column; gap: 6px; }
 .fg label {
   font-size: .7rem; color: var(--muted);
@@ -204,7 +194,6 @@ header {
 .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 14px; margin-bottom: 16px; }
 .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
 
-/* ── Upload zone ── */
 .upload-zone {
   border: 2px dashed var(--border2);
   border-radius: 16px; padding: 40px 20px;
@@ -220,7 +209,6 @@ header {
 .upload-text { color: var(--muted2); font-size: .88rem; line-height: 1.6; }
 .upload-text strong { color: var(--gold); }
 
-/* ── Preview ── */
 .preview-box {
   display: none; position: relative; border-radius: 12px; overflow: hidden;
   border: 1px solid var(--border); background: var(--surface);
@@ -235,7 +223,6 @@ header {
 .preview-name { font-size: .82rem; color: var(--muted2); font-family: 'Space Mono', monospace; }
 .preview-size { font-size: .75rem; color: var(--muted); }
 
-/* ── Status steps ── */
 .steps { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
 .step {
   display: flex; align-items: center; gap: 12px;
@@ -251,23 +238,22 @@ header {
 .step-label { font-weight: 600; color: var(--text); }
 .step-desc  { color: var(--muted2); font-size: .75rem; margin-top: 1px; font-family: 'Space Mono', monospace; }
 
-/* ── Obra cards ── */
 .obras-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
-  gap: 16px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+  gap: 20px;
 }
 .obra-card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 14px; overflow: hidden;
   transition: all .2s; cursor: pointer;
 }
-.obra-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+.obra-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
 .obra-thumb {
-  width: 100%; height: 180px; object-fit: cover;
+  width: 100%; height: 200px; object-fit: cover;
   background: var(--card); display: block;
 }
 .obra-thumb-placeholder {
-  width: 100%; height: 180px;
+  width: 100%; height: 200px;
   background: linear-gradient(135deg, var(--card), var(--surface));
   display: flex; align-items: center; justify-content: center;
   font-size: 2.4rem;
@@ -281,7 +267,7 @@ header {
   font-family: 'Space Mono', monospace; font-size: .7rem;
   color: var(--muted2); margin-bottom: 8px;
 }
-.obra-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.obra-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
 .chip {
   font-size: .68rem; padding: 3px 8px; border-radius: 20px; font-weight: 600;
 }
@@ -291,7 +277,6 @@ header {
 .chip-blue   { background: rgba(91,138,240,.1); color: var(--blue); border: 1px solid rgba(91,138,240,.25); }
 .chip-red    { background: rgba(224,92,92,.1); color: var(--red); border: 1px solid rgba(224,92,92,.25); }
 
-/* ── Alerts ── */
 .alert-err {
   background: rgba(224,92,92,.06); border: 1px solid rgba(224,92,92,.2);
   border-left: 3px solid var(--red); padding: 10px 14px;
@@ -312,7 +297,18 @@ header {
 .cell-l { font-size: .67rem; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; margin-bottom: 3px; }
 .cell-v { font-size: .84rem; word-break: break-all; font-family: 'Space Mono', monospace; }
 
-/* ── Toast ── */
+.match-resultado {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
+  transition: all .2s;
+}
+.match-resultado:hover {
+  transform: translateX(4px);
+}
+
 #toast-c {
   position: fixed; top: 72px; right: 16px;
   display: flex; flex-direction: column; gap: 8px; z-index: 300;
@@ -329,7 +325,6 @@ header {
 .toast-title { font-weight: 700; font-size: .73rem; text-transform: uppercase; margin-bottom: 2px; }
 @keyframes ts { from { opacity:0; transform: translateX(24px); } to { opacity:1; } }
 
-/* ── Statusbar ── */
 #statusbar {
   position: fixed; bottom: 0; left: 0; right: 0;
   background: rgba(19,19,22,.96); backdrop-filter: blur(12px);
@@ -351,7 +346,8 @@ header {
 
 @media(max-width:640px) {
   #splash h1 { font-size: 2.2rem; }
-  .tabs { width: 100%; }
+  .tabs { width: 100%; overflow-x: auto; }
+  .tab { white-space: nowrap; }
 }
 </style>
 </head>
@@ -419,7 +415,6 @@ header {
       <div class="sec-title">Registrar nova obra</div>
       <div class="sec-sub">Faça upload da sua arte. O sistema analisa automaticamente com IA e emite um NFT com royalties.</div>
 
-      <!-- Upload zone -->
       <div class="upload-zone" id="upload-zone" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event)">
         <input type="file" accept="image/*" id="file-input" onchange="arquivoSelecionado(this.files[0])"/>
         <div class="upload-icon">🖼</div>
@@ -429,7 +424,6 @@ header {
         </div>
       </div>
 
-      <!-- Preview -->
       <div class="preview-box" id="preview-box" style="margin-top:14px">
         <img id="preview-img" src="" alt="preview"/>
         <div class="preview-info">
@@ -438,13 +432,11 @@ header {
         </div>
       </div>
 
-      <!-- Metadados -->
       <div class="grid" style="margin-top:16px">
         <div class="fg"><label>Título da obra *</label><input id="r-titulo" placeholder="ex: Composição em Azul"/></div>
         <div class="fg"><label>Descrição</label><input id="r-desc" placeholder="Breve descrição da obra"/></div>
       </div>
 
-      <!-- Steps de progresso -->
       <div class="steps" id="steps" style="display:none">
         <div class="step" id="step-upload">
           <span class="step-icon">📤</span>
@@ -467,7 +459,6 @@ header {
             <div class="step-desc" id="step-chainlink-desc">Aguardando...</div>
           </div>
         </div>
-
       </div>
 
       <div id="r-resultado" style="display:none;margin-top:14px"></div>
@@ -536,7 +527,6 @@ header {
       </div>
     </div>
 
-    <!-- Resultado -->
     <div id="v-resultado" style="display:none">
       <div class="sec">
         <div class="sec-title">Resultado da análise</div>
@@ -608,7 +598,6 @@ const ABI_NFT = [
   "function tokenURI(uint256) view returns (string)",
   "function mint(string cidObra, string cidAnalise) external",
   "function setContratoOracle(address)",
-  "function mint(string cidObra, string cidAnalise) external",
   "event ObraMintada(string indexed cidObra, string cidAnalise, address indexed autor, uint256 tokenId)"
 ];
 
@@ -618,7 +607,8 @@ const ABI_ORACLE = [
   "function contratoNFT() view returns (address)",
   "function setContratoArte(address)",
   "function setContratoNFT(address)",
-  "function setFunctionsSource(string)"
+  "function setFunctionsSource(string)",
+  "function analisarObra(string cidObra) external"
 ];
 
 const SK = "ac_v1";
@@ -708,7 +698,6 @@ function limparForm(){
   document.getElementById("btn-registrar").disabled = true;
 }
 
-/* ── Steps UI ── */
 function setStep(id, estado, desc){
   const el = document.getElementById(id);
   el.className = "step " + estado;
@@ -762,13 +751,11 @@ async function registrarObra(){
   let cidObra = "";
 
   try {
-    // Step 1 — Upload Pinata
     setStep("step-upload","active","Enviando para o IPFS...");
     cidObra = await pinataUpload(selectedFile, titulo, desc);
     setStep("step-upload","done","CID: "+cidObra.slice(0,16)+"...");
     lg("Pinata: "+cidObra.slice(0,12)+"...","s");
 
-    // Step 2 — Transação on-chain
     setStep("step-tx","active","Confirme no MetaMask...");
     toast("MetaMask","Confirme a transação de registro","p");
     const tx = await CA.registrar(cidObra);
@@ -777,16 +764,20 @@ async function registrarObra(){
     setStep("step-tx","done","Tx: "+tx.hash.slice(0,16)+"...");
     lg("On-chain: "+cidObra.slice(0,10),"s");
 
-    // Step 3 — Aguarda Chainlink
-    setStep("step-chainlink","active","Gemini Vision analisando sua obra...");
-    toast("Chainlink","Análise de originalidade em andamento...","p");
-
-    // Escuta evento ObraAprovada ou ObraRejeitada
-    await esperarCallback(cidObra);
+    setStep("step-chainlink","active","Aguardando Chainlink...");
+    toast("Chainlink","Análise de originalidade pendente","p");
+    
+    setStep("step-chainlink","done","Análise manual disponível na galeria");
+    mostrarResultadoPendente(cidObra);
+    
+    setTimeout(() => {
+      refresh();
+      if(document.getElementById("tp-minha").classList.contains("on")) renderMinhas();
+    }, 2000);
 
   } catch(e) {
     const msg = fe2(e);
-    const stepAtivo = ["step-upload","step-tx","step-chainlink","step-nft"].find(s => document.getElementById(s).classList.contains("active"));
+    const stepAtivo = ["step-upload","step-tx","step-chainlink"].find(s => document.getElementById(s).classList.contains("active"));
     if(stepAtivo) setStep(stepAtivo,"error",msg);
     document.getElementById("r-err").textContent = msg;
     document.getElementById("r-err").style.display = "block";
@@ -795,64 +786,66 @@ async function registrarObra(){
   }
 }
 
-async function esperarCallback(cidObra){
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(()=>{
-      CA.off("ObraAprovada"); CA.off("ObraRejeitada");
-      // Mesmo sem evento, marca como pendente
-      setStep("step-chainlink","done","Pendente — callback chegará em breve");
-      setStep("step-nft","active","Aguardando mint...");
-      mostrarResultadoPendente(cidObra);
-      resolve();
-    }, 120000); // 2 min timeout
-
-    CA.on("ObraAprovada", (cid, cidAnalise) => {
-      if(cid !== cidObra) return;
-      clearTimeout(timeout);
-      CA.off("ObraAprovada"); CA.off("ObraRejeitada");
-      setStep("step-chainlink","done","Aprovada pelo Gemini Vision ✅");
-      setStep("step-nft","done","NFT mintado! CID: "+cidAnalise.slice(0,14)+"...");
-      mostrarResultadoAprovado(cidObra, cidAnalise);
-      refresh();
-      resolve();
-    });
-
-    CA.on("ObraRejeitada", (cid, motivo) => {
-      if(cid !== cidObra) return;
-      clearTimeout(timeout);
-      CA.off("ObraAprovada"); CA.off("ObraRejeitada");
-      setStep("step-chainlink","error","Rejeitada: "+motivo);
-      setStep("step-nft","error","NFT não emitido");
-      reject(new Error("Obra rejeitada: "+motivo));
-    });
-  });
-}
-
-function mostrarResultadoAprovado(cidObra, cidAnalise){
-  const el = document.getElementById("r-resultado");
-  el.innerHTML = `
-    <div class="alert-ok">
-      🎉 Obra aprovada e NFT mintado com sucesso!<br>
-      <a href="https://ipfs.io/ipfs/${cidAnalise}" target="_blank" style="color:var(--green)">
-        Ver análise no IPFS →
-      </a>
-    </div>
-  `;
-  el.style.display = "block";
-  toast("NFT mintado!", "Obra registrada com sucesso 🎨", "s");
-}
-
 function mostrarResultadoPendente(cidObra){
   const el = document.getElementById("r-resultado");
   el.innerHTML = `
     <div class="notice">
-      ⏳ Obra registrada on-chain. O Chainlink está analisando...<br>
-      <small>O NFT será mintado automaticamente quando a análise terminar.</small><br><br>
+      ⏳ Obra registrada on-chain. <strong>Acesse "Minhas obras" e clique em "Analisar obra agora"</strong> para iniciar a análise do Gemini.<br><br>
       CID da obra: <code style="color:var(--gold)">${cidObra}</code><br>
       <a href="https://ipfs.io/ipfs/${cidObra}" target="_blank" style="color:var(--gold)">Ver obra no IPFS →</a>
     </div>
   `;
   el.style.display = "block";
+}
+
+/* ── Analisar obra (manual) ── */
+async function analisarObra(cidObra){
+  if(!CO){ 
+    toast("Oracle não configurado", "Contate o administrador", "e"); 
+    return; 
+  }
+  
+  try {
+    toast("Chainlink", "Iniciando análise Gemini...", "p");
+    lg(`Analisando obra ${cidObra.slice(0,10)}...`, "p");
+    
+    const tx = await CO.analisarObra(cidObra);
+    lg("Transação enviada, aguardando confirmação...", "p");
+    
+    await tx.wait();
+    
+    toast("Análise iniciada", "Gemini está processando sua obra", "s");
+    lg("Análise Gemini iniciada com sucesso ✅", "s");
+    
+    setTimeout(() => {
+      refresh();
+      if(document.getElementById("tp-minha").classList.contains("on")) renderMinhas();
+      if(document.getElementById("tp-galeria").classList.contains("on")) renderGaleria();
+    }, 3000);
+    
+  } catch(e){
+    const erro = fe2(e);
+    toast("Erro na análise", erro, "e");
+    lg("Erro: "+erro, "e");
+  }
+}
+
+/* ── Mint NFT ── */
+async function mintarObra(cidObra){
+  if(!CN){ toast("ArteNFT não configurado","","e"); return; }
+  try {
+    const o = await CA.getObra(cidObra);
+    if(!o.aprovada){ toast("Obra não aprovada","","e"); return; }
+    toast("MetaMask","Confirme o mint do NFT","p");
+    const tx = await CN.mint(cidObra, o.cidAnalise);
+    lg("Mintando NFT...","p");
+    await tx.wait();
+    toast("NFT Mintado!","Obra registrada como NFT 🎨","s");
+    lg("NFT mintado ✅","s");
+    await refresh();
+    if(document.getElementById("tp-minha").classList.contains("on")) renderMinhas();
+    if(document.getElementById("tp-galeria").classList.contains("on")) renderGaleria();
+  } catch(e){ toast("Erro",fe2(e),"e"); lg("Erro mint: "+fe2(e),"e"); }
 }
 
 /* ── Connect ── */
@@ -901,15 +894,12 @@ async function ligar(){
     CN = new ethers.Contract(ethers.getAddress(an), ABI_NFT,  signer);
     localStorage.setItem(SK, JSON.stringify({arte:aa, nft:an}));
 
-    // Conecta Oracle
     const ORACLE_ADDRESS = "0xEa5B03FbF6eA5C030bAdF8274EfDBAbC04e3d13d";
     CO = new ethers.Contract(ethers.getAddress(ORACLE_ADDRESS), ABI_ORACLE, signer);
 
-    // Auto-configura contratos se ainda não estiverem configurados
     try {
       lg("Verificando configurações...","p");
 
-      // Arte.sol → setContratoOracle
       const oracleNoArte = await CA.contratoOracle();
       if(!oracleNoArte || oracleNoArte === ethers.ZeroAddress) {
         lg("Configurando Oracle no Arte...","p");
@@ -918,7 +908,6 @@ async function ligar(){
         lg("Oracle configurado no Arte ✅","s");
       }
 
-      // Arte.sol → setContratoNFT
       const nftNoArte = await CA.contratoNFT();
       if(!nftNoArte || nftNoArte === ethers.ZeroAddress) {
         lg("Configurando NFT no Arte...","p");
@@ -927,7 +916,6 @@ async function ligar(){
         lg("NFT configurado no Arte ✅","s");
       }
 
-      // ArteOracle → setContratoArte
       const arteNoOracle = await CO.contratoArte();
       if(!arteNoOracle || arteNoOracle === ethers.ZeroAddress) {
         lg("Configurando Arte no Oracle...","p");
@@ -936,7 +924,6 @@ async function ligar(){
         lg("Arte configurado no Oracle ✅","s");
       }
 
-      // ArteOracle → setContratoNFT
       const nftNoOracle = await CO.contratoNFT();
       if(!nftNoOracle || nftNoOracle === ethers.ZeroAddress) {
         lg("Configurando NFT no Oracle...","p");
@@ -945,7 +932,6 @@ async function ligar(){
         lg("NFT configurado no Oracle ✅","s");
       }
 
-      // ArteNFT → setContratoOracle
       const oracleNoNFT = await CN.contratoOracle();
       if(!oracleNoNFT || oracleNoNFT === ethers.ZeroAddress) {
         lg("Configurando Oracle no NFT...","p");
@@ -989,13 +975,13 @@ function renderAdminInfo(){
   if(CA) CA.contratoOracle().then(a=>{ const el=document.getElementById("adm-oracle-addr"); if(el) el.textContent=sh(a); }).catch(()=>{});
 }
 
-/* ── Galeria ── */
+/* ── Galeria e Minhas Obras com botões melhorados ── */
 async function renderGaleria(){
   const el = document.getElementById("galeria-lista");
   try {
     const total = Number(await CA.totalObras());
     if(!total){ el.innerHTML=`<div class="empty"><div class="empty-ico">🖼</div>Nenhuma obra registrada ainda.</div>`; return; }
-    const obras = await CA.getObrasPorPagina(0, Math.min(total, 20));
+    const obras = await CA.getObrasPorPagina(0, Math.min(total, 30));
     await renderCards(el, obras, false);
   } catch(e){ el.innerHTML=`<div class="empty">${fe2(e)}</div>`; }
 }
@@ -1024,25 +1010,50 @@ async function renderCards(el, cids, mostrarNFT){
     const isPendente = o.pendente;
     const isAprovada = !isPendente && o.aprovada;
     const isRejeitada = !isPendente && !o.aprovada && o.cidAnalise;
-    const status = isPendente ? "pendente" : (isAprovada ? "aprovada" : isRejeitada ? "rejeitada" : "pendente");
+    
+    let chipHtml = "";
+    let borderColor = "var(--border)";
+    
+    if(isAprovada) {
+      chipHtml = `<span class="chip chip-green">✅ Aprovada</span>`;
+      borderColor = "var(--green)";
+    } else if(isPendente) {
+      chipHtml = `<span class="chip chip-amber">⏳ Pendente</span>`;
+      borderColor = "var(--amber)";
+    } else if(isRejeitada) {
+      chipHtml = `<span class="chip chip-red">❌ Rejeitada</span>`;
+      borderColor = "var(--red)";
+    }
 
-    const chipHtml = status==="aprovada"
-      ? `<span class="chip chip-green">✅ Aprovada</span>`
-      : status==="pendente"
-      ? `<span class="chip chip-amber">⏳ Pendente</span>`
-      : `<span class="chip chip-red">❌ Rejeitada</span>`;
-
-    // Verifica se já tem NFT
-    let tokenHtml = "";
     let mintBtnHtml = "";
     if(CN && isAprovada){
       const tokenId = await CN.tokenDaObra(cid).catch(()=>0n);
       if(tokenId > 0n){
-        tokenHtml = `<span class="chip chip-gold">🏷 Token #${tokenId}</span>`;
+        mintBtnHtml = `<div class="chip chip-gold" style="margin-top:6px">🏷 Token #${tokenId}</div>`;
       } else if(o.autor.toLowerCase() === me.toLowerCase()){
-        // Só o dono pode mintar
-        mintBtnHtml = `<button class="btn btn-gold btn-sm" onclick="mintarObra('${cid}')" style="margin-top:8px;width:100%">🏷 Mintar NFT</button>`;
+        mintBtnHtml = `
+          <button 
+            class="btn btn-sm" 
+            onclick="mintarObra('${cid}')" 
+            style="margin-top:8px;width:100%;background:linear-gradient(135deg, var(--green), #2a9d6e);color:white;border:none"
+          >
+            🏷 Mintar NFT
+          </button>
+        `;
       }
+    }
+
+    let analisarBtnHtml = "";
+    if(isPendente && o.autor.toLowerCase() === me.toLowerCase()){
+      analisarBtnHtml = `
+        <button 
+          class="btn btn-sm btn-ghost" 
+          onclick="analisarObra('${cid}')" 
+          style="margin-top:8px;width:100%;border-color:var(--amber);color:var(--amber)"
+        >
+          🔍 Analisar obra agora
+        </button>
+      `;
     }
 
     const ipfsLink   = `https://ipfs.io/ipfs/${cid}`;
@@ -1051,7 +1062,7 @@ async function renderCards(el, cids, mostrarNFT){
     const pHashChip  = o.pHash ? `<span class="chip chip-blue" title="${o.pHash}">🔑 ${o.pHash.slice(0,8)}...</span>` : "";
 
     return `
-      <div class="obra-card">
+      <div class="obra-card" style="border-left: 3px solid ${borderColor}">
         <img class="obra-thumb" src="${imgSrc}" alt="obra" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
         <div class="obra-thumb-placeholder" style="display:none">🖼</div>
         <div class="obra-info">
@@ -1059,33 +1070,18 @@ async function renderCards(el, cids, mostrarNFT){
           <div class="obra-autor">${sh(o.autor)}</div>
           <div class="obra-chips">
             ${chipHtml}
-            ${tokenHtml}
             ${pHashChip}
           </div>
           <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
             <a href="${ipfsLink}" target="_blank" style="font-size:.72rem;color:var(--gold);text-decoration:none">🔗 Ver obra</a>
             ${analiseLink?`<a href="${analiseLink}" target="_blank" style="font-size:.72rem;color:var(--muted2);text-decoration:none">📋 Análise</a>`:""}
           </div>
+          ${analisarBtnHtml}
           ${mintBtnHtml}
         </div>
       </div>`;
   }));
   el.innerHTML = `<div class="obras-grid">${cards.join("")}</div>`;
-}
-
-async function mintarObra(cidObra){
-  if(!CN){ toast("ArteNFT não configurado","","e"); return; }
-  try {
-    const o = await CA.getObra(cidObra);
-    if(!o.aprovada){ toast("Obra não aprovada","","e"); return; }
-    toast("MetaMask","Confirme o mint do NFT","p");
-    const tx = await CN.mint(cidObra, o.cidAnalise);
-    lg("Mintando NFT...","p");
-    await tx.wait();
-    toast("NFT Mintado!","Obra registrada como NFT 🎨","s");
-    lg("NFT mintado ✅","s");
-    await refresh();
-  } catch(e){ toast("Erro",fe2(e),"e"); lg("Erro mint: "+fe2(e),"e"); }
 }
 
 /* ── Admin ── */
@@ -1108,6 +1104,7 @@ async function setOracleNoNFT(){
   if(!ethers.isAddress(v)){ toast("Endereço inválido","","e"); return; }
   await txSend("Oracle no NFT...", ()=>CN.setContratoOracle(v), "Oracle definido no NFT!", "");
 }
+
 /* ── Verificar plágio ── */
 let vSelectedFile = null;
 let vSelectedBase64 = null;
@@ -1161,7 +1158,6 @@ async function verificarPlagio(){
   document.getElementById("btn-verificar").disabled = true;
 
   try {
-    // 1. Busca todas obras registradas
     const total = Number(await CA.totalObras());
     if(!total){
       document.getElementById("v-status").textContent = "Nenhuma obra registrada para comparar.";
@@ -1172,10 +1168,8 @@ async function verificarPlagio(){
     document.getElementById("v-status").textContent = `⏳ Comparando com ${cids.length} obras via Gemini Vision...`;
     lg("Verificando plágio contra "+cids.length+" obras","p");
 
-    // 2. Monta lista de URLs IPFS
     const urlsIPFS = cids.map(cid => `https://ipfs.io/ipfs/${cid}`).join("\n");
 
-    // 3. Chama Gemini Vision com a imagem suspeita
     const prompt = `You are an art plagiarism detector.
 I will show you an image that may be plagiarized.
 Compare it against these registered artworks on IPFS:
@@ -1208,17 +1202,14 @@ Sort by similarity descending. Only include works with similarity > 10%.`;
     const data = await res.json();
     const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-    // 4. Parse resultado
     let resultados = [];
     try {
       const clean = rawText.replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();
       resultados = JSON.parse(clean);
     } catch(e){
-      // fallback — tenta extrair do texto
       resultados = [];
     }
 
-    // 5. Renderiza resultado
     if(!resultados.length){
       document.getElementById("v-status").innerHTML =
         `<span style="color:var(--green)">✅ Nenhuma similaridade significativa encontrada. Obra possivelmente original!</span>`;
@@ -1235,7 +1226,7 @@ Sort by similarity descending. Only include works with similarity > 10%.`;
       const cor = r.similaridade >= 70 ? "var(--red)" : r.similaridade >= 40 ? "var(--amber)" : "var(--green)";
       const cidCurto = r.cid ? r.cid.slice(0,10)+"..."+r.cid.slice(-6) : "—";
       return `
-        <div class="match-resultado" style="background:var(--surface);border:1px solid var(--border);border-left:3px solid ${cor};border-radius:10px;padding:14px;margin-bottom:10px">
+        <div class="match-resultado" style="border-left:3px solid ${cor}">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
             <span style="font-family:'Space Mono',monospace;font-size:.82rem;color:var(--text)">${cidCurto}</span>
             <span style="font-family:'Space Mono',monospace;font-size:1.1rem;font-weight:700;color:${cor}">${r.similaridade}%</span>
@@ -1280,4 +1271,3 @@ function tab(n){
 </script>
 </body>
 </html>
-
