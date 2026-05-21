@@ -10,7 +10,7 @@
 :root {
   --bg:       #0c0c0e;
   --surface:  #131316;
-  --card:     #1a1a1f;
+  --card:     #1a1a1f;0xE7ADED0fE7D0DdD8A4E6EdC261eB84B9390a5dB6
   --border:   #2a2a32;
   --border2:  #3a3a48;
   --gold:     #c8a96e;
@@ -894,7 +894,7 @@ async function ligar(){
     CN = new ethers.Contract(ethers.getAddress(an), ABI_NFT,  signer);
     localStorage.setItem(SK, JSON.stringify({arte:aa, nft:an}));
 
-    const ORACLE_ADDRESS = "0xEa5B03FbF6eA5C030bAdF8274EfDBAbC04e3d13d";
+    const ORACLE_ADDRESS = "0xE7ADED0fE7D0DdD8A4E6EdC261eB84B9390a5dB6";
     CO = new ethers.Contract(ethers.getAddress(ORACLE_ADDRESS), ABI_ORACLE, signer);
 
     try {
