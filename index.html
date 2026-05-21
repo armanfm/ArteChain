@@ -10,7 +10,7 @@
 :root {
   --bg:       #0c0c0e;
   --surface:  #131316;
-  --card:     #1a1a1f;0xE7ADED0fE7D0DdD8A4E6EdC261eB84B9390a5dB6
+  --card:     #1a1a1f;
   --border:   #2a2a32;
   --border2:  #3a3a48;
   --gold:     #c8a96e;
@@ -245,7 +245,7 @@ header {
 .obra-card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 14px; overflow: hidden;
-  transition: all .2s; cursor: pointer;
+  transition: all .2s;
 }
 .obra-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
 .obra-thumb {
@@ -305,9 +305,7 @@ header {
   margin-bottom: 10px;
   transition: all .2s;
 }
-.match-resultado:hover {
-  transform: translateX(4px);
-}
+.match-resultado:hover { transform: translateX(4px); }
 
 #toast-c {
   position: fixed; top: 72px; right: 16px;
@@ -364,22 +362,20 @@ header {
 
 <div id="app">
 
-<!-- SPLASH -->
 <section id="splash">
   <div class="splash-icon">🎨</div>
   <h1>Registro Descentralizado<br>de <em>Arte Digital</em></h1>
-  <p>Registre sua obra on-chain. Análise de originalidade via IA. NFT com royalties automáticos.</p>
+  <p>Registre sua obra on-chain. Match de similaridade calculado on-chain. Análise visual por IA.</p>
   <div class="splash-pills">
     <span class="pill">🎨 Upload → IPFS</span>
+    <span class="pill">🔑 pHash on-chain</span>
+    <span class="pill">⛓ Hamming Solidity</span>
     <span class="pill">🤖 Gemini Vision</span>
-    <span class="pill">⛓ Chainlink</span>
     <span class="pill">🏷 NFT ERC-721</span>
-    <span class="pill">💰 Royalties ERC-2981</span>
   </div>
   <button class="btn btn-gold" style="font-size:.95rem;padding:13px 36px;margin-top:8px" onclick="conectar()">Conectar MetaMask</button>
 </section>
 
-<!-- SETUP -->
 <section id="setup">
   <div class="setup-box">
     <div class="setup-title">Configurar contratos</div>
@@ -393,7 +389,6 @@ header {
   </div>
 </section>
 
-<!-- MAIN -->
 <main id="main">
   <div class="statbar">
     <div class="stat"><div class="stat-v" id="st-obras">—</div><div class="stat-l">Obras registradas</div></div>
@@ -409,11 +404,10 @@ header {
     <button class="tab" onclick="tab('admin')">⚙️ Admin</button>
   </div>
 
-  <!-- REGISTRAR -->
   <div id="tp-registrar" class="tc on">
     <div class="sec">
       <div class="sec-title">Registrar nova obra</div>
-      <div class="sec-sub">Faça upload da sua arte. O sistema analisa automaticamente com IA e emite um NFT com royalties.</div>
+      <div class="sec-sub">ETAPA 1 — Faça upload e o Chainlink calcula o pHash da sua obra on-chain. Depois você pode iniciar a análise pelo botão na galeria.</div>
 
       <div class="upload-zone" id="upload-zone" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event)">
         <input type="file" accept="image/*" id="file-input" onchange="arquivoSelecionado(this.files[0])"/>
@@ -452,11 +446,11 @@ header {
             <div class="step-desc" id="step-tx-desc">Aguardando...</div>
           </div>
         </div>
-        <div class="step" id="step-chainlink">
-          <span class="step-icon">🤖</span>
+        <div class="step" id="step-phash">
+          <span class="step-icon">🔑</span>
           <div class="step-text">
-            <div class="step-label">Análise Gemini Vision</div>
-            <div class="step-desc" id="step-chainlink-desc">Aguardando...</div>
+            <div class="step-label">Chainlink calculando pHash</div>
+            <div class="step-desc" id="step-phash-desc">Aguardando...</div>
           </div>
         </div>
       </div>
@@ -471,7 +465,6 @@ header {
     </div>
   </div>
 
-  <!-- GALERIA -->
   <div id="tp-galeria" class="tc">
     <div class="sec">
       <div class="sec-title">Galeria de obras registradas</div>
@@ -479,7 +472,6 @@ header {
     </div>
   </div>
 
-  <!-- MINHAS OBRAS -->
   <div id="tp-minha" class="tc">
     <div class="sec">
       <div class="sec-title">Minhas obras</div>
@@ -487,7 +479,6 @@ header {
     </div>
   </div>
 
-  <!-- VERIFICAR PLÁGIO -->
   <div id="tp-verificar" class="tc">
     <div class="sec">
       <div class="sec-title">🔍 Verificar plágio</div>
@@ -536,23 +527,10 @@ header {
     </div>
   </div>
 
-  <!-- ADMIN -->
   <div id="tp-admin" class="tc">
     <div class="sec">
       <div class="sec-title">⚙️ Configuração</div>
       <div class="cells" id="admin-info"></div>
-    </div>
-    <div class="sec">
-      <div class="sec-title">Configurar endereços</div>
-      <div class="grid">
-        <div class="fg"><label>ArteOracle.sol</label><input id="adm-oracle" spellcheck="false" placeholder="0x..."/></div>
-      </div>
-      <div class="row">
-        <button class="btn btn-ghost" style="font-size:.78rem" onclick="setOracle()">Definir Oracle no Arte.sol</button>
-        <button class="btn btn-ghost" style="font-size:.78rem" onclick="setNFTnoOracle()">Definir NFT no Oracle</button>
-        <button class="btn btn-ghost" style="font-size:.78rem" onclick="setArteNoOracle()">Definir Arte no Oracle</button>
-        <button class="btn btn-ghost" style="font-size:.78rem" onclick="setOracleNoNFT()">Definir Oracle no NFT</button>
-      </div>
     </div>
     <div class="sec">
       <div class="sec-title">Utilitários</div>
@@ -572,6 +550,11 @@ header {
 <script>
 "use strict";
 
+/* ── Endereços (novos contratos) ── */
+const ARTE_DEFAULT   = "0xB1d9581398e527b33Dd2d3f83433E75B971A1b90";
+const NFT_DEFAULT    = "0xbF8Df2B292c1D6541D24f234aEF8f461C931b7f1";
+const ORACLE_ADDRESS = "0xE7ADED0fE7D0DdD8A4E6EdC261eB84B9390a5dB6";
+
 /* ── ABIs ── */
 const ABI_ARTE = [
   "function owner() view returns (address)",
@@ -579,48 +562,43 @@ const ABI_ARTE = [
   "function contratoNFT() view returns (address)",
   "function totalObras() view returns (uint256)",
   "function registrar(string cidObra)",
+  "function analisarObra(string cidObra)",
   "function getObra(string cidObra) view returns (address autor, string pHash, string cidAnalise, bool aprovada, uint256 timestamp, bool pendente)",
+  "function getPHash(string cidObra) view returns (string)",
   "function getObrasAprovadas() view returns (string[] cids, string[] pHashes)",
   "function getObrasPorPagina(uint256 offset, uint256 limit) view returns (string[])",
   "function setContratoOracle(address)",
   "function setContratoNFT(address)",
   "event ObraRegistrada(string indexed cidObra, address indexed autor)",
+  "event ObraProcessada(string indexed cidObra, string pHash)",
+  "event AnaliseSolicitada(string indexed cidObra)",
   "event ObraAprovada(string indexed cidObra, string cidAnalise)",
   "event ObraRejeitada(string indexed cidObra, string cidAnalise)"
 ];
 
 const ABI_NFT = [
   "function owner() view returns (address)",
-  "function contratoOracle() view returns (address)",
   "function totalMintado() view returns (uint256)",
   "function tokenDaObra(string) view returns (uint256)",
-  "function getToken(uint256 tokenId) view returns (string cidObra, string cidAnalise, address autor, uint256 timestamp)",
-  "function tokenURI(uint256) view returns (string)",
-  "function mint(string cidObra, string cidAnalise) external",
-  "function setContratoOracle(address)",
+  "function mintManual(string cidObra) external",
+  "function setContratoArte(address)",
   "event ObraMintada(string indexed cidObra, string cidAnalise, address indexed autor, uint256 tokenId)"
 ];
 
 const ABI_ORACLE = [
   "function owner() view returns (address)",
   "function contratoArte() view returns (address)",
-  "function contratoNFT() view returns (address)",
-  "function setContratoArte(address)",
-  "function setContratoNFT(address)",
-  "function setFunctionsSource(string)",
-  "function analisarObra(string cidObra) external"
+  "function setContratoArte(address)"
 ];
 
-const SK = "ac_v1";
+const SK = "ac_v2";
 let prov, signer, me = "";
 let CA = null, CN = null, CO = null;
 let selectedFile = null;
 
-/* ── Utils ── */
 const H   = v => String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 const sh  = a => (!a||a==="0x0000000000000000000000000000000000000000")?"—":a.slice(0,6)+"…"+a.slice(-4);
 const fe  = w => { try{return Number(ethers.formatEther(w)).toFixed(4)}catch{return"0"} };
-const fd  = t => (!t||Number(t)===0)?"—":new Date(Number(t)*1000).toLocaleDateString("pt-BR");
 
 function fe2(e){
   if(!e) return "Erro desconhecido";
@@ -647,20 +625,6 @@ function toast(title, msg, type="i"){
   c.appendChild(el); setTimeout(()=>el.remove(), 5000);
 }
 
-async function txSend(msg, fn, okTitle, okMsg){
-  lg(msg, "p"); toast("MetaMask","Confirme a transação.","p");
-  try {
-    const t = await fn(); lg("Tx enviada...","p");
-    await t.wait();
-    lg(okTitle,"s"); toast(okTitle, okMsg,"s");
-    await new Promise(r=>setTimeout(r,1500));
-    await refresh();
-  } catch(e) {
-    const m2 = fe2(e); lg("Erro: "+m2,"e"); toast("Erro",m2,"e");
-  }
-}
-
-/* ── Upload drag/drop ── */
 function dragOver(e){ e.preventDefault(); document.getElementById("upload-zone").classList.add("drag"); }
 function dragLeave(){ document.getElementById("upload-zone").classList.remove("drag"); }
 function dragDrop(e){
@@ -704,10 +668,9 @@ function setStep(id, estado, desc){
   if(desc) document.getElementById(id+"-desc").textContent = desc;
 }
 
-/* ── Pinata upload ── */
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxc29vcGdtemR3dHR3dmVkbmdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NjIxNTEsImV4cCI6MjA5NDUzODE1MX0.LaHuxJVFJI9SkGHFmapSpkUYBC5plB9oPuDXIXJXsN0";
 
-async function pinataUpload(file, titulo, desc){
+async function pinataUpload(file){
   const mensagem = "ArteChain upload autorizado";
   const assinatura = await signer.signMessage(mensagem);
 
@@ -736,12 +699,8 @@ async function pinataUpload(file, titulo, desc){
   return data.IpfsHash;
 }
 
-/* ── Registrar obra ── */
 async function registrarObra(){
   if(!selectedFile){ toast("Selecione uma imagem","","e"); return; }
-
-  const titulo = document.getElementById("r-titulo").value.trim() || selectedFile.name;
-  const desc   = document.getElementById("r-desc").value.trim();
 
   document.getElementById("steps").style.display = "flex";
   document.getElementById("r-err").style.display = "none";
@@ -751,8 +710,8 @@ async function registrarObra(){
   let cidObra = "";
 
   try {
-    setStep("step-upload","active","Enviando para o IPFS...");
-    cidObra = await pinataUpload(selectedFile, titulo, desc);
+    setStep("step-upload","active","Validando assinatura e enviando para o IPFS...");
+    cidObra = await pinataUpload(selectedFile);
     setStep("step-upload","done","CID: "+cidObra.slice(0,16)+"...");
     lg("Pinata: "+cidObra.slice(0,12)+"...","s");
 
@@ -764,20 +723,20 @@ async function registrarObra(){
     setStep("step-tx","done","Tx: "+tx.hash.slice(0,16)+"...");
     lg("On-chain: "+cidObra.slice(0,10),"s");
 
-    setStep("step-chainlink","active","Aguardando Chainlink...");
-    toast("Chainlink","Análise de originalidade pendente","p");
-    
-    setStep("step-chainlink","done","Análise manual disponível na galeria");
+    setStep("step-phash","active","Chainlink Functions calculando pHash da imagem...");
+    toast("Chainlink","Calculando pHash da obra","p");
+
+    setStep("step-phash","done","pHash será salvo on-chain em alguns segundos");
     mostrarResultadoPendente(cidObra);
-    
+
     setTimeout(() => {
       refresh();
       if(document.getElementById("tp-minha").classList.contains("on")) renderMinhas();
-    }, 2000);
+    }, 5000);
 
   } catch(e) {
     const msg = fe2(e);
-    const stepAtivo = ["step-upload","step-tx","step-chainlink"].find(s => document.getElementById(s).classList.contains("active"));
+    const stepAtivo = ["step-upload","step-tx","step-phash"].find(s => document.getElementById(s).classList.contains("active"));
     if(stepAtivo) setStep(stepAtivo,"error",msg);
     document.getElementById("r-err").textContent = msg;
     document.getElementById("r-err").style.display = "block";
@@ -790,7 +749,8 @@ function mostrarResultadoPendente(cidObra){
   const el = document.getElementById("r-resultado");
   el.innerHTML = `
     <div class="notice">
-      ⏳ Obra registrada on-chain. <strong>Acesse "Minhas obras" e clique em "Analisar obra agora"</strong> para iniciar a análise do Gemini.<br><br>
+      ✅ Obra registrada on-chain. O Chainlink está calculando o pHash agora.<br>
+      <strong>Depois disso vá em "Minhas obras" e clique em "🔍 Analisar obra"</strong> para iniciar a Etapa 2 (Gemini Vision).<br><br>
       CID da obra: <code style="color:var(--gold)">${cidObra}</code><br>
       <a href="https://ipfs.io/ipfs/${cidObra}" target="_blank" style="color:var(--gold)">Ver obra no IPFS →</a>
     </div>
@@ -798,46 +758,35 @@ function mostrarResultadoPendente(cidObra){
   el.style.display = "block";
 }
 
-/* ── Analisar obra (manual) ── */
 async function analisarObra(cidObra){
-  if(!CO){ 
-    toast("Oracle não configurado", "Contate o administrador", "e"); 
-    return; 
-  }
-  
   try {
-    toast("Chainlink", "Iniciando análise Gemini...", "p");
-    lg(`Analisando obra ${cidObra.slice(0,10)}...`, "p");
+    toast("Chainlink","Iniciando análise Gemini...","p");
+    lg(`Analisando ${cidObra.slice(0,10)}...`, "p");
     
-    const tx = await CO.analisarObra(cidObra);
-    lg("Transação enviada, aguardando confirmação...", "p");
-    
+    const tx = await CA.analisarObra(cidObra);
+    lg("Tx enviada...","p");
     await tx.wait();
     
-    toast("Análise iniciada", "Gemini está processando sua obra", "s");
-    lg("Análise Gemini iniciada com sucesso ✅", "s");
+    toast("Análise iniciada","Gemini está processando","s");
+    lg("Análise iniciada ✅","s");
     
     setTimeout(() => {
       refresh();
       if(document.getElementById("tp-minha").classList.contains("on")) renderMinhas();
       if(document.getElementById("tp-galeria").classList.contains("on")) renderGaleria();
     }, 3000);
-    
   } catch(e){
     const erro = fe2(e);
-    toast("Erro na análise", erro, "e");
-    lg("Erro: "+erro, "e");
+    toast("Erro na análise",erro,"e");
+    lg("Erro: "+erro,"e");
   }
 }
 
-/* ── Mint NFT ── */
-async function mintarObra(cidObra){
+async function mintarNFT(cidObra){
   if(!CN){ toast("ArteNFT não configurado","","e"); return; }
   try {
-    const o = await CA.getObra(cidObra);
-    if(!o.aprovada){ toast("Obra não aprovada","","e"); return; }
     toast("MetaMask","Confirme o mint do NFT","p");
-    const tx = await CN.mint(cidObra, o.cidAnalise);
+    const tx = await CN.mintManual(cidObra);
     lg("Mintando NFT...","p");
     await tx.wait();
     toast("NFT Mintado!","Obra registrada como NFT 🎨","s");
@@ -848,7 +797,6 @@ async function mintarObra(cidObra){
   } catch(e){ toast("Erro",fe2(e),"e"); lg("Erro mint: "+fe2(e),"e"); }
 }
 
-/* ── Connect ── */
 async function conectar(){
   if(!window.ethereum){ toast("MetaMask não encontrada","Instale a extensão","e"); return; }
   try {
@@ -868,10 +816,8 @@ async function conectar(){
     document.getElementById("splash").style.display = "none";
     document.getElementById("setup").style.display   = "block";
     const saved = JSON.parse(localStorage.getItem(SK)||"{}");
-    if(saved.arte)   document.getElementById("a-arte").value   = saved.arte;
-    else             document.getElementById("a-arte").value   = "0xe332025a1B24f27e096Fe2fBbf7AA195d685959b";
-    if(saved.nft)    document.getElementById("a-nft").value    = saved.nft;
-    else             document.getElementById("a-nft").value    = "0x939ebf6dcE99b7d4d66044dB4a30F4FcAC9Bf919";
+    document.getElementById("a-arte").value = saved.arte || ARTE_DEFAULT;
+    document.getElementById("a-nft").value  = saved.nft  || NFT_DEFAULT;
     window.ethereum.on("accountsChanged",()=>location.reload());
     window.ethereum.on("chainChanged",()=>location.reload());
   } catch(e){ lg("Erro: "+fe2(e),"e"); toast("Erro",fe2(e),"e"); }
@@ -890,13 +836,14 @@ async function ligar(){
     const cn = await prov.getCode(an);
     if(ca==="0x") throw new Error("Arte.sol: sem contrato nesse endereço");
     if(cn==="0x") throw new Error("ArteNFT.sol: sem contrato nesse endereço");
+    
     CA = new ethers.Contract(ethers.getAddress(aa), ABI_ARTE, signer);
     CN = new ethers.Contract(ethers.getAddress(an), ABI_NFT,  signer);
-    localStorage.setItem(SK, JSON.stringify({arte:aa, nft:an}));
-
-    const ORACLE_ADDRESS = "0xE7ADED0fE7D0DdD8A4E6EdC261eB84B9390a5dB6";
     CO = new ethers.Contract(ethers.getAddress(ORACLE_ADDRESS), ABI_ORACLE, signer);
 
+    localStorage.setItem(SK, JSON.stringify({arte:aa, nft:an}));
+
+    // Auto-configura contratos
     try {
       lg("Verificando configurações...","p");
 
@@ -924,24 +871,8 @@ async function ligar(){
         lg("Arte configurado no Oracle ✅","s");
       }
 
-      const nftNoOracle = await CO.contratoNFT();
-      if(!nftNoOracle || nftNoOracle === ethers.ZeroAddress) {
-        lg("Configurando NFT no Oracle...","p");
-        const tx4 = await CO.setContratoNFT(an);
-        await tx4.wait();
-        lg("NFT configurado no Oracle ✅","s");
-      }
-
-      const oracleNoNFT = await CN.contratoOracle();
-      if(!oracleNoNFT || oracleNoNFT === ethers.ZeroAddress) {
-        lg("Configurando Oracle no NFT...","p");
-        const tx5 = await CN.setContratoOracle(ORACLE_ADDRESS);
-        await tx5.wait();
-        lg("Oracle configurado no NFT ✅","s");
-      }
-
     } catch(configErr) {
-      lg("Config parcial: "+fe2(configErr),"i");
+      lg("Config: "+fe2(configErr),"i");
     }
 
     document.getElementById("setup").style.display = "none";
@@ -951,7 +882,6 @@ async function ligar(){
   } catch(e){ eb.textContent = fe2(e); eb.style.display = "block"; }
 }
 
-/* ── Refresh ── */
 async function refresh(){
   if(!CA) return;
   try {
@@ -968,21 +898,20 @@ async function refresh(){
 
 function renderAdminInfo(){
   document.getElementById("admin-info").innerHTML = `
-    <div class="cell"><div class="cell-l">Owner Arte</div><div class="cell-v">${sh(me)}</div></div>
-    <div class="cell"><div class="cell-l">Oracle</div><div class="cell-v" id="adm-oracle-addr">—</div></div>
-    <div class="cell"><div class="cell-l">NFT</div><div class="cell-v">${CN?sh(CN.target):"—"}</div></div>
+    <div class="cell"><div class="cell-l">Carteira</div><div class="cell-v">${sh(me)}</div></div>
+    <div class="cell"><div class="cell-l">Arte.sol</div><div class="cell-v">${CA?sh(CA.target):"—"}</div></div>
+    <div class="cell"><div class="cell-l">Oracle</div><div class="cell-v">${sh(ORACLE_ADDRESS)}</div></div>
+    <div class="cell"><div class="cell-l">ArteNFT</div><div class="cell-v">${CN?sh(CN.target):"—"}</div></div>
   `;
-  if(CA) CA.contratoOracle().then(a=>{ const el=document.getElementById("adm-oracle-addr"); if(el) el.textContent=sh(a); }).catch(()=>{});
 }
 
-/* ── Galeria e Minhas Obras com botões melhorados ── */
 async function renderGaleria(){
   const el = document.getElementById("galeria-lista");
   try {
     const total = Number(await CA.totalObras());
     if(!total){ el.innerHTML=`<div class="empty"><div class="empty-ico">🖼</div>Nenhuma obra registrada ainda.</div>`; return; }
     const obras = await CA.getObrasPorPagina(0, Math.min(total, 30));
-    await renderCards(el, obras, false);
+    await renderCards(el, obras);
   } catch(e){ el.innerHTML=`<div class="empty">${fe2(e)}</div>`; }
 }
 
@@ -999,17 +928,20 @@ async function renderMinhas(){
     }
     document.getElementById("st-minhas").textContent = minhas.length;
     if(!minhas.length){ el.innerHTML=`<div class="empty"><div class="empty-ico">🎨</div>Você ainda não registrou obras.</div>`; return; }
-    await renderCards(el, minhas, true);
+    await renderCards(el, minhas);
   } catch(e){ el.innerHTML=`<div class="empty">${fe2(e)}</div>`; }
 }
 
-async function renderCards(el, cids, mostrarNFT){
+async function renderCards(el, cids){
   const cards = await Promise.all(cids.map(async cid => {
     const o = await CA.getObra(cid).catch(()=>null);
     if(!o) return "";
-    const isPendente = o.pendente;
-    const isAprovada = !isPendente && o.aprovada;
-    const isRejeitada = !isPendente && !o.aprovada && o.cidAnalise;
+    
+    const temPHash    = o.pHash && o.pHash.length > 0;
+    const isPendente  = o.pendente;
+    const isAprovada  = !isPendente && o.aprovada;
+    const isRejeitada = !isPendente && !o.aprovada && o.cidAnalise && o.cidAnalise.length > 0;
+    const ehMeu       = o.autor.toLowerCase() === me.toLowerCase();
     
     let chipHtml = "";
     let borderColor = "var(--border)";
@@ -1017,25 +949,41 @@ async function renderCards(el, cids, mostrarNFT){
     if(isAprovada) {
       chipHtml = `<span class="chip chip-green">✅ Aprovada</span>`;
       borderColor = "var(--green)";
-    } else if(isPendente) {
-      chipHtml = `<span class="chip chip-amber">⏳ Pendente</span>`;
-      borderColor = "var(--amber)";
     } else if(isRejeitada) {
       chipHtml = `<span class="chip chip-red">❌ Rejeitada</span>`;
       borderColor = "var(--red)";
+    } else if(temPHash) {
+      chipHtml = `<span class="chip chip-amber">⏳ Aguardando análise</span>`;
+      borderColor = "var(--amber)";
+    } else {
+      chipHtml = `<span class="chip chip-blue">🔄 Calculando pHash...</span>`;
+      borderColor = "var(--blue)";
     }
 
-    let mintBtnHtml = "";
-    if(CN && isAprovada){
+    let analisarBtn = "";
+    if(temPHash && isPendente && ehMeu){
+      analisarBtn = `
+        <button 
+          class="btn btn-sm" 
+          onclick="analisarObra('${cid}')" 
+          style="margin-top:8px;width:100%;background:linear-gradient(135deg, var(--amber), #c47a1f);color:#0c0c0e;border:none;font-weight:700"
+        >
+          🔍 Analisar obra
+        </button>
+      `;
+    }
+
+    let mintBtn = "";
+    if(isAprovada && ehMeu && CN){
       const tokenId = await CN.tokenDaObra(cid).catch(()=>0n);
       if(tokenId > 0n){
-        mintBtnHtml = `<div class="chip chip-gold" style="margin-top:6px">🏷 Token #${tokenId}</div>`;
-      } else if(o.autor.toLowerCase() === me.toLowerCase()){
-        mintBtnHtml = `
+        mintBtn = `<div class="chip chip-gold" style="margin-top:8px;display:inline-block">🏷 Token #${tokenId}</div>`;
+      } else {
+        mintBtn = `
           <button 
             class="btn btn-sm" 
-            onclick="mintarObra('${cid}')" 
-            style="margin-top:8px;width:100%;background:linear-gradient(135deg, var(--green), #2a9d6e);color:white;border:none"
+            onclick="mintarNFT('${cid}')" 
+            style="margin-top:8px;width:100%;background:linear-gradient(135deg, var(--green), #2a9d6e);color:white;border:none;font-weight:700"
           >
             🏷 Mintar NFT
           </button>
@@ -1043,23 +991,10 @@ async function renderCards(el, cids, mostrarNFT){
       }
     }
 
-    let analisarBtnHtml = "";
-    if(isPendente && o.autor.toLowerCase() === me.toLowerCase()){
-      analisarBtnHtml = `
-        <button 
-          class="btn btn-sm btn-ghost" 
-          onclick="analisarObra('${cid}')" 
-          style="margin-top:8px;width:100%;border-color:var(--amber);color:var(--amber)"
-        >
-          🔍 Analisar obra agora
-        </button>
-      `;
-    }
-
     const ipfsLink   = `https://ipfs.io/ipfs/${cid}`;
     const analiseLink = o.cidAnalise ? `https://ipfs.io/ipfs/${o.cidAnalise}` : null;
     const imgSrc     = `https://gateway.pinata.cloud/ipfs/${cid}`;
-    const pHashChip  = o.pHash ? `<span class="chip chip-blue" title="${o.pHash}">🔑 ${o.pHash.slice(0,8)}...</span>` : "";
+    const pHashChip  = temPHash ? `<span class="chip chip-blue" title="${o.pHash}">🔑 ${o.pHash.slice(0,8)}...</span>` : "";
 
     return `
       <div class="obra-card" style="border-left: 3px solid ${borderColor}">
@@ -1076,36 +1011,15 @@ async function renderCards(el, cids, mostrarNFT){
             <a href="${ipfsLink}" target="_blank" style="font-size:.72rem;color:var(--gold);text-decoration:none">🔗 Ver obra</a>
             ${analiseLink?`<a href="${analiseLink}" target="_blank" style="font-size:.72rem;color:var(--muted2);text-decoration:none">📋 Análise</a>`:""}
           </div>
-          ${analisarBtnHtml}
-          ${mintBtnHtml}
+          ${analisarBtn}
+          ${mintBtn}
         </div>
       </div>`;
   }));
   el.innerHTML = `<div class="obras-grid">${cards.join("")}</div>`;
 }
 
-/* ── Admin ── */
-async function setOracle(){
-  const v = document.getElementById("adm-oracle").value.trim();
-  if(!ethers.isAddress(v)){ toast("Endereço inválido","","e"); return; }
-  if(!CO) CO = new ethers.Contract(ethers.getAddress(v), ABI_ORACLE, signer);
-  await txSend("Configurando Oracle...", ()=>CA.setContratoOracle(v), "Oracle definido!", sh(v));
-}
-async function setNFTnoOracle(){
-  if(!CO){ toast("Configure o Oracle primeiro","","e"); return; }
-  await txSend("NFT no Oracle...", ()=>CO.setContratoNFT(CN.target), "NFT definido no Oracle!", "");
-}
-async function setArteNoOracle(){
-  if(!CO){ toast("Configure o Oracle primeiro","","e"); return; }
-  await txSend("Arte no Oracle...", ()=>CO.setContratoArte(CA.target), "Arte definido no Oracle!", "");
-}
-async function setOracleNoNFT(){
-  const v = document.getElementById("adm-oracle").value.trim();
-  if(!ethers.isAddress(v)){ toast("Endereço inválido","","e"); return; }
-  await txSend("Oracle no NFT...", ()=>CN.setContratoOracle(v), "Oracle definido no NFT!", "");
-}
-
-/* ── Verificar plágio ── */
+// Verificar plágio
 let vSelectedFile = null;
 let vSelectedBase64 = null;
 
@@ -1171,17 +1085,15 @@ async function verificarPlagio(){
     const urlsIPFS = cids.map(cid => `https://ipfs.io/ipfs/${cid}`).join("\n");
 
     const prompt = `You are an art plagiarism detector.
-I will show you an image that may be plagiarized.
-Compare it against these registered artworks on IPFS:
+Compare the uploaded image against these registered artworks on IPFS:
 ${urlsIPFS}
 
-For each artwork URL, estimate the visual similarity percentage (0-100%) to the uploaded image.
-Consider: composition, style, colors, subject matter, overall impression.
+For each artwork URL, estimate the visual similarity percentage (0-100%).
+Consider: composition, style, colors, subject matter.
 
 Respond ONLY with valid JSON array, no markdown:
 [
-  {"cid": "Qm...", "similaridade": 85, "motivo": "brief reason in Portuguese"},
-  ...
+  {"cid": "Qm...", "similaridade": 85, "motivo": "brief reason in Portuguese"}
 ]
 Sort by similarity descending. Only include works with similarity > 10%.`;
 
@@ -1219,8 +1131,8 @@ Sort by similarity descending. Only include works with similarity > 10%.`;
 
     const temAlto = resultados.some(r => r.similaridade >= 70);
     document.getElementById("v-status").innerHTML = temAlto
-      ? `<span style="color:var(--red)">🚨 Possível plágio detectado! Similaridade alta com obra(s) registrada(s).</span>`
-      : `<span style="color:var(--amber)">⚠️ Similaridade baixa encontrada. Pode ser coincidência de estilo.</span>`;
+      ? `<span style="color:var(--red)">🚨 Alta similaridade detectada com obra(s) registrada(s)!</span>`
+      : `<span style="color:var(--amber)">⚠️ Similaridade encontrada. Pode ser coincidência de estilo.</span>`;
 
     document.getElementById("v-lista").innerHTML = resultados.map(r => {
       const cor = r.similaridade >= 70 ? "var(--red)" : r.similaridade >= 40 ? "var(--amber)" : "var(--green)";
@@ -1255,7 +1167,6 @@ Sort by similarity descending. Only include works with similarity > 10%.`;
   }
 }
 
-/* ── Tabs ── */
 function tab(n){
   const ns = ["registrar","verificar","galeria","minha","admin"];
   document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("on",ns[i]===n));
@@ -1271,3 +1182,4 @@ function tab(n){
 </script>
 </body>
 </html>
+
