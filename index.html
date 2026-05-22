@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ArteChain - Obras, Selos e Auditoria</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -98,3 +97,2231 @@
 
     .topbar {
       align-items: center;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .badge {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted-2);
+      font-family: "Space Mono", monospace;
+      font-size: 0.76rem;
+      padding: 7px 12px;
+      white-space: nowrap;
+    }
+
+    .badge.ok {
+      border-color: rgba(78, 203, 141, 0.35);
+      color: var(--green);
+    }
+
+    .badge.warn {
+      border-color: rgba(232, 154, 58, 0.35);
+      color: var(--amber);
+    }
+
+    .badge.err {
+      border-color: rgba(224, 92, 92, 0.35);
+      color: var(--red);
+    }
+
+    #app {
+      margin: 0 auto;
+      max-width: 1480px;
+      padding: 34px 24px;
+    }
+
+    .hero {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      justify-content: center;
+      min-height: calc(100vh - 140px);
+      text-align: center;
+    }
+
+    .hero-mark {
+      align-items: center;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      box-shadow: 0 0 70px rgba(200, 169, 110, 0.14);
+      display: flex;
+      font-family: "Playfair Display", serif;
+      font-size: 2.5rem;
+      height: 92px;
+      justify-content: center;
+      width: 92px;
+    }
+
+    .hero h1 {
+      font-family: "Playfair Display", serif;
+      font-size: clamp(2.3rem, 7vw, 4.2rem);
+      letter-spacing: -0.04em;
+      line-height: 0.98;
+    }
+
+    .hero h1 em {
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .hero p {
+      color: var(--muted-2);
+      line-height: 1.7;
+      max-width: 680px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 6px;
+    }
+
+    .pill {
+      border: 1px solid var(--line-2);
+      border-radius: 999px;
+      color: var(--muted-2);
+      font-family: "Space Mono", monospace;
+      font-size: 0.72rem;
+      padding: 6px 12px;
+    }
+
+    .main {
+      display: none;
+    }
+
+    .stats {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(4, minmax(170px, 1fr));
+      margin-bottom: 26px;
+    }
+
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .stat-value {
+      color: var(--gold);
+      font-family: "Playfair Display", serif;
+      font-size: 2.1rem;
+      line-height: 1;
+    }
+
+    .stat-value.green {
+      color: var(--green);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      margin-top: 8px;
+      text-transform: uppercase;
+    }
+
+    .tabs {
+      background: var(--surface);
+      border-radius: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 26px;
+      padding: 6px;
+      width: fit-content;
+    }
+
+    .tab {
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      color: var(--muted-2);
+      cursor: pointer;
+      font-weight: 700;
+      padding: 10px 16px;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+
+    .tab:hover {
+      color: var(--text);
+    }
+
+    .tab.on {
+      background: var(--panel);
+      border-color: var(--line-2);
+      color: var(--text);
+    }
+
+    .panel-tab {
+      display: none;
+    }
+
+    .panel-tab.on {
+      display: block;
+    }
+
+    .section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      margin-bottom: 20px;
+      padding: 26px;
+    }
+
+    .section-head {
+      align-items: flex-start;
+      display: flex;
+      gap: 16px;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .section h2 {
+      font-family: "Playfair Display", serif;
+      font-size: 1.45rem;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .sub {
+      color: var(--muted-2);
+      line-height: 1.55;
+    }
+
+    .btn {
+      align-items: center;
+      background: var(--panel-2);
+      border: 1px solid var(--line-2);
+      border-radius: var(--radius);
+      color: var(--text);
+      cursor: pointer;
+      display: inline-flex;
+      font-weight: 700;
+      gap: 8px;
+      justify-content: center;
+      line-height: 1;
+      min-height: 42px;
+      padding: 11px 16px;
+      transition: opacity 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+    }
+
+    .btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.42;
+      transform: none;
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), var(--gold-2));
+      border: 0;
+      color: #0c0c0e;
+    }
+
+    .btn-gold:hover {
+      color: #0c0c0e;
+      opacity: 0.92;
+    }
+
+    .btn-red {
+      border-color: rgba(224, 92, 92, 0.44);
+      color: var(--red);
+    }
+
+    .btn-sm {
+      border-radius: 10px;
+      font-size: 0.78rem;
+      min-height: 34px;
+      padding: 8px 10px;
+    }
+
+    .actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .upload-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1.15fr 0.85fr;
+    }
+
+    .upload {
+      align-items: center;
+      background: var(--surface);
+      border: 2px dashed var(--line-2);
+      border-radius: 16px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      min-height: 270px;
+      overflow: hidden;
+      padding: 28px;
+      position: relative;
+      text-align: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .upload:hover,
+    .upload.drag {
+      background: rgba(200, 169, 110, 0.04);
+      border-color: var(--gold);
+    }
+
+    .upload input {
+      cursor: pointer;
+      inset: 0;
+      opacity: 0;
+      position: absolute;
+    }
+
+    .upload strong {
+      color: var(--gold);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .preview {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      display: none;
+      overflow: hidden;
+    }
+
+    .preview img {
+      background: #050506;
+      display: block;
+      height: 270px;
+      object-fit: contain;
+      width: 100%;
+    }
+
+    .preview-meta {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr auto;
+      padding: 12px;
+    }
+
+    .steps {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .step {
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      padding: 12px 14px;
+    }
+
+    .step.active {
+      border-color: var(--gold);
+    }
+
+    .step.done {
+      border-color: rgba(78, 203, 141, 0.45);
+    }
+
+    .step.error {
+      border-color: rgba(224, 92, 92, 0.5);
+    }
+
+    .two-col {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+
+    .card:hover {
+      border-color: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    .card.selected {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 1px rgba(200, 169, 110, 0.25);
+    }
+
+    .thumb-wrap {
+      background: #050506;
+      border-bottom: 1px solid var(--line);
+      height: 240px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .thumb {
+      display: block;
+      height: 100%;
+      object-fit: cover;
+      width: 100%;
+    }
+
+    .thumb-placeholder {
+      align-items: center;
+      color: var(--muted);
+      display: none;
+      font-family: "Space Mono", monospace;
+      height: 100%;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+    }
+
+    .card-body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .title {
+      font-family: "Playfair Display", serif;
+      font-size: 1.05rem;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mono {
+      color: var(--muted-2);
+      font-family: "Space Mono", monospace;
+      font-size: 0.74rem;
+      line-height: 1.55;
+      word-break: break-all;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--line-2);
+      border-radius: 999px;
+      color: var(--muted-2);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      white-space: nowrap;
+    }
+
+    .chip.green {
+      background: rgba(78, 203, 141, 0.1);
+      border-color: rgba(78, 203, 141, 0.34);
+      color: var(--green);
+    }
+
+    .chip.red {
+      background: rgba(224, 92, 92, 0.1);
+      border-color: rgba(224, 92, 92, 0.34);
+      color: var(--red);
+    }
+
+    .chip.amber {
+      background: rgba(232, 154, 58, 0.1);
+      border-color: rgba(232, 154, 58, 0.34);
+      color: var(--amber);
+    }
+
+    .chip.blue {
+      background: rgba(91, 138, 240, 0.1);
+      border-color: rgba(91, 138, 240, 0.34);
+      color: #8fb0ff;
+    }
+
+    .chain-box {
+      background: #0c0c0e;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+    }
+
+    .kv {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 118px minmax(0, 1fr);
+      min-width: 0;
+    }
+
+    .kv b {
+      color: var(--muted);
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .kv span,
+    .kv code,
+    .kv a {
+      color: var(--text);
+      font-family: "Space Mono", monospace;
+      font-size: 0.72rem;
+      line-height: 1.45;
+      word-break: break-all;
+    }
+
+    .kv a {
+      color: var(--gold);
+    }
+
+    .seal-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .seal-mini {
+      background: #0c0c0e;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .seal-mini-head {
+      align-items: center;
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+      margin-bottom: 9px;
+    }
+
+    .seal-mini h4 {
+      font-size: 0.86rem;
+    }
+
+    .seal-data {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .field {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .field label {
+      color: var(--muted);
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .field code,
+    .field a,
+    .field span {
+      color: var(--text);
+      font-family: "Space Mono", monospace;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      word-break: break-all;
+    }
+
+    .field a {
+      color: var(--gold);
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    select,
+    input[type="text"] {
+      background: var(--surface);
+      border: 1px solid var(--line-2);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: "Space Mono", monospace;
+      outline: 0;
+      padding: 12px;
+      width: 100%;
+    }
+
+    select:focus,
+    input[type="text"]:focus {
+      border-color: var(--gold);
+    }
+
+    .result {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px dashed var(--line-2);
+      border-radius: 14px;
+      display: none;
+      line-height: 1.75;
+      margin-top: 14px;
+      padding: 16px;
+    }
+
+    .match-layout {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 12px;
+    }
+
+    .score-card {
+      background: #0c0c0e;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .score {
+      color: var(--gold);
+      font-family: "Playfair Display", serif;
+      font-size: 3rem;
+      line-height: 1;
+    }
+
+    .score.red {
+      color: var(--red);
+    }
+
+    .score.amber {
+      color: var(--amber);
+    }
+
+    .score.green {
+      color: var(--green);
+    }
+
+    .table-wrap {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      min-width: 1100px;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 11px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #101014;
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      position: sticky;
+      text-transform: uppercase;
+      top: 0;
+      z-index: 2;
+    }
+
+    td {
+      color: var(--muted-2);
+      font-family: "Space Mono", monospace;
+      font-size: 0.72rem;
+      line-height: 1.45;
+      word-break: break-all;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.018);
+    }
+
+    .drawer {
+      background: rgba(0, 0, 0, 0.74);
+      display: none;
+      inset: 0;
+      justify-content: center;
+      padding: 24px;
+      position: fixed;
+      z-index: 120;
+    }
+
+    .drawer.open {
+      display: flex;
+    }
+
+    .drawer-box {
+      background: var(--panel);
+      border: 1px solid var(--line-2);
+      border-radius: 18px;
+      max-height: 90vh;
+      max-width: 1220px;
+      overflow: auto;
+      padding: 24px;
+      position: relative;
+      width: 100%;
+    }
+
+    .drawer-close {
+      background: transparent;
+      border: 0;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 2rem;
+      line-height: 1;
+      position: absolute;
+      right: 18px;
+      top: 14px;
+    }
+
+    .audit-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-bottom: 16px;
+    }
+
+    .audit-tile {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .audit-tile b {
+      color: var(--muted);
+      display: block;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      margin-bottom: 7px;
+      text-transform: uppercase;
+    }
+
+    .audit-tile strong {
+      color: var(--gold);
+      font-family: "Playfair Display", serif;
+      font-size: 1.8rem;
+    }
+
+    .toast-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: fixed;
+      right: 18px;
+      top: 86px;
+      z-index: 160;
+    }
+
+    .toast {
+      background: var(--panel);
+      border: 1px solid var(--line-2);
+      border-radius: 14px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+      max-width: 390px;
+      min-width: 270px;
+      padding: 13px 15px;
+    }
+
+    .toast.ok {
+      border-color: rgba(78, 203, 141, 0.55);
+    }
+
+    .toast.err {
+      border-color: rgba(224, 92, 92, 0.55);
+    }
+
+    .toast.warn {
+      border-color: rgba(232, 154, 58, 0.55);
+    }
+
+    .toast b {
+      display: block;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .toast span {
+      color: var(--muted-2);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .statusbar {
+      align-items: center;
+      background: rgba(19, 19, 22, 0.97);
+      border-top: 1px solid var(--line);
+      bottom: 0;
+      display: flex;
+      gap: 8px;
+      left: 0;
+      min-height: 48px;
+      overflow: auto;
+      padding: 9px 26px;
+      position: fixed;
+      right: 0;
+      z-index: 80;
+    }
+
+    .status-label {
+      color: var(--muted);
+      flex: 0 0 auto;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .log {
+      border-radius: 999px;
+      flex: 0 0 auto;
+      font-family: "Space Mono", monospace;
+      font-size: 0.74rem;
+      padding: 5px 11px;
+      white-space: nowrap;
+    }
+
+    .log.info {
+      background: rgba(91, 138, 240, 0.12);
+      color: #8fb0ff;
+    }
+
+    .log.ok {
+      background: rgba(78, 203, 141, 0.12);
+      color: var(--green);
+    }
+
+    .log.warn {
+      background: rgba(232, 154, 58, 0.12);
+      color: var(--amber);
+    }
+
+    .log.err {
+      background: rgba(224, 92, 92, 0.12);
+      color: var(--red);
+    }
+
+    .empty {
+      border: 1px dashed var(--line-2);
+      border-radius: 14px;
+      color: var(--muted-2);
+      padding: 26px;
+      text-align: center;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 1100px) {
+      .stats,
+      .audit-grid,
+      .upload-grid,
+      .two-col,
+      .match-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+        height: auto;
+        gap: 10px;
+        padding: 16px;
+      }
+
+      #app {
+        padding: 24px 14px;
+      }
+
+      .section {
+        padding: 18px;
+      }
+
+      .form-grid,
+      .seal-data {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs {
+        width: 100%;
+      }
+
+      .tab {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Arte<span>Chain</span></div>
+    <div class="topbar">
+      <span class="badge" id="net-badge">desconectado</span>
+      <span class="badge" id="eth-badge">0 ETH</span>
+      <span class="badge" id="wallet-badge">sem carteira</span>
+    </div>
+  </header>
+
+  <div id="toast" class="toast-wrap"></div>
+
+  <div id="app">
+    <section id="hero" class="hero">
+      <div class="hero-mark">AC</div>
+      <h1>Arte<em>Chain</em></h1>
+      <p>
+        Registro on-chain, pHashes no Supabase, busca de similaridade por selo
+        e dossie completo com todos os campos salvos no contrato.
+      </p>
+      <div class="pill-row">
+        <span class="pill">Obra on-chain</span>
+        <span class="pill">Selos pendentes</span>
+        <span class="pill">Score + URL match</span>
+        <span class="pill">CID Gemini/IPFS</span>
+        <span class="pill">Auditoria completa</span>
+      </div>
+      <button class="btn btn-gold" onclick="connectWallet()">Conectar carteira</button>
+    </section>
+
+    <main id="main" class="main">
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">Obras on-chain</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="stat-mine">0</div>
+          <div class="stat-label">Minhas obras</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="stat-seals">0</div>
+          <div class="stat-label">Selos existentes</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value green" id="stat-eth">0</div>
+          <div class="stat-label">Saldo ETH</div>
+        </div>
+      </div>
+
+      <nav class="tabs">
+        <button class="tab on" onclick="openTab('registrar')">Registrar</button>
+        <button class="tab" onclick="openTab('galeria')">Galeria completa</button>
+        <button class="tab" onclick="openTab('minhas')">Minhas obras</button>
+        <button class="tab" onclick="openTab('selo')">Analisar selo</button>
+        <button class="tab" onclick="openTab('auditoria')">Auditoria</button>
+        <button class="tab" onclick="openTab('admin')">Admin</button>
+      </nav>
+
+      <section id="tab-registrar" class="panel-tab on">
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <h2>Registrar nova obra</h2>
+              <p class="sub">
+                A imagem e enviada para o Supabase. A Edge Function salva a linha em
+                artworks com phash_normal e phash_variations. No contrato entra o
+                artworkId bytes32 e a URI publica.
+              </p>
+            </div>
+            <button class="btn" onclick="resetRegister()">Limpar</button>
+          </div>
+
+          <div class="upload-grid">
+            <div>
+              <div
+                class="upload"
+                id="upload-zone"
+                ondragover="dragOver(event)"
+                ondragleave="dragLeave(event)"
+                ondrop="dragDrop(event)"
+              >
+                <input id="file-input" type="file" accept="image/*" onchange="selectFile(this.files[0])" />
+                <div>
+                  <strong>Selecionar obra digital</strong>
+                  <div class="sub">PNG, JPG, WEBP ou GIF. A wallet assina antes do upload.</div>
+                </div>
+              </div>
+
+              <div class="preview" id="preview">
+                <img id="preview-img" alt="Preview da obra" />
+                <div class="preview-meta">
+                  <code id="preview-name">-</code>
+                  <code id="preview-size">-</code>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="chain-box">
+                <div class="kv">
+                  <b>Carteira</b>
+                  <code id="register-wallet">-</code>
+                </div>
+                <div class="kv">
+                  <b>Edge upload</b>
+                  <code id="register-edge">calcular-phash</code>
+                </div>
+                <div class="kv">
+                  <b>Contrato</b>
+                  <code id="register-contract">-</code>
+                </div>
+                <div class="kv">
+                  <b>ArtworkId</b>
+                  <code id="register-artwork-id">gerado apos upload</code>
+                </div>
+              </div>
+
+              <div class="steps" id="register-steps">
+                <div class="step" id="step-sign">
+                  <b>1. Assinatura wallet</b>
+                  <span id="step-sign-text">aguardando</span>
+                </div>
+                <div class="step" id="step-supabase">
+                  <b>2. Supabase + pHash</b>
+                  <span id="step-supabase-text">aguardando</span>
+                </div>
+                <div class="step" id="step-chain">
+                  <b>3. Registro on-chain</b>
+                  <span id="step-chain-text">aguardando</span>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button class="btn btn-gold" id="register-button" disabled onclick="registerArtwork()">
+                  Registrar obra
+                </button>
+                <button class="btn" onclick="refreshAll()">Atualizar painel</button>
+              </div>
+
+              <div class="result" id="register-result"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-galeria" class="panel-tab">
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <h2>Galeria completa</h2>
+              <p class="sub">
+                Cada card mostra obra, autor, timestamps e todos os selos salvos
+                on-chain. O botao de dossie abre os mesmos dados em formato de prova.
+              </p>
+            </div>
+            <button class="btn" onclick="refreshAll()">Atualizar</button>
+          </div>
+          <div id="gallery-grid" class="grid"></div>
+        </div>
+      </section>
+
+      <section id="tab-minhas" class="panel-tab">
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <h2>Minhas obras</h2>
+              <p class="sub">Somente obras cujo autor on-chain e a carteira conectada.</p>
+            </div>
+            <button class="btn" onclick="refreshAll()">Atualizar</button>
+          </div>
+          <div id="mine-grid" class="grid"></div>
+        </div>
+      </section>
+
+      <section id="tab-selo" class="panel-tab">
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <h2>Analisar selo</h2>
+              <p class="sub">
+                Escolha uma obra e um tipo de selo. O Supabase procura o maior match,
+                retorna score e URL, e o contrato grava o selo pendente.
+              </p>
+            </div>
+            <button class="btn" onclick="clearSelectedArtwork()">Limpar selecao</button>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>ArtworkId bytes32</label>
+              <code id="selected-id">nenhuma obra selecionada</code>
+            </div>
+            <div class="field">
+              <label>Autor on-chain</label>
+              <code id="selected-author">-</code>
+            </div>
+            <div class="field">
+              <label>Image URL / URI</label>
+              <code id="selected-uri">-</code>
+            </div>
+            <div class="field">
+              <label>Criada em</label>
+              <code id="selected-created">-</code>
+            </div>
+          </div>
+
+          <div class="field" style="margin-top: 12px;">
+            <label>Tipo do selo</label>
+            <select id="seal-type" onchange="renderSelectedSealPreview()">
+              <option value="estrutural_basica">Estrutural basica - pHash normal, espelhos, rotacao e sem bordas</option>
+              <option value="regional">Regional - centro e metades</option>
+              <option value="visual_perceptual">Visual perceptual - histograma, luminancia e conteudo recortado</option>
+              <option value="match_local">Match local - regioes inteligentes</option>
+            </select>
+          </div>
+
+          <div class="two-col" style="margin-top: 14px;">
+            <div class="section" style="margin: 0; padding: 18px;">
+              <h2 style="font-size: 1.1rem;">Selo atual dessa obra</h2>
+              <div id="selected-seal-preview" class="seal-list"></div>
+            </div>
+
+            <div class="section" style="margin: 0; padding: 18px;">
+              <h2 style="font-size: 1.1rem;">Acao</h2>
+              <p class="sub">
+                V1 cria o selo pendente. A Chainlink/Gemini resolve depois e grava
+                status final + CID no mesmo selo.
+              </p>
+              <div class="actions">
+                <button class="btn btn-gold" onclick="searchMatchAndCreateSeal()">
+                  Buscar match e criar selo pendente
+                </button>
+                <button class="btn" onclick="openSelectedDossier()">Abrir dossie da obra</button>
+              </div>
+              <div class="result" id="match-result"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-auditoria" class="panel-tab">
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <h2>Auditoria geral de selos</h2>
+              <p class="sub">
+                Tabela completa com todos os selos existentes ou inexistentes por obra.
+                Aqui aparecem status, score, URL match, CID e timestamps.
+              </p>
+            </div>
+            <div class="actions" style="margin-top: 0;">
+              <button class="btn" onclick="refreshAll()">Atualizar</button>
+              <button class="btn" onclick="exportAuditJson()">Exportar JSON</button>
+            </div>
+          </div>
+
+          <div class="audit-grid">
+            <div class="audit-tile">
+              <b>Obras</b>
+              <strong id="audit-artworks">0</strong>
+            </div>
+            <div class="audit-tile">
+              <b>Selos pendentes</b>
+              <strong id="audit-pending">0</strong>
+            </div>
+            <div class="audit-tile">
+              <b>Selos aprovados</b>
+              <strong id="audit-approved">0</strong>
+            </div>
+            <div class="audit-tile">
+              <b>Selos rejeitados/manual</b>
+              <strong id="audit-rejected">0</strong>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Obra</th>
+                  <th>Tipo selo</th>
+                  <th>Status</th>
+                  <th>Score</th>
+                  <th>URL match</th>
+                  <th>CID analise</th>
+                  <th>Criado em</th>
+                  <th>Resolvido em</th>
+                  <th>Acoes</th>
+                </tr>
+              </thead>
+              <tbody id="audit-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-admin" class="panel-tab">
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <h2>Configuracao e contratos</h2>
+              <p class="sub">
+                Enderecos, routers funcionais e URLs das Edge Functions usadas pelo HTML.
+              </p>
+            </div>
+            <div class="actions" style="margin-top: 0;">
+              <button class="btn" onclick="refreshAdmin()">Recarregar admin</button>
+              <button class="btn btn-gold" onclick="configureContracts()">Configurar Arte/Oracle</button>
+            </div>
+          </div>
+          <div id="admin-grid" class="grid"></div>
+        </div>
+
+        <div class="section">
+          <h2>Estado bruto em memoria</h2>
+          <p class="sub">
+            Esse bloco ajuda a conferir se o HTML esta lendo tudo do contrato.
+          </p>
+          <div class="result" id="raw-state" style="display: block;"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="dossier" class="drawer">
+    <div class="drawer-box">
+      <button class="drawer-close" onclick="closeDossier()">x</button>
+      <h2 style="font-family: 'Playfair Display', serif; margin-bottom: 6px;">Dossie completo on-chain</h2>
+      <p class="sub">Todos os campos conhecidos do contrato para a obra e seus selos.</p>
+      <div id="dossier-body"></div>
+    </div>
+  </div>
+
+  <div id="statusbar" class="statusbar">
+    <span class="status-label">Status</span>
+    <span class="log info">Aguardando conexao...</span>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
+  <script>
+    "use strict";
+
+    const ARTE_ADDRESS = "0x80Dc05845C4817edFFccd8c2A1d084E4199a9f4C";
+    const ORACLE_ADDRESS = "0xDB49fFD14e052a00b02381F1A76d0Dde8F390c50";
+
+    const SUPABASE_REGISTRAR_URL =
+      "https://tqsoopgmzdwttwvedngk.supabase.co/functions/v1/calcular-phash";
+
+    const SUPABASE_ANALISAR_SELO_URL =
+      "https://tqsoopgmzdwttwvedngk.supabase.co/functions/v1/analisar-selo";
+
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6InRxc29vcGdtemR3dHR3dmVkbmdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NjIxNTEsImV4cCI6MjA5NDUzODE1MX0.LaHuxJVFJI9SkGHFmapSpkUYBC5plB9oPuDXIXJXsN0";
+
+    const SEALS = [
+      {
+        key: "estrutural_basica",
+        title: "Estrutural basica",
+        summary: "Normal, espelho H/V, rotacao 180 e sem bordas.",
+      },
+      {
+        key: "regional",
+        title: "Regional",
+        summary: "Centro 50%, metades esquerda/direita/superior/inferior.",
+      },
+      {
+        key: "visual_perceptual",
+        title: "Visual perceptual",
+        summary: "Histograma, luminancia, contraste e conteudo recortado.",
+      },
+      {
+        key: "match_local",
+        title: "Match local",
+        summary: "Regioes inteligentes e melhor encaixe local.",
+      },
+    ];
+
+    const STATUS = {
+      0: "Inexistente",
+      1: "Pendente",
+      2: "Aprovado",
+      3: "Rejeitado",
+      4: "Manual",
+    };
+
+    const ABI_ARTE = [
+      "function owner() view returns (address)",
+      "function oracle() view returns (address)",
+      "function contratoOracle() view returns (address)",
+      "function totalObras() view returns (uint256)",
+      "function registrarObra(bytes32 artworkId,string uri)",
+      "function criarSeloPendente(bytes32 artworkId,string tipoSelo,string urlMatch,uint256 score)",
+      "function getObra(bytes32 artworkId) view returns (address autor,string uri,uint256 timestamp,bool existe)",
+      "function getSelo(bytes32 artworkId,string tipoSelo) view returns (string tipo,string urlMatch,uint256 score,uint8 status,string cidAnalise,uint256 timestampCriacao,uint256 timestampResolucao,bool existe)",
+      "function getObrasPorPagina(uint256 offset,uint256 limit) view returns (bytes32[])",
+      "function setOracle(address)",
+      "function setContratoOracle(address)",
+    ];
+
+    const ABI_ORACLE = [
+      "function owner() view returns (address)",
+      "function contratoArte() view returns (address)",
+      "function setContratoArte(address)",
+    ];
+
+    let provider = null;
+    let signer = null;
+    let account = "";
+    let arte = null;
+    let oracle = null;
+    let selectedFile = null;
+    let selectedArtworkId = "";
+    let selectedArtworkUri = "";
+    let artworks = [];
+
+    const $ = (id) => document.getElementById(id);
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function shortAddress(value) {
+      const text = String(value || "");
+
+      if (!text) {
+        return "-";
+      }
+
+      return text.slice(0, 6) + "..." + text.slice(-4);
+    }
+
+    function formatEth(value) {
+      try {
+        return Number(ethers.formatEther(value || 0n)).toFixed(4);
+      } catch {
+        return "0.0000";
+      }
+    }
+
+    function formatTime(timestamp) {
+      const n = Number(timestamp || 0);
+
+      if (!n) {
+        return "-";
+      }
+
+      return new Date(n * 1000).toLocaleString("pt-BR");
+    }
+
+    function fileNameFromUrl(url) {
+      try {
+        return decodeURIComponent(String(url || "").split("/").pop() || url || "-");
+      } catch {
+        return String(url || "").split("/").pop() || "-";
+      }
+    }
+
+    function ipfsUrl(cid) {
+      return cid ? "https://ipfs.io/ipfs/" + cid : "";
+    }
+
+    function statusClass(status) {
+      if (status === 1) return "amber";
+      if (status === 2) return "green";
+      if (status === 3) return "red";
+      if (status === 4) return "blue";
+      return "";
+    }
+
+    function scoreClass(score) {
+      const n = Number(score || 0);
+
+      if (n >= 70) return "red";
+      if (n >= 50) return "amber";
+      return "green";
+    }
+
+    function errorText(error) {
+      return (
+        error?.shortMessage ||
+        error?.reason ||
+        error?.info?.error?.message ||
+        error?.message ||
+        String(error)
+      );
+    }
+
+    function log(message, type = "info") {
+      const item = document.createElement("span");
+      item.className = "log " + type;
+      item.textContent = message;
+
+      const bar = $("statusbar");
+      bar.insertBefore(item, bar.children[1]);
+
+      while (bar.children.length > 10) {
+        bar.removeChild(bar.lastChild);
+      }
+    }
+
+    function toast(title, message, type = "info") {
+      const item = document.createElement("div");
+      item.className = "toast " + (type === "err" ? "err" : type === "ok" ? "ok" : "warn");
+      item.innerHTML =
+        "<b>" +
+        escapeHtml(title) +
+        "</b><span>" +
+        escapeHtml(message) +
+        "</span>";
+
+      $("toast").appendChild(item);
+
+      setTimeout(() => item.remove(), 5200);
+    }
+
+    function openTab(name) {
+      document.querySelectorAll(".tab").forEach((button) => button.classList.remove("on"));
+      document.querySelectorAll(".panel-tab").forEach((panel) => panel.classList.remove("on"));
+
+      const names = ["registrar", "galeria", "minhas", "selo", "auditoria", "admin"];
+      const index = names.indexOf(name);
+
+      if (index >= 0) {
+        document.querySelectorAll(".tab")[index].classList.add("on");
+      }
+
+      $("tab-" + name).classList.add("on");
+
+      if (name === "galeria") renderGallery();
+      if (name === "minhas") renderMine();
+      if (name === "auditoria") renderAudit();
+      if (name === "admin") refreshAdmin();
+    }
+
+    function dragOver(event) {
+      event.preventDefault();
+      $("upload-zone").classList.add("drag");
+    }
+
+    function dragLeave() {
+      $("upload-zone").classList.remove("drag");
+    }
+
+    function dragDrop(event) {
+      event.preventDefault();
+      dragLeave();
+
+      const file = event.dataTransfer.files[0];
+
+      if (file) {
+        selectFile(file);
+      }
+    }
+
+    function selectFile(file) {
+      if (!file) {
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        toast("Arquivo invalido", "Selecione uma imagem.", "err");
+        return;
+      }
+
+      selectedFile = file;
+
+      $("preview-img").src = URL.createObjectURL(file);
+      $("preview-name").textContent = file.name;
+      $("preview-size").textContent = (file.size / 1024).toFixed(1) + " KB";
+      $("preview").style.display = "block";
+      $("upload-zone").style.display = "none";
+      $("register-button").disabled = false;
+    }
+
+    function resetRegister() {
+      selectedFile = null;
+      $("file-input").value = "";
+      $("preview").style.display = "none";
+      $("upload-zone").style.display = "flex";
+      $("register-button").disabled = true;
+      $("register-steps").style.display = "none";
+      $("register-result").style.display = "none";
+      $("register-artwork-id").textContent = "gerado apos upload";
+    }
+
+    function setStep(id, state, text) {
+      const box = $(id);
+      box.className = "step " + state;
+      $(id + "-text").textContent = text;
+    }
+
+    async function connectWallet() {
+      try {
+        if (!window.ethereum) {
+          throw new Error("MetaMask nao encontrada.");
+        }
+
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = await provider.getSigner();
+        account = await signer.getAddress();
+        arte = new ethers.Contract(ARTE_ADDRESS, ABI_ARTE, signer);
+        oracle = new ethers.Contract(ORACLE_ADDRESS, ABI_ORACLE, signer);
+
+        const network = await provider.getNetwork();
+        const balance = await provider.getBalance(account);
+
+        $("net-badge").textContent = network.name || String(network.chainId);
+        $("net-badge").className = "badge ok";
+        $("wallet-badge").textContent = shortAddress(account);
+        $("wallet-badge").className = "badge ok";
+        $("eth-badge").textContent = formatEth(balance) + " ETH";
+        $("register-wallet").textContent = account;
+        $("register-contract").textContent = ARTE_ADDRESS;
+
+        $("hero").style.display = "none";
+        $("main").style.display = "block";
+
+        log("Conectado: " + shortAddress(account), "ok");
+        await refreshAll();
+
+        if (window.ethereum?.on) {
+          window.ethereum.on("accountsChanged", () => location.reload());
+          window.ethereum.on("chainChanged", () => location.reload());
+        }
+      } catch (error) {
+        toast("Erro", errorText(error), "err");
+        log("Erro: " + errorText(error), "err");
+      }
+    }
+
+    async function refreshAll() {
+      if (!arte) {
+        return;
+      }
+
+      try {
+        const balance = await provider.getBalance(account);
+
+        $("eth-badge").textContent = formatEth(balance) + " ETH";
+        $("stat-eth").textContent = formatEth(balance);
+
+        await loadArtworks();
+        updateStats();
+        renderGallery();
+        renderMine();
+        renderAudit();
+        renderSelectedSealPreview();
+        refreshAdmin();
+
+        log("Painel atualizado", "ok");
+      } catch (error) {
+        toast("Erro ao atualizar", errorText(error), "err");
+        log("Erro refresh: " + errorText(error), "err");
+      }
+    }
+
+    async function loadArtworks() {
+      const total = Number(await arte.totalObras());
+      const ids = total ? await arte.getObrasPorPagina(0, Math.min(total, 500)) : [];
+      const rows = [];
+
+      for (const id of ids) {
+        try {
+          const rawArtwork = await arte.getObra(id);
+          const seals = {};
+
+          for (const seal of SEALS) {
+            seals[seal.key] = await readSeal(id, seal.key);
+          }
+
+          rows.push({
+            id: String(id),
+            autor: rawArtwork.autor || rawArtwork[0],
+            uri: rawArtwork.uri || rawArtwork[1],
+            timestamp: Number(rawArtwork.timestamp ?? rawArtwork[2] ?? 0),
+            existe: Boolean(rawArtwork.existe ?? rawArtwork[3]),
+            seals,
+          });
+        } catch (error) {
+          log("Falha lendo obra " + shortAddress(id) + ": " + errorText(error), "err");
+        }
+      }
+
+      artworks = rows;
+    }
+
+    async function readSeal(artworkId, sealType) {
+      try {
+        const rawSeal = await arte.getSelo(artworkId, sealType);
+
+        return {
+          tipo: rawSeal.tipo || rawSeal[0] || sealType,
+          urlMatch: rawSeal.urlMatch || rawSeal[1] || "",
+          score: Number(rawSeal.score ?? rawSeal[2] ?? 0),
+          status: Number(rawSeal.status ?? rawSeal[3] ?? 0),
+          cidAnalise: rawSeal.cidAnalise || rawSeal[4] || "",
+          timestampCriacao: Number(rawSeal.timestampCriacao ?? rawSeal[5] ?? 0),
+          timestampResolucao: Number(rawSeal.timestampResolucao ?? rawSeal[6] ?? 0),
+          existe: Boolean(rawSeal.existe ?? rawSeal[7]),
+        };
+      } catch {
+        return emptySeal(sealType);
+      }
+    }
+
+    function emptySeal(sealType) {
+      return {
+        tipo: sealType,
+        urlMatch: "",
+        score: 0,
+        status: 0,
+        cidAnalise: "",
+        timestampCriacao: 0,
+        timestampResolucao: 0,
+        existe: false,
+      };
+    }
+
+    function updateStats() {
+      const mine = artworks.filter((item) => item.autor.toLowerCase() === account.toLowerCase());
+      const allSeals = flattenSeals();
+
+      $("stat-total").textContent = artworks.length;
+      $("stat-mine").textContent = mine.length;
+      $("stat-seals").textContent = allSeals.filter((item) => item.seal.existe).length;
+    }
+
+    function flattenSeals() {
+      const rows = [];
+
+      for (const artwork of artworks) {
+        for (const meta of SEALS) {
+          rows.push({
+            artwork,
+            meta,
+            seal: artwork.seals[meta.key] || emptySeal(meta.key),
+          });
+        }
+      }
+
+      return rows;
+    }
+
+    function renderGallery() {
+      renderCards("gallery-grid", artworks);
+    }
+
+    function renderMine() {
+      const mine = artworks.filter((item) => item.autor.toLowerCase() === account.toLowerCase());
+      renderCards("mine-grid", mine);
+    }
+
+    function renderCards(targetId, list) {
+      const target = $(targetId);
+
+      if (!list.length) {
+        target.innerHTML = '<div class="empty">Nenhuma obra encontrada.</div>';
+        return;
+      }
+
+      target.innerHTML = list.map(renderArtworkCard).join("");
+    }
+
+    function renderArtworkCard(artwork) {
+      const mine = artwork.autor.toLowerCase() === account.toLowerCase();
+      const selected = artwork.id.toLowerCase() === selectedArtworkId.toLowerCase();
+      const sealCards = SEALS.map((meta) => renderSealMini(meta, artwork.seals[meta.key])).join("");
+
+      return `
+        <article class="card ${selected ? "selected" : ""}">
+          <div class="thumb-wrap">
+            <img class="thumb" src="${escapeHtml(artwork.uri)}" alt="Obra" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+            <div class="thumb-placeholder">Imagem indisponivel</div>
+          </div>
+          <div class="card-body">
+            <div>
+              <div class="title">${escapeHtml(fileNameFromUrl(artwork.uri))}</div>
+              <div class="chip-row" style="margin-top: 8px;">
+                <span class="chip blue">on-chain</span>
+                ${mine ? '<span class="chip green">minha obra</span>' : '<span class="chip">terceiro</span>'}
+                <span class="chip">${escapeHtml(formatTime(artwork.timestamp))}</span>
+              </div>
+            </div>
+
+            <div class="chain-box">
+              <div class="kv"><b>ArtworkId</b><code>${escapeHtml(artwork.id)}</code></div>
+              <div class="kv"><b>Autor</b><code>${escapeHtml(artwork.autor)}</code></div>
+              <div class="kv"><b>URI</b><a href="${escapeHtml(artwork.uri)}" target="_blank">${escapeHtml(artwork.uri)}</a></div>
+              <div class="kv"><b>Existe</b><code>${artwork.existe ? "sim" : "nao"}</code></div>
+            </div>
+
+            <div class="seal-list">${sealCards}</div>
+
+            <div class="actions">
+              <button class="btn btn-sm" onclick="selectArtwork('${escapeHtml(artwork.id)}')">Analisar selo</button>
+              <button class="btn btn-sm btn-gold" onclick="openDossier('${escapeHtml(artwork.id)}')">Dossie completo</button>
+              <a class="btn btn-sm" href="${escapeHtml(artwork.uri)}" target="_blank">Abrir imagem</a>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderSealMini(meta, seal) {
+      const current = seal || emptySeal(meta.key);
+      const cid = ipfsUrl(current.cidAnalise);
+
+      return `
+        <div class="seal-mini">
+          <div class="seal-mini-head">
+            <h4>${escapeHtml(meta.title)}</h4>
+            <span class="chip ${statusClass(current.status)}">${escapeHtml(STATUS[current.status] || "Status " + current.status)}</span>
+          </div>
+          <div class="seal-data">
+            <div class="kv"><b>Existe</b><code>${current.existe ? "sim" : "nao"}</code></div>
+            <div class="kv"><b>Score</b><code>${current.score}</code></div>
+            <div class="kv"><b>Criado</b><code>${escapeHtml(formatTime(current.timestampCriacao))}</code></div>
+            <div class="kv"><b>Resolvido</b><code>${escapeHtml(formatTime(current.timestampResolucao))}</code></div>
+          </div>
+          <div class="kv" style="margin-top: 8px;"><b>Match</b>${current.urlMatch ? `<a href="${escapeHtml(current.urlMatch)}" target="_blank">${escapeHtml(current.urlMatch)}</a>` : "<code>-</code>"}</div>
+          <div class="kv" style="margin-top: 8px;"><b>CID</b>${cid ? `<a href="${escapeHtml(cid)}" target="_blank">${escapeHtml(current.cidAnalise)}</a>` : "<code>-</code>"}</div>
+        </div>
+      `;
+    }
+
+    function selectArtwork(artworkId) {
+      const artwork = findArtwork(artworkId);
+
+      if (!artwork) {
+        toast("Obra nao encontrada", "Atualize o painel e tente novamente.", "err");
+        return;
+      }
+
+      selectedArtworkId = artwork.id;
+      selectedArtworkUri = artwork.uri;
+
+      $("selected-id").textContent = artwork.id;
+      $("selected-author").textContent = artwork.autor;
+      $("selected-uri").textContent = artwork.uri;
+      $("selected-created").textContent = formatTime(artwork.timestamp);
+
+      renderSelectedSealPreview();
+      openTab("selo");
+    }
+
+    function clearSelectedArtwork() {
+      selectedArtworkId = "";
+      selectedArtworkUri = "";
+      $("selected-id").textContent = "nenhuma obra selecionada";
+      $("selected-author").textContent = "-";
+      $("selected-uri").textContent = "-";
+      $("selected-created").textContent = "-";
+      $("selected-seal-preview").innerHTML = "";
+      $("match-result").style.display = "none";
+    }
+
+    function findArtwork(artworkId) {
+      return artworks.find((item) => item.id.toLowerCase() === String(artworkId).toLowerCase());
+    }
+
+    function renderSelectedSealPreview() {
+      if (!selectedArtworkId) {
+        $("selected-seal-preview").innerHTML = '<div class="empty">Selecione uma obra na galeria.</div>';
+        return;
+      }
+
+      const artwork = findArtwork(selectedArtworkId);
+
+      if (!artwork) {
+        $("selected-seal-preview").innerHTML = '<div class="empty">Obra nao carregada.</div>';
+        return;
+      }
+
+      const sealType = $("seal-type").value;
+      const meta = SEALS.find((item) => item.key === sealType);
+      const seal = artwork.seals[sealType] || emptySeal(sealType);
+
+      $("selected-seal-preview").innerHTML = renderSealMini(meta, seal);
+    }
+
+    async function registerInSupabase(file) {
+      const signature = await signer.signMessage("ArteChain upload autorizado");
+      const form = new FormData();
+      form.append("file", file);
+
+      const response = await fetch(SUPABASE_REGISTRAR_URL, {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + SUPABASE_ANON_KEY,
+          "x-wallet-address": account,
+          "x-wallet-signature": signature,
+        },
+        body: form,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.erro || data.error || "Erro no Supabase");
+      }
+
+      return data;
+    }
+
+    async function registerArtwork() {
+      try {
+        if (!selectedFile) {
+          throw new Error("Selecione uma imagem.");
+        }
+
+        $("register-steps").style.display = "flex";
+        $("register-result").style.display = "none";
+        setStep("step-sign", "active", "assine na carteira");
+        setStep("step-supabase", "", "aguardando");
+        setStep("step-chain", "", "aguardando");
+
+        const upload = await registerInSupabase(selectedFile);
+        const artworkId = ethers.keccak256(ethers.toUtf8Bytes(upload.imageUrl));
+
+        $("register-artwork-id").textContent = artworkId;
+        setStep("step-sign", "done", "assinatura validada");
+        setStep("step-supabase", "done", "imagem, storage_path e pHashes salvos");
+        setStep("step-chain", "active", "confirme a transacao");
+
+        const transaction = await arte.registrarObra(artworkId, upload.imageUrl);
+        await transaction.wait();
+
+        setStep("step-chain", "done", "obra registrada on-chain");
+
+        $("register-result").innerHTML = `
+          <b>Obra registrada com sucesso</b>
+          <div class="chain-box" style="margin-top: 10px;">
+            <div class="kv"><b>ArtworkId</b><code>${escapeHtml(artworkId)}</code></div>
+            <div class="kv"><b>Image URL</b><a href="${escapeHtml(upload.imageUrl)}" target="_blank">${escapeHtml(upload.imageUrl)}</a></div>
+            <div class="kv"><b>Storage path</b><code>${escapeHtml(upload.storagePath || "-")}</code></div>
+            <div class="kv"><b>pHash normal</b><code>${escapeHtml(upload.variacoes?.[0] || "-")}</code></div>
+          </div>
+        `;
+        $("register-result").style.display = "block";
+
+        toast("Registrado", "Obra salva no Supabase e no contrato.", "ok");
+        log("Registro on-chain confirmado", "ok");
+
+        await refreshAll();
+      } catch (error) {
+        setStep("step-chain", "error", errorText(error));
+        toast("Erro", errorText(error), "err");
+        log("Erro: " + errorText(error), "err");
+      }
+    }
+
+    async function searchMatchAndCreateSeal() {
+      try {
+        if (!selectedArtworkId || !selectedArtworkUri) {
+          throw new Error("Selecione uma obra primeiro.");
+        }
+
+        const sealType = $("seal-type").value;
+        const artwork = findArtwork(selectedArtworkId);
+
+        if (!artwork) {
+          throw new Error("Obra nao carregada no painel.");
+        }
+
+        log("Buscando match no Supabase...", "warn");
+        toast("Supabase", "Buscando maior score para o selo.", "warn");
+
+        const response = await fetch(SUPABASE_ANALISAR_SELO_URL, {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + SUPABASE_ANON_KEY,
+            "Content-Type": "application/json",
+            "x-wallet-address": account,
+          },
+          body: JSON.stringify({
+            imageUrl: selectedArtworkUri,
+            tipoSelo: sealType,
+            walletAddress: account,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.erro || data.error || "Erro na Edge Function analisar-selo");
+        }
+
+        renderMatchResult(data);
+
+        log("Criando selo pendente on-chain...", "warn");
+
+        const transaction = await arte.criarSeloPendente(
+          selectedArtworkId,
+          sealType,
+          data.urlMatch || "",
+          Number(data.score || 0)
+        );
+
+        await transaction.wait();
+
+        toast("Selo criado", "Selo pendente registrado on-chain.", "ok");
+        log("Selo pendente criado", "ok");
+
+        await refreshAll();
+        selectArtwork(artwork.id);
+      } catch (error) {
+        toast("Erro", errorText(error), "err");
+        log("Erro: " + errorText(error), "err");
+      }
+    }
+
+    function renderMatchResult(data) {
+      const score = Number(data.score || 0);
+      const details = Array.isArray(data.detalhes) ? data.detalhes : [];
+      const rows = details
+        .slice(0, 12)
+        .map((item) => {
+          return `
+            <tr>
+              <td>${escapeHtml(item.grupo || "-")}</td>
+              <td>${escapeHtml(item.nome || item.descricao || "-")}</td>
+              <td>${escapeHtml(item.score ?? "-")}</td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      $("match-result").innerHTML = `
+        <b>Match calculado pelo Supabase</b>
+        <div class="match-layout">
+          <div class="score-card">
+            <div class="sub">Score final</div>
+            <div class="score ${scoreClass(score)}">${score}%</div>
+          </div>
+          <div class="score-card">
+            <div class="sub">Tipo do selo</div>
+            <div class="mono">${escapeHtml(data.tipoSelo || "-")}</div>
+          </div>
+          <div class="score-card">
+            <div class="sub">Melhor variacao</div>
+            <div class="mono">${escapeHtml(data.bestVariation || "-")}</div>
+          </div>
+        </div>
+        <div class="chain-box" style="margin-top: 12px;">
+          <div class="kv"><b>URL match</b>${data.urlMatch ? `<a href="${escapeHtml(data.urlMatch)}" target="_blank">${escapeHtml(data.urlMatch)}</a>` : "<code>sem match</code>"}</div>
+          <div class="kv"><b>Match artwork id</b><code>${escapeHtml(data.matchArtworkId || "-")}</code></div>
+          <div class="kv"><b>Desempate vermelho</b><code>${escapeHtml(data.redWeight ?? "-")}</code></div>
+          <div class="kv"><b>Desempate amarelo</b><code>${escapeHtml(data.yellowWeight ?? "-")}</code></div>
+        </div>
+        <div class="table-wrap" style="margin-top: 12px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Grupo</th>
+                <th>Analise</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody>${rows || '<tr><td colspan="3">Sem detalhes retornados.</td></tr>'}</tbody>
+          </table>
+        </div>
+      `;
+      $("match-result").style.display = "block";
+    }
+
+    function renderAudit() {
+      const rows = flattenSeals();
+      const pending = rows.filter((row) => row.seal.status === 1).length;
+      const approved = rows.filter((row) => row.seal.status === 2).length;
+      const rejected = rows.filter((row) => row.seal.status === 3 || row.seal.status === 4).length;
+
+      $("audit-artworks").textContent = artworks.length;
+      $("audit-pending").textContent = pending;
+      $("audit-approved").textContent = approved;
+      $("audit-rejected").textContent = rejected;
+
+      $("audit-body").innerHTML = rows
+        .map((row) => {
+          const cid = ipfsUrl(row.seal.cidAnalise);
+          const match = row.seal.urlMatch
+            ? `<a href="${escapeHtml(row.seal.urlMatch)}" target="_blank">${escapeHtml(row.seal.urlMatch)}</a>`
+            : "-";
+          const cidLink = cid
+            ? `<a href="${escapeHtml(cid)}" target="_blank">${escapeHtml(row.seal.cidAnalise)}</a>`
+            : "-";
+
+          return `
+            <tr>
+              <td>
+                <b>${escapeHtml(fileNameFromUrl(row.artwork.uri))}</b><br />
+                ${escapeHtml(row.artwork.id)}<br />
+                ${escapeHtml(shortAddress(row.artwork.autor))}
+              </td>
+              <td>${escapeHtml(row.meta.title)}<br />${escapeHtml(row.meta.key)}</td>
+              <td><span class="chip ${statusClass(row.seal.status)}">${escapeHtml(STATUS[row.seal.status] || row.seal.status)}</span><br />existe: ${row.seal.existe ? "sim" : "nao"}</td>
+              <td>${escapeHtml(row.seal.score)}</td>
+              <td>${match}</td>
+              <td>${cidLink}</td>
+              <td>${escapeHtml(formatTime(row.seal.timestampCriacao))}</td>
+              <td>${escapeHtml(formatTime(row.seal.timestampResolucao))}</td>
+              <td>
+                <button class="btn btn-sm" onclick="selectArtwork('${escapeHtml(row.artwork.id)}')">Selecionar</button>
+                <button class="btn btn-sm btn-gold" onclick="openDossier('${escapeHtml(row.artwork.id)}')">Dossie</button>
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+    }
+
+    function exportAuditJson() {
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        chain: "sepolia",
+        arte: ARTE_ADDRESS,
+        oracle: ORACLE_ADDRESS,
+        artworks,
+      };
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "artechain-auditoria.json";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function openSelectedDossier() {
+      if (!selectedArtworkId) {
+        toast("Selecione uma obra", "Abra a galeria e escolha uma obra.", "err");
+        return;
+      }
+
+      openDossier(selectedArtworkId);
+    }
+
+    function openDossier(artworkId) {
+      const artwork = findArtwork(artworkId);
+
+      if (!artwork) {
+        toast("Obra nao encontrada", "Atualize o painel e tente novamente.", "err");
+        return;
+      }
+
+      const sealBlocks = SEALS.map((meta) => {
+        const seal = artwork.seals[meta.key] || emptySeal(meta.key);
+        const cid = ipfsUrl(seal.cidAnalise);
+
+        return `
+          <div class="section" style="padding: 18px;">
+            <div class="section-head" style="margin-bottom: 12px;">
+              <div>
+                <h2 style="font-size: 1.15rem;">${escapeHtml(meta.title)}</h2>
+                <p class="sub">${escapeHtml(meta.summary)}</p>
+              </div>
+              <span class="chip ${statusClass(seal.status)}">${escapeHtml(STATUS[seal.status] || seal.status)}</span>
+            </div>
+            <div class="form-grid">
+              <div class="field"><label>Tipo salvo</label><code>${escapeHtml(seal.tipo)}</code></div>
+              <div class="field"><label>Existe</label><code>${seal.existe ? "sim" : "nao"}</code></div>
+              <div class="field"><label>Status enum</label><code>${escapeHtml(seal.status)}</code></div>
+              <div class="field"><label>Status texto</label><code>${escapeHtml(STATUS[seal.status] || "-")}</code></div>
+              <div class="field"><label>Score</label><code>${escapeHtml(seal.score)}</code></div>
+              <div class="field"><label>Criado em</label><code>${escapeHtml(formatTime(seal.timestampCriacao))}</code></div>
+              <div class="field"><label>Resolvido em</label><code>${escapeHtml(formatTime(seal.timestampResolucao))}</code></div>
+              <div class="field"><label>CID analise</label><code>${escapeHtml(seal.cidAnalise || "-")}</code></div>
+            </div>
+            <div class="field" style="margin-top: 12px;">
+              <label>URL match salva on-chain</label>
+              ${seal.urlMatch ? `<a href="${escapeHtml(seal.urlMatch)}" target="_blank">${escapeHtml(seal.urlMatch)}</a>` : "<code>sem match</code>"}
+            </div>
+            <div class="field" style="margin-top: 12px;">
+              <label>Relatorio IPFS</label>
+              ${cid ? `<a href="${escapeHtml(cid)}" target="_blank">${escapeHtml(cid)}</a>` : "<code>sem CID ainda - selo pendente ou nao resolvido</code>"}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      $("dossier-body").innerHTML = `
+        <div class="two-col" style="margin-top: 16px;">
+          <div class="section" style="padding: 18px;">
+            <h2 style="font-size: 1.15rem;">Imagem</h2>
+            <div class="thumb-wrap" style="height: 320px; border: 1px solid var(--line); border-radius: 14px;">
+              <img class="thumb" src="${escapeHtml(artwork.uri)}" alt="Obra" style="object-fit: contain;" />
+            </div>
+            <div class="actions">
+              <a class="btn btn-sm btn-gold" href="${escapeHtml(artwork.uri)}" target="_blank">Abrir imagem</a>
+            </div>
+          </div>
+          <div class="section" style="padding: 18px;">
+            <h2 style="font-size: 1.15rem;">Obra salva on-chain</h2>
+            <div class="field"><label>ArtworkId bytes32</label><code>${escapeHtml(artwork.id)}</code></div>
+            <div class="field"><label>Autor</label><code>${escapeHtml(artwork.autor)}</code></div>
+            <div class="field"><label>Timestamp</label><code>${escapeHtml(formatTime(artwork.timestamp))}</code></div>
+            <div class="field"><label>Existe</label><code>${artwork.existe ? "sim" : "nao"}</code></div>
+            <div class="field"><label>URI</label><a href="${escapeHtml(artwork.uri)}" target="_blank">${escapeHtml(artwork.uri)}</a></div>
+          </div>
+        </div>
+        <div style="margin-top: 16px;">${sealBlocks}</div>
+      `;
+
+      $("dossier").classList.add("open");
+    }
+
+    function closeDossier() {
+      $("dossier").classList.remove("open");
+    }
+
+    async function callOptional(contract, names, args = []) {
+      for (const name of names) {
+        try {
+          if (typeof contract[name] === "function") {
+            return await contract[name](...args);
+          }
+        } catch {
+          // tenta o proximo nome
+        }
+      }
+
+      return null;
+    }
+
+    async function configureContracts() {
+      try {
+        const setArteOracle = await callOptional(arte, ["setOracle", "setContratoOracle"], [ORACLE_ADDRESS]);
+
+        if (setArteOracle?.wait) {
+          await setArteOracle.wait();
+        }
+
+        const setOracleArte = await oracle.setContratoArte(ARTE_ADDRESS);
+
+        if (setOracleArte?.wait) {
+          await setOracleArte.wait();
+        }
+
+        toast("Configurado", "Arte e Oracle foram conectados.", "ok");
+        log("Contratos configurados", "ok");
+        await refreshAdmin();
+      } catch (error) {
+        toast("Erro config", errorText(error), "err");
+        log("Erro config: " + errorText(error), "err");
+      }
+    }
+
+    async function refreshAdmin() {
+      if (!arte || !oracle) {
+        return;
+      }
+
+      let arteOwner = "-";
+      let oracleOwner = "-";
+      let oracleOnArte = "-";
+      let arteOnOracle = "-";
+
+      try {
+        arteOwner = await arte.owner();
+      } catch {}
+
+      try {
+        oracleOwner = await oracle.owner();
+      } catch {}
+
+      oracleOnArte = await callOptional(arte, ["oracle", "contratoOracle"]) || "-";
+
+      try {
+        arteOnOracle = await oracle.contratoArte();
+      } catch {}
+
+      const adminItems = [
+        ["Carteira conectada", account],
+        ["Arte.sol", ARTE_ADDRESS],
+        ["Arte owner", arteOwner],
+        ["ArteOracle", ORACLE_ADDRESS],
+        ["Oracle owner", oracleOwner],
+        ["Oracle no Arte", oracleOnArte],
+        ["Arte no Oracle", arteOnOracle],
+        ["Edge calcular-phash", SUPABASE_REGISTRAR_URL],
+        ["Edge analisar-selo", SUPABASE_ANALISAR_SELO_URL],
+        ["Supabase anon key", SUPABASE_ANON_KEY.slice(0, 24) + "..."],
+      ];
+
+      $("admin-grid").innerHTML = adminItems
+        .map(([label, value]) => {
+          return `
+            <div class="field">
+              <label>${escapeHtml(label)}</label>
+              <code>${escapeHtml(value)}</code>
+            </div>
+          `;
+        })
+        .join("");
+
+      $("raw-state").innerHTML = `<pre style="white-space: pre-wrap; font-family: Space Mono, monospace; font-size: .75rem;">${escapeHtml(JSON.stringify({
+        account,
+        arte: ARTE_ADDRESS,
+        oracle: ORACLE_ADDRESS,
+        totalArtworks: artworks.length,
+        artworks,
+      }, null, 2))}</pre>`;
+    }
+  </script>
+</body>
+</html>
+
