@@ -1,801 +1,2326 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ArteChain - Obras e Selos</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet"/>
-<style>
-:root{
-  --bg:#0c0c0e;--surface:#131316;--card:#1a1a1f;--border:#2a2a32;--border2:#3a3a48;
-  --gold:#c8a96e;--gold2:#e8c98e;--green:#4ecb8d;--red:#e05c5c;--amber:#e89a3a;--blue:#5b8af0;
-  --text:#e8e4dc;--muted:#6b6878;--muted2:#928fa0;--r:12px
-}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
-body:before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% 20%,rgba(200,169,110,.05),transparent 60%);pointer-events:none}
-header{position:sticky;top:0;z-index:50;background:rgba(12,12,14,.93);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);height:64px;padding:0 28px;display:flex;align-items:center;justify-content:space-between}
-.logo{font-family:'Playfair Display',serif;font-size:1.45rem}.logo span{color:var(--gold);font-style:italic}
-.hright{display:flex;gap:8px;align-items:center}.badge{display:none;font-family:'Space Mono',monospace;font-size:.68rem;background:var(--card);border:1px solid var(--border);padding:5px 10px;border-radius:20px;color:var(--muted2)}
-#app{max-width:1120px;margin:0 auto;padding:30px 20px 82px;position:relative}
-.btn{padding:10px 18px;border:0;border-radius:var(--r);cursor:pointer;font-size:.84rem;font-weight:600;font-family:'DM Sans',sans-serif;transition:.15s}
-.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0c0c0e}
-.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text)}
-.btn:hover{transform:translateY(-1px);opacity:.92}.btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
-.btn-sm{padding:7px 11px;font-size:.73rem;border-radius:9px}
-#splash{min-height:78vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:22px}
-.splash-icon{width:88px;height:88px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.4rem}
-#splash h1{font-family:'Playfair Display',serif;font-size:3.1rem;line-height:1.08}#splash h1 em{color:var(--gold);font-style:italic}
-#splash p{max-width:520px;color:var(--muted2);line-height:1.75}.splash-pills{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
-.pill{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--muted2);border:1px solid var(--border2);border-radius:20px;padding:5px 12px}
-#main{display:none}.tabs{display:flex;gap:4px;margin-bottom:24px;background:var(--surface);padding:5px;border-radius:var(--r);width:max-content;max-width:100%;overflow:auto}
-.tab{padding:8px 18px;border-radius:8px;border:0;background:transparent;color:var(--muted2);cursor:pointer;font-weight:600}
-.tab.on{background:var(--card);color:var(--text);border:1px solid var(--border2)}
-.tc{display:none}.tc.on{display:block}
-.statbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px}
-.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px}.stat-v{font-family:'Playfair Display',serif;font-size:2rem;color:var(--gold)}.stat-l{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
-.sec{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:18px}
-.sec-title{font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:4px}.sec-sub{color:var(--muted2);font-size:.83rem;line-height:1.6;margin-bottom:17px}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
-.upload-zone{border:2px dashed var(--border2);border-radius:16px;padding:38px 20px;text-align:center;cursor:pointer;background:var(--surface);position:relative}
-.upload-zone:hover,.upload-zone.drag{border-color:var(--gold);background:rgba(200,169,110,.04)}
-.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.upload-icon{font-size:2.6rem;margin-bottom:10px}.upload-text{color:var(--muted2);font-size:.88rem;line-height:1.6}.upload-text strong{color:var(--gold)}
-.preview-box{display:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface)}
-.preview-box img{width:100%;max-height:310px;object-fit:contain;background:#0c0c0e;display:block}
-.preview-info{padding:12px 14px;display:flex;justify-content:space-between;gap:10px}.preview-name,.preview-size{font-family:'Space Mono',monospace;font-size:.75rem;color:var(--muted2)}
-.steps{display:none;flex-direction:column;gap:8px;margin:16px 0}
-.step{display:flex;gap:12px;align-items:center;padding:10px 13px;border-radius:8px;background:var(--surface);border:1px solid var(--border);font-size:.82rem}
-.step.active{border-color:var(--gold);background:rgba(200,169,110,.06)}.step.done{border-color:var(--green);background:rgba(78,203,141,.06)}.step.error{border-color:var(--red);background:rgba(224,92,92,.06)}
-.step-icon{width:24px;text-align:center}.step-label{font-weight:700}.step-desc{font-family:'Space Mono',monospace;color:var(--muted2);font-size:.73rem;margin-top:2px}
-.obras-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}
-.obra-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}.obra-card:hover{border-color:var(--gold)}
-.obra-thumb{width:100%;height:205px;object-fit:cover;background:var(--card);display:block}.obra-thumb-placeholder{width:100%;height:205px;background:linear-gradient(135deg,var(--card),var(--surface));display:flex;align-items:center;justify-content:center;font-size:2.4rem}
-.obra-info{padding:14px}.obra-titulo{font-family:'Playfair Display',serif;font-size:.95rem;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.obra-autor,.obra-id{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--muted2);margin-bottom:7px;word-break:break-all}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.chip{font-size:.66rem;padding:3px 8px;border-radius:20px;font-weight:700}
-.chip-green{background:rgba(78,203,141,.1);color:var(--green);border:1px solid rgba(78,203,141,.25)}
-.chip-amber{background:rgba(232,154,58,.1);color:var(--amber);border:1px solid rgba(232,154,58,.25)}
-.chip-blue{background:rgba(91,138,240,.1);color:var(--blue);border:1px solid rgba(91,138,240,.25)}
-.chip-red{background:rgba(224,92,92,.1);color:var(--red);border:1px solid rgba(224,92,92,.25)}
-.chip-gray{background:rgba(146,143,160,.1);color:var(--muted2);border:1px solid rgba(146,143,160,.25)}
-.alert-err{display:none;background:rgba(224,92,92,.06);border:1px solid rgba(224,92,92,.2);border-left:3px solid var(--red);padding:10px 13px;border-radius:8px;color:var(--red);font-size:.82rem}
-.notice{background:rgba(255,255,255,.02);border:1px dashed var(--border2);border-radius:8px;padding:11px 13px;color:var(--muted2);font-size:.82rem;line-height:1.6}
-.empty{text-align:center;padding:38px;color:var(--muted);font-size:.85rem}.empty-ico{font-size:2.6rem;margin-bottom:10px}
-.cells{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
-.cell{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
-.cell-l{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
-.cell-v{font-family:'Space Mono',monospace;font-size:.8rem;word-break:break-all;margin-top:4px}
-.fg{margin-bottom:10px}.fg label{font-size:.68rem;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;font-weight:700;letter-spacing:.5px}
-.fg input,.fg select{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:8px;color:var(--text);padding:10px 11px;font-family:'Space Mono',monospace;font-size:.8rem}
-.fg input:focus,.fg select:focus{outline:none;border-color:var(--gold)}
-#toast-c{position:fixed;top:74px;right:16px;z-index:300;display:flex;flex-direction:column;gap:8px}
-.toast{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 15px;font-size:.82rem;max-width:340px;display:flex;gap:10px}
-.toast.ts{border-color:var(--green)}.toast.te{border-color:var(--red)}.toast.tp{border-color:var(--gold)}.toast-title{font-size:.72rem;font-weight:800;text-transform:uppercase;margin-bottom:2px}
-#statusbar{position:fixed;bottom:0;left:0;right:0;background:rgba(19,19,22,.96);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:9px 22px;display:flex;gap:12px;z-index:200;min-height:44px}
-.sbl{font-size:.67rem;text-transform:uppercase;font-weight:800;color:var(--muted);letter-spacing:.6px;white-space:nowrap}
-#sbm{flex:1;display:flex;gap:6px;overflow:auto}.sbe{font-family:'Space Mono',monospace;font-size:.72rem;white-space:nowrap;padding:3px 10px;border-radius:20px}
-.sbe-i{background:rgba(91,138,240,.12);color:var(--blue)}.sbe-s{background:rgba(78,203,141,.12);color:var(--green)}.sbe-e{background:rgba(224,92,92,.12);color:var(--red)}.sbe-p{background:rgba(200,169,110,.12);color:var(--gold)}
-@media(max-width:650px){#splash h1{font-size:2.25rem}.tabs{width:100%}.tab{white-space:nowrap}.preview-info{flex-direction:column}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ArteChain - Obras, Selos e Auditoria</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0c0e;
+      --surface: #131316;
+      --panel: #1a1a1f;
+      --panel-2: #101014;
+      --line: #2a2a32;
+      --line-2: #3a3a48;
+      --gold: #c8a96e;
+      --gold-2: #e8c98e;
+      --green: #4ecb8d;
+      --red: #e05c5c;
+      --amber: #e89a3a;
+      --blue: #5b8af0;
+      --text: #e8e4dc;
+      --muted: #6b6878;
+      --muted-2: #a5a1b3;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "DM Sans", sans-serif;
+      min-height: 100%;
+    }
+
+    body {
+      background:
+        radial-gradient(900px 420px at 12% 0%, rgba(200, 169, 110, 0.09), transparent 58%),
+        radial-gradient(680px 360px at 92% 12%, rgba(91, 138, 240, 0.06), transparent 56%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 64px;
+    }
+
+    a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    code {
+      font-family: "Space Mono", monospace;
+      word-break: break-all;
+    }
+
+    header {
+      align-items: center;
+      background: rgba(12, 12, 14, 0.94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(18px);
+      display: flex;
+      height: 72px;
+      justify-content: space-between;
+      left: 0;
+      padding: 0 34px;
+      position: sticky;
+      right: 0;
+      top: 0;
+      z-index: 50;
+    }
+
+    .logo {
+      font-family: "Playfair Display", serif;
+      font-size: 1.8rem;
+      letter-spacing: -0.03em;
+    }
+
+    .logo span {
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .topbar {
+      align-items: center;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .badge {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted-2);
+      font-family: "Space Mono", monospace;
+      font-size: 0.76rem;
+      padding: 7px 12px;
+      white-space: nowrap;
+    }
+
+    .badge.ok {
+      border-color: rgba(78, 203, 141, 0.35);
+      color: var(--green);
+    }
+
+    .badge.warn {
+      border-color: rgba(232, 154, 58, 0.35);
+      color: var(--amber);
+    }
+
+    .badge.err {
+      border-color: rgba(224, 92, 92, 0.35);
+      color: var(--red);
+    }
+
+    #app {
+      margin: 0 auto;
+      max-width: 1480px;
+      padding: 34px 24px;
+    }
+
+    .hero {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      justify-content: center;
+      min-height: calc(100vh - 140px);
+      text-align: center;
+    }
+
+    .hero-mark {
+      align-items: center;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      box-shadow: 0 0 70px rgba(200, 169, 110, 0.14);
+      display: flex;
+      font-family: "Playfair Display", serif;
+      font-size: 2.5rem;
+      height: 92px;
+      justify-content: center;
+      width: 92px;
+    }
+
+    .hero h1 {
+      font-family: "Playfair Display", serif;
+      font-size: clamp(2.3rem, 7vw, 4.2rem);
+      letter-spacing: -0.04em;
+      line-height: 0.98;
+    }
+
+    .hero h1 em {
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .hero p {
+      color: var(--muted-2);
+      line-height: 1.7;
+      max-width: 680px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 6px;
+    }
+
+    .pill {
+      border: 1px solid var(--line-2);
+      border-radius: 999px;
+      color: var(--muted-2);
+      font-family: "Space Mono", monospace;
+      font-size: 0.72rem;
+      padding: 6px 12px;
+    }
+
+    .main {
+      display: none;
+    }
+
+    .stats {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(4, minmax(170px, 1fr));
+      margin-bottom: 26px;
+    }
+
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .stat-value {
+      color: var(--gold);
+      font-family: "Playfair Display", serif;
+      font-size: 2.1rem;
+      line-height: 1;
+    }
+
+    .stat-value.green {
+      color: var(--green);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      margin-top: 8px;
+      text-transform: uppercase;
+    }
+
+    .tabs {
+      background: var(--surface);
+      border-radius: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 26px;
+      padding: 6px;
+      width: fit-content;
+    }
+
+    .tab {
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      color: var(--muted-2);
+      cursor: pointer;
+      font-weight: 700;
+      padding: 10px 16px;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+
+    .tab:hover {
+      color: var(--text);
+    }
+
+    .tab.on {
+      background: var(--panel);
+      border-color: var(--line-2);
+      color: var(--text);
+    }
+
+    .panel-tab {
+      display: none;
+    }
+
+    .panel-tab.on {
+      display: block;
+    }
+
+    .section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      margin-bottom: 20px;
+      padding: 26px;
+    }
+
+    .section-head {
+      align-items: flex-start;
+      display: flex;
+      gap: 16px;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .section h2 {
+      font-family: "Playfair Display", serif;
+      font-size: 1.45rem;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .sub {
+      color: var(--muted-2);
+      line-height: 1.55;
+    }
+
+    .btn {
+      align-items: center;
+      background: var(--panel-2);
+      border: 1px solid var(--line-2);
+      border-radius: var(--radius);
+      color: var(--text);
+      cursor: pointer;
+      display: inline-flex;
+      font-weight: 700;
+      gap: 8px;
+      justify-content: center;
+      line-height: 1;
+      min-height: 42px;
+      padding: 11px 16px;
+      transition: opacity 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+    }
+
+    .btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.42;
+      transform: none;
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), var(--gold-2));
+      border: 0;
+      color: #0c0c0e;
+    }
+
+    .btn-gold:hover {
+      color: #0c0c0e;
+      opacity: 0.92;
+    }
+
+    .btn-red {
+      border-color: rgba(224, 92, 92, 0.44);
+      color: var(--red);
+    }
+
+    .btn-sm {
+      border-radius: 10px;
+      font-size: 0.78rem;
+      min-height: 34px;
+      padding: 8px 10px;
+    }
+
+    .actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .upload-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1.15fr 0.85fr;
+    }
+
+    .upload {
+      align-items: center;
+      background: var(--surface);
+      border: 2px dashed var(--line-2);
+      border-radius: 16px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      min-height: 270px;
+      overflow: hidden;
+      padding: 28px;
+      position: relative;
+      text-align: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .upload:hover,
+    .upload.drag {
+      background: rgba(200, 169, 110, 0.04);
+      border-color: var(--gold);
+    }
+
+    .upload input {
+      cursor: pointer;
+      inset: 0;
+      opacity: 0;
+      position: absolute;
+    }
+
+    .upload strong {
+      color: var(--gold);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .preview {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      display: none;
+      overflow: hidden;
+    }
+
+    .preview img {
+      background: #050506;
+      display: block;
+      height: 270px;
+      object-fit: contain;
+      width: 100%;
+    }
+
+    .preview-meta {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr auto;
+      padding: 12px;
+    }
+
+    .steps {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .step {
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      padding: 12px 14px;
+    }
+
+    .step.active {
+      border-color: var(--gold);
+    }
+
+    .step.done {
+      border-color: rgba(78, 203, 141, 0.45);
+    }
+
+    .step.error {
+      border-color: rgba(224, 92, 92, 0.5);
+    }
+
+    .two-col {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+
+    .card:hover {
+      border-color: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    .card.selected {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 1px rgba(200, 169, 110, 0.25);
+    }
+
+    .thumb-wrap {
+      background: #050506;
+      border-bottom: 1px solid var(--line);
+      height: 240px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .thumb {
+      display: block;
+      height: 100%;
+      object-fit: cover;
+      width: 100%;
+    }
+
+    .thumb-placeholder {
+      align-items: center;
+      color: var(--muted);
+      display: none;
+      font-family: "Space Mono", monospace;
+      height: 100%;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+    }
+
+    .card-body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .title {
+      font-family: "Playfair Display", serif;
+      font-size: 1.05rem;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mono {
+      color: var(--muted-2);
+      font-family: "Space Mono", monospace;
+      font-size: 0.74rem;
+      line-height: 1.55;
+      word-break: break-all;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--line-2);
+      border-radius: 999px;
+      color: var(--muted-2);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      white-space: nowrap;
+    }
+
+    .chip.green {
+      background: rgba(78, 203, 141, 0.1);
+      border-color: rgba(78, 203, 141, 0.34);
+      color: var(--green);
+    }
+
+    .chip.red {
+      background: rgba(224, 92, 92, 0.1);
+      border-color: rgba(224, 92, 92, 0.34);
+      color: var(--red);
+    }
+
+    .chip.amber {
+      background: rgba(232, 154, 58, 0.1);
+      border-color: rgba(232, 154, 58, 0.34);
+      color: var(--amber);
+    }
+
+    .chip.blue {
+      background: rgba(91, 138, 240, 0.1);
+      border-color: rgba(91, 138, 240, 0.34);
+      color: #8fb0ff;
+    }
+
+    .chain-box {
+      background: #0c0c0e;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+    }
+
+    .kv {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 118px minmax(0, 1fr);
+      min-width: 0;
+    }
+
+    .kv b {
+      color: var(--muted);
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .kv span,
+    .kv code,
+    .kv a {
+      color: var(--text);
+      font-family: "Space Mono", monospace;
+      font-size: 0.72rem;
+      line-height: 1.45;
+      word-break: break-all;
+    }
+
+    .kv a {
+      color: var(--gold);
+    }
+
+    .seal-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .seal-mini {
+      background: #0c0c0e;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .seal-mini-head {
+      align-items: center;
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+      margin-bottom: 9px;
+    }
+
+    .seal-mini h4 {
+      font-size: 0.86rem;
+    }
+
+    .seal-data {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .field {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .field label {
+      color: var(--muted);
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .field code,
+    .field a,
+    .field span {
+      color: var(--text);
+      font-family: "Space Mono", monospace;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      word-break: break-all;
+    }
+
+    .field a {
+      color: var(--gold);
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    select,
+    input[type="text"] {
+      background: var(--surface);
+      border: 1px solid var(--line-2);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: "Space Mono", monospace;
+      outline: 0;
+      padding: 12px;
+      width: 100%;
+    }
+
+    select:focus,
+    input[type="text"]:focus {
+      border-color: var(--gold);
+    }
+
+    .result {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px dashed var(--line-2);
+      border-radius: 14px;
+      display: none;
+      line-height: 1.75;
+      margin-top: 14px;
+      padding: 16px;
+    }
+
+    .match-layout {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 12px;
+    }
+
+    .score-card {
+      background: #0c0c0e;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .score {
+      color: var(--gold);
+      font-family: "Playfair Display", serif;
+      font-size: 3rem;
+      line-height: 1;
+    }
+
+    .score.red {
+      color: var(--red);
+    }
+
+    .score.amber {
+      color: var(--amber);
+    }
+
+    .score.green {
+      color: var(--green);
+    }
+
+    .table-wrap {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      min-width: 1100px;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 11px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #101014;
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      position: sticky;
+      text-transform: uppercase;
+      top: 0;
+      z-index: 2;
+    }
+
+    td {
+      color: var(--muted-2);
+      font-family: "Space Mono", monospace;
+      font-size: 0.72rem;
+      line-height: 1.45;
+      word-break: break-all;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.018);
+    }
+
+    .drawer {
+      background: rgba(0, 0, 0, 0.74);
+      display: none;
+      inset: 0;
+      justify-content: center;
+      padding: 24px;
+      position: fixed;
+      z-index: 120;
+    }
+
+    .drawer.open {
+      display: flex;
+    }
+
+    .drawer-box {
+      background: var(--panel);
+      border: 1px solid var(--line-2);
+      border-radius: 18px;
+      max-height: 90vh;
+      max-width: 1220px;
+      overflow: auto;
+      padding: 24px;
+      position: relative;
+      width: 100%;
+    }
+
+    .drawer-close {
+      background: transparent;
+      border: 0;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 2rem;
+      line-height: 1;
+      position: absolute;
+      right: 18px;
+      top: 14px;
+    }
+
+    .audit-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-bottom: 16px;
+    }
+
+    .audit-tile {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .audit-tile b {
+      color: var(--muted);
+      display: block;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      margin-bottom: 7px;
+      text-transform: uppercase;
+    }
+
+    .audit-tile strong {
+      color: var(--gold);
+      font-family: "Playfair Display", serif;
+      font-size: 1.8rem;
+    }
+
+    .toast-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: fixed;
+      right: 18px;
+      top: 86px;
+      z-index: 160;
+    }
+
+    .toast {
+      background: var(--panel);
+      border: 1px solid var(--line-2);
+      border-radius: 14px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+      max-width: 390px;
+      min-width: 270px;
+      padding: 13px 15px;
+    }
+
+    .toast.ok {
+      border-color: rgba(78, 203, 141, 0.55);
+    }
+
+    .toast.err {
+      border-color: rgba(224, 92, 92, 0.55);
+    }
+
+    .toast.warn {
+      border-color: rgba(232, 154, 58, 0.55);
+    }
+
+    .toast b {
+      display: block;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .toast span {
+      color: var(--muted-2);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .statusbar {
+      align-items: center;
+      background: rgba(19, 19, 22, 0.97);
+      border-top: 1px solid var(--line);
+      bottom: 0;
+      display: flex;
+      gap: 8px;
+      left: 0;
+      min-height: 48px;
+      overflow: auto;
+      padding: 9px 26px;
+      position: fixed;
+      right: 0;
+      z-index: 80;
+    }
+
+    .status-label {
+      color: var(--muted);
+      flex: 0 0 auto;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .log {
+      border-radius: 999px;
+      flex: 0 0 auto;
+      font-family: "Space Mono", monospace;
+      font-size: 0.74rem;
+      padding: 5px 11px;
+      white-space: nowrap;
+    }
+
+    .log.info {
+      background: rgba(91, 138, 240, 0.12);
+      color: #8fb0ff;
+    }
+
+    .log.ok {
+      background: rgba(78, 203, 141, 0.12);
+      color: var(--green);
+    }
+
+    .log.warn {
+      background: rgba(232, 154, 58, 0.12);
+      color: var(--amber);
+    }
+
+    .log.err {
+      background: rgba(224, 92, 92, 0.12);
+      color: var(--red);
+    }
+
+    .empty {
+      border: 1px dashed var(--line-2);
+      border-radius: 14px;
+      color: var(--muted-2);
+      padding: 26px;
+      text-align: center;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 1100px) {
+      .stats,
+      .audit-grid,
+      .upload-grid,
+      .two-col,
+      .match-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+        height: auto;
+        gap: 10px;
+        padding: 16px;
+      }
+
+      #app {
+        padding: 24px 14px;
+      }
+
+      .section {
+        padding: 18px;
+      }
+
+      .form-grid,
+      .seal-data {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs {
+        width: 100%;
+      }
+
+      .tab {
+        flex: 1;
+      }
+    }
+  </style>
 </head>
 <body>
-<header>
-  <div class="logo">Arte<span>Chain</span></div>
-  <div class="hright">
-    <span class="badge" id="bnet"></span>
-    <span class="badge" id="bbal"></span>
-    <span class="badge" id="bwallet"></span>
+  <header>
+    <div class="logo">Arte<span>Chain</span></div>
+    <div class="topbar">
+      <span class="badge" id="net-badge">desconectado</span>
+      <span class="badge" id="eth-badge">0 ETH</span>
+      <span class="badge" id="wallet-badge">sem carteira</span>
+    </div>
+  </header>
+
+  <div id="toast" class="toast-wrap"></div>
+
+  <div id="app">
+    <section id="hero" class="hero">
+      <div class="hero-mark">AC</div>
+      <h1>Arte<em>Chain</em></h1>
+      <p>
+        Registro on-chain, pHashes no Supabase, busca de similaridade por selo
+        e dossie completo com todos os campos salvos no contrato.
+      </p>
+      <div class="pill-row">
+        <span class="pill">Obra on-chain</span>
+        <span class="pill">Selos pendentes</span>
+        <span class="pill">Score + URL match</span>
+        <span class="pill">CID Gemini/IPFS</span>
+        <span class="pill">Auditoria completa</span>
+      </div>
+      <button class="btn btn-gold" onclick="connectWallet()">Conectar carteira</button>
+    </section>
+
+    <main id="main" class="main">
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">Obras on-chain</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="stat-mine">0</div>
+          <div class="stat-label">Minhas obras</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="stat-seals">0</div>
+          <div class="stat-label">Selos existentes</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value green" id="stat-eth">0</div>
+          <div class="stat-label">Saldo ETH</div>
+        </div>
+      </div>
+
+      <nav class="tabs">
+        <button class="tab on" onclick="openTab('registrar')">Registrar</button>
+        <button class="tab" onclick="openTab('galeria')">Galeria completa</button>
+        <button class="tab" onclick="openTab('minhas')">Minhas obras</button>
+        <button class="tab" onclick="openTab('selo')">Analisar selo</button>
+        <button class="tab" onclick="openTab('auditoria')">Auditoria</button>
+        <button class="tab" onclick="openTab('admin')">Admin</button>
+      </nav>
+
+      <section id="tab-registrar" class="panel-tab on">
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <h2>Registrar nova obra</h2>
+              <p class="sub">
+                A imagem e enviada para o Supabase. A Edge Function salva a linha em
+                artworks com phash_normal e phash_variations. No contrato entra o
+                artworkId bytes32 e a URI publica.
+              </p>
+            </div>
+            <button class="btn" onclick="resetRegister()">Limpar</button>
+          </div>
+
+          <div class="upload-grid">
+            <div>
+              <div
+                class="upload"
+                id="upload-zone"
+                ondragover="dragOver(event)"
+                ondragleave="dragLeave(event)"
+                ondrop="dragDrop(event)"
+              >
+                <input id="file-input" type="file" accept="image/*" onchange="selectFile(this.files[0])" />
+                <div>
+                  <strong>Selecionar obra digital</strong>
+                  <div class="sub">PNG, JPG, WEBP ou GIF. A wallet assina antes do upload.</div>
+                </div>
+              </div>
+
+              <div class="preview" id="preview">
+                <img id="preview-img" alt="Preview da obra" />
+                <div class="preview-meta">
+                  <code id="preview-name">-</code>
+                  <code id="preview-size">-</code>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="chain-box">
+                <div class="kv">
+                  <b>Carteira</b>
+                  <code id="register-wallet">-</code>
+                </div>
+                <div class="kv">
+                  <b>Edge upload</b>
+                  <code id="register-edge">calcular-phash</code>
+                </div>
+                <div class="kv">
+                  <b>Contrato</b>
+                  <code id="register-contract">-</code>
+                </div>
+                <div class="kv">
+                  <b>ArtworkId</b>
+                  <code id="register-artwork-id">gerado apos upload</code>
+                </div>
+              </div>
+
+              <div class="steps" id="register-steps">
+                <div class="step" id="step-sign">
+                  <b>1. Assinatura wallet</b>
+                  <span id="step-sign-text">aguardando</span>
+                </div>
+                <div class="step" id="step-supabase">
+                  <b>2. Supabase + pHash</b>
+                  <span id="step-supabase-text">aguardando</span>
+                </div>
+                <div class="step" id="step-chain">
+                  <b>3. Registro on-chain</b>
+                  <span id="step-chain-text">aguardando</span>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button class="btn btn-gold" id="register-button" disabled onclick="registerArtwork()">
+                  Registrar obra
+                </button>
+                <button class="btn" onclick="refreshAll()">Atualizar painel</button>
+              </div>
+
+              <div class="result" id="register-result"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-galeria" class="panel-tab">
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <h2>Galeria completa</h2>
+              <p class="sub">
+                Cada card mostra obra, autor, timestamps e todos os selos salvos
+                on-chain. O botao de dossie abre os mesmos dados em formato de prova.
+              </p>
+            </div>
+            <button class="btn" onclick="refreshAll()">Atualizar</button>
+          </div>
+          <div id="gallery-grid" class="grid"></div>
+        </div>
+      </section>
+
+      <section id="tab-minhas" class="panel-tab">
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <h2>Minhas obras</h2>
+              <p class="sub">Somente obras cujo autor on-chain e a carteira conectada.</p>
+            </div>
+            <button class="btn" onclick="refreshAll()">Atualizar</button>
+          </div>
+          <div id="mine-grid" class="grid"></div>
+        </div>
+      </section>
+
+      <section id="tab-selo" class="panel-tab">
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <h2>Analisar selo</h2>
+              <p class="sub">
+                Escolha uma obra e um tipo de selo. O Supabase procura o maior match,
+                retorna score e URL, e o contrato grava o selo pendente.
+              </p>
+            </div>
+            <button class="btn" onclick="clearSelectedArtwork()">Limpar selecao</button>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>ArtworkId bytes32</label>
+              <code id="selected-id">nenhuma obra selecionada</code>
+            </div>
+            <div class="field">
+              <label>Autor on-chain</label>
+              <code id="selected-author">-</code>
+            </div>
+            <div class="field">
+              <label>Image URL / URI</label>
+              <code id="selected-uri">-</code>
+            </div>
+            <div class="field">
+              <label>Criada em</label>
+              <code id="selected-created">-</code>
+            </div>
+          </div>
+
+          <div class="field" style="margin-top: 12px;">
+            <label>Tipo do selo</label>
+            <select id="seal-type" onchange="renderSelectedSealPreview()">
+              <option value="estrutural_basica">Estrutural basica - pHash normal, espelhos, rotacao e sem bordas</option>
+              <option value="regional">Regional - centro e metades</option>
+              <option value="visual_perceptual">Visual perceptual - histograma, luminancia e conteudo recortado</option>
+              <option value="match_local">Match local - regioes inteligentes</option>
+            </select>
+          </div>
+
+          <div class="two-col" style="margin-top: 14px;">
+            <div class="section" style="margin: 0; padding: 18px;">
+              <h2 style="font-size: 1.1rem;">Selo atual dessa obra</h2>
+              <div id="selected-seal-preview" class="seal-list"></div>
+            </div>
+
+            <div class="section" style="margin: 0; padding: 18px;">
+              <h2 style="font-size: 1.1rem;">Acao</h2>
+              <p class="sub">
+                V1 cria o selo pendente. A Chainlink/Gemini resolve depois e grava
+                status final + CID no mesmo selo.
+              </p>
+              <div class="actions">
+                <button class="btn btn-gold" onclick="searchMatchAndCreateSeal()">
+                  Buscar match e criar selo pendente
+                </button>
+                <button class="btn" onclick="openSelectedDossier()">Abrir dossie da obra</button>
+              </div>
+              <div class="result" id="match-result"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-auditoria" class="panel-tab">
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <h2>Auditoria geral de selos</h2>
+              <p class="sub">
+                Tabela completa com todos os selos existentes ou inexistentes por obra.
+                Aqui aparecem status, score, URL match, CID e timestamps.
+              </p>
+            </div>
+            <div class="actions" style="margin-top: 0;">
+              <button class="btn" onclick="refreshAll()">Atualizar</button>
+              <button class="btn" onclick="exportAuditJson()">Exportar JSON</button>
+            </div>
+          </div>
+
+          <div class="audit-grid">
+            <div class="audit-tile">
+              <b>Obras</b>
+              <strong id="audit-artworks">0</strong>
+            </div>
+            <div class="audit-tile">
+              <b>Selos pendentes</b>
+              <strong id="audit-pending">0</strong>
+            </div>
+            <div class="audit-tile">
+              <b>Selos aprovados</b>
+              <strong id="audit-approved">0</strong>
+            </div>
+            <div class="audit-tile">
+              <b>Selos rejeitados/manual</b>
+              <strong id="audit-rejected">0</strong>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Obra</th>
+                  <th>Tipo selo</th>
+                  <th>Status</th>
+                  <th>Score</th>
+                  <th>URL match</th>
+                  <th>CID analise</th>
+                  <th>Criado em</th>
+                  <th>Resolvido em</th>
+                  <th>Acoes</th>
+                </tr>
+              </thead>
+              <tbody id="audit-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-admin" class="panel-tab">
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <h2>Configuracao e contratos</h2>
+              <p class="sub">
+                Enderecos, routers funcionais e URLs das Edge Functions usadas pelo HTML.
+              </p>
+            </div>
+            <div class="actions" style="margin-top: 0;">
+              <button class="btn" onclick="refreshAdmin()">Recarregar admin</button>
+              <button class="btn btn-gold" onclick="configureContracts()">Configurar Arte/Oracle</button>
+            </div>
+          </div>
+          <div id="admin-grid" class="grid"></div>
+        </div>
+
+        <div class="section">
+          <h2>Estado bruto em memoria</h2>
+          <p class="sub">
+            Esse bloco ajuda a conferir se o HTML esta lendo tudo do contrato.
+          </p>
+          <div class="result" id="raw-state" style="display: block;"></div>
+        </div>
+      </section>
+    </main>
   </div>
-</header>
 
-<div id="toast-c"></div>
-
-<div id="app">
-  <section id="splash">
-    <div class="splash-icon">🎨</div>
-    <h1>Obras verificadas<br>por <em>selos</em></h1>
-    <p>Registro no Supabase, obra on-chain, busca de match pelo Supabase e selos resolvidos via Chainlink/Gemini.</p>
-    <div class="splash-pills">
-      <span class="pill">🖼 Supabase Storage</span>
-      <span class="pill">🔎 Match no Supabase</span>
-      <span class="pill">🏅 Selos on-chain</span>
-      <span class="pill">🤖 Chainlink/Gemini</span>
+  <div id="dossier" class="drawer">
+    <div class="drawer-box">
+      <button class="drawer-close" onclick="closeDossier()">x</button>
+      <h2 style="font-family: 'Playfair Display', serif; margin-bottom: 6px;">Dossie completo on-chain</h2>
+      <p class="sub">Todos os campos conhecidos do contrato para a obra e seus selos.</p>
+      <div id="dossier-body"></div>
     </div>
-    <button class="btn btn-gold" style="font-size:.95rem;padding:13px 36px;margin-top:8px" onclick="conectar()">Conectar MetaMask</button>
-  </section>
-
-  <main id="main">
-    <div class="statbar">
-      <div class="stat"><div class="stat-v" id="st-obras">—</div><div class="stat-l">Obras on-chain</div></div>
-      <div class="stat"><div class="stat-v" id="st-minhas">—</div><div class="stat-l">Minhas obras</div></div>
-      <div class="stat"><div class="stat-v" id="st-bal" style="color:var(--green)">—</div><div class="stat-l">Saldo ETH</div></div>
-    </div>
-
-    <div class="tabs">
-      <button class="tab on" onclick="tab('registrar')">🎨 Registrar</button>
-      <button class="tab" onclick="tab('galeria')">🖼 Galeria</button>
-      <button class="tab" onclick="tab('minha')">📁 Minhas</button>
-      <button class="tab" onclick="tab('selos')">🏅 Analisar selo</button>
-      <button class="tab" onclick="tab('admin')">⚙️ Admin</button>
-    </div>
-
-    <div id="tp-registrar" class="tc on">
-      <div class="sec">
-        <div class="sec-title">Registrar nova obra</div>
-        <div class="sec-sub">A Edge Function sobe a imagem, calcula os pHashes e salva no Supabase. O contrato recebe apenas o ID da obra e a URL.</div>
-
-        <div class="upload-zone" id="upload-zone" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event)">
-          <input type="file" accept="image/*" id="file-input" onchange="arquivoSelecionado(this.files[0])"/>
-          <div class="upload-icon">🖼</div>
-          <div class="upload-text"><strong>Arraste sua obra aqui</strong><br>ou clique para selecionar · PNG, JPG, GIF, WEBP · máx 10MB</div>
-        </div>
-
-        <div class="preview-box" id="preview-box" style="margin-top:14px">
-          <img id="preview-img" src="" alt="preview"/>
-          <div class="preview-info">
-            <span class="preview-name" id="preview-name">—</span>
-            <span class="preview-size" id="preview-size">—</span>
-          </div>
-        </div>
-
-        <div class="steps" id="steps">
-          <div class="step" id="step-assinar">
-            <span class="step-icon">✍️</span>
-            <div><div class="step-label">Assinar autorização</div><div class="step-desc" id="step-assinar-desc">Aguardando...</div></div>
-          </div>
-          <div class="step" id="step-supabase">
-            <span class="step-icon">☁️</span>
-            <div><div class="step-label">Supabase: upload + pHash</div><div class="step-desc" id="step-supabase-desc">Aguardando...</div></div>
-          </div>
-          <div class="step" id="step-tx">
-            <span class="step-icon">⛓</span>
-            <div><div class="step-label">Registrar obra on-chain</div><div class="step-desc" id="step-tx-desc">Aguardando...</div></div>
-          </div>
-        </div>
-
-        <div id="r-resultado" style="display:none;margin-top:14px"></div>
-        <div id="r-err" class="alert-err" style="margin-top:12px"></div>
-
-        <div class="row" style="margin-top:16px">
-          <button class="btn btn-gold" id="btn-registrar" onclick="registrarObra()" disabled>🎨 Registrar obra</button>
-          <button class="btn btn-ghost" onclick="limparForm()">↺ Limpar</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="tp-galeria" class="tc">
-      <div class="sec">
-        <div class="sec-title">Galeria de obras</div>
-        <div class="sec-sub">Obras registradas no contrato. Os pHashes e a busca de match ficam no Supabase.</div>
-        <div id="galeria-lista"><div class="empty"><div class="empty-ico">🖼</div>Carregando obras...</div></div>
-      </div>
-    </div>
-
-    <div id="tp-minha" class="tc">
-      <div class="sec">
-        <div class="sec-title">Minhas obras</div>
-        <div class="sec-sub">Escolha uma obra sua e peça ao Supabase para buscar o match do selo.</div>
-        <div id="minha-lista"><div class="empty"><div class="empty-ico">🎨</div>Nenhuma obra encontrada.</div></div>
-      </div>
-    </div>
-
-    <div id="tp-selos" class="tc">
-      <div class="sec">
-        <div class="sec-title">Analisar selo</div>
-        <div class="sec-sub">Escolha o tipo do selo. O Supabase procura o match e retorna URL + score. Se não houver match, cria selo sem URL de match.</div>
-
-        <div class="cells" style="margin-bottom:12px">
-          <div class="cell"><div class="cell-l">Obra selecionada</div><div class="cell-v" id="selo-artwork">—</div></div>
-          <div class="cell"><div class="cell-l">URL da obra</div><div class="cell-v" id="selo-url">—</div></div>
-        </div>
-
-        <div class="fg">
-          <label>Artwork key bytes32</label>
-          <input id="selo-artwork-input" placeholder="0x..." />
-        </div>
-
-        <div class="fg">
-          <label>Image URL</label>
-          <input id="selo-image-url-input" placeholder="https://..." />
-        </div>
-
-        <div class="fg">
-          <label>Tipo do selo</label>
-          <select id="selo-tipo"></select>
-        </div>
-
-        <button class="btn btn-gold" onclick="buscarMatchECriarSelo()">🔎 Buscar match e criar selo pendente</button>
-
-        <div id="selo-preview" style="display:none;margin-top:12px"></div>
-        <div id="selo-err" class="alert-err" style="margin-top:12px"></div>
-      </div>
-    </div>
-
-    <div id="tp-admin" class="tc">
-      <div class="sec">
-        <div class="sec-title">Configuração</div>
-        <div class="cells" id="admin-info"></div>
-      </div>
-      <div class="sec">
-        <div class="sec-title">Utilitários</div>
-        <div class="row">
-          <button class="btn btn-ghost" onclick="refresh()">↻ Atualizar</button>
-          <button class="btn btn-ghost" onclick="configurarContratos()">🔗 Configurar Arte ↔ Oracle</button>
-        </div>
-      </div>
-    </div>
-  </main>
-</div>
-
-<div id="statusbar">
-  <span class="sbl">Status</span>
-  <div id="sbm"><span class="sbe sbe-i">Aguardando conexão...</span></div>
-</div>
-
-<script>
-"use strict";
-
-/*
-  Atualize com os contratos novos.
-*/
-const ARTE_ADDRESS   = "0xEC427165B9463Be0A82460B0d38B464d72789CbD";
-const ORACLE_ADDRESS = "0xd92518355902Ef9065940e9a19c465F742CB64e3";
-
-const SUPABASE_REGISTRAR_URL =
-  "https://tqsoopgmzdwttwvedngk.supabase.co/functions/v1/calcular-phash";
-
-const SUPABASE_ANALISAR_SELO_URL =
-  "https://tqsoopgmzdwttwvedngk.supabase.co/functions/v1/analisar-selo";
-
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxc29vcGdtemR3dHR3dmVkbmdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NjIxNTEsImV4cCI6MjA5NDUzODE1MX0.LaHuxJVFJI9SkGHFmapSpkUYBC5plB9oPuDXIXJXsN0";
-
-const SELOS = [
-  { tipo:"estrutural_basica",  label:"🥉 Estrutural básica" },
-  { tipo:"regional",           label:"🥈 Regional" },
-  { tipo:"visual_perceptual",  label:"🥇 Visual perceptual" },
-  { tipo:"match_local",        label:"🏅 Match local" }
-];
-
-const STATUS = {
-  0: { label:"Inexistente", chip:"chip-gray" },
-  1: { label:"Pendente",    chip:"chip-amber" },
-  2: { label:"Aprovado",    chip:"chip-green" },
-  3: { label:"Rejeitado",   chip:"chip-red" },
-  4: { label:"Manual",      chip:"chip-blue" }
-};
-
-const ABI_ARTE = [
-  "function owner() view returns (address)",
-  "function oracle() view returns (address)",
-  "function totalObras() view returns (uint256)",
-  "function registrarObra(bytes32 artworkId, string uri)",
-  "function criarSeloPendente(bytes32 artworkId, string tipoSelo, string urlMatch, uint256 score)",
-  "function getObra(bytes32 artworkId) view returns (address autor, string uri, uint256 timestamp, bool existe)",
-  "function getSelo(bytes32 artworkId, string tipoSelo) view returns (string nome, string urlMatch, uint256 score, uint8 status, string cidAnalise, uint256 timestampCriacao, uint256 timestampResolucao, bool existe)",
-  "function getTiposSelos(bytes32 artworkId) view returns (bytes32[])",
-  "function getObrasPorPagina(uint256 offset, uint256 limit) view returns (bytes32[])",
-  "function setOracle(address)",
-  "event ObraRegistrada(bytes32 indexed artworkId, address indexed autor, string uri, uint256 timestamp)",
-  "event SeloPendente(bytes32 indexed artworkId, bytes32 indexed tipoSeloHash, string tipoSelo, string urlMatch, uint256 score)",
-  "event SeloResolvido(bytes32 indexed artworkId, bytes32 indexed tipoSeloHash, string tipoSelo, uint8 status, string cidAnalise)"
-];
-
-const ABI_ORACLE = [
-  "function owner() view returns (address)",
-  "function contratoArte() view returns (address)",
-  "function setContratoArte(address)"
-];
-
-let prov, signer, me = "";
-let CA = null, CO = null;
-let selectedFile = null;
-
-const H = v => String(v ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-const sh = a => (!a || a === ethers.ZeroAddress) ? "—" : String(a).slice(0,6)+"…"+String(a).slice(-4);
-const fe = w => { try { return Number(ethers.formatEther(w)).toFixed(4); } catch { return "0"; } };
-const nomeDoArquivo = url => (String(url||"").split("/").pop() || "obra");
-const artworkKey = id => ethers.id(String(id));
-
-function fe2(e){
-  if(!e) return "Erro desconhecido";
-  if(String(e.code)==="4001") return "Recusado no MetaMask.";
-  return String(e.shortMessage || e.reason || e.info?.error?.message || e.message || e)
-    .replace(/^execution reverted:\s*/i,"")
-    .trim();
-}
-
-function lg(m,t="i"){
-  const b = document.getElementById("sbm");
-  const el = document.createElement("span");
-  el.className = "sbe sbe-" + t;
-  el.textContent = m;
-  b.insertBefore(el,b.firstChild);
-  while(b.children.length > 9) b.removeChild(b.lastChild);
-}
-
-function toast(title,msg,type="i"){
-  const icons={i:"ℹ️",s:"✅",e:"❌",p:"⏳"};
-  const map={s:"ts",e:"te",p:"tp"};
-  const c=document.getElementById("toast-c");
-  const el=document.createElement("div");
-  el.className="toast "+(map[type]||"");
-  el.innerHTML=`<span>${icons[type]||"ℹ️"}</span><div><div class="toast-title">${H(title)}</div><div style="color:var(--muted2);font-size:.79rem">${H(msg)}</div></div>`;
-  c.appendChild(el);
-  setTimeout(()=>el.remove(),5000);
-}
-
-function dragOver(e){ e.preventDefault(); document.getElementById("upload-zone").classList.add("drag"); }
-function dragLeave(){ document.getElementById("upload-zone").classList.remove("drag"); }
-function dragDrop(e){ e.preventDefault(); dragLeave(); const f=e.dataTransfer.files[0]; if(f) arquivoSelecionado(f); }
-
-function arquivoSelecionado(file){
-  if(!file || !file.type.startsWith("image/")){ toast("Arquivo inválido","Apenas imagens","e"); return; }
-  if(file.size > 10*1024*1024){ toast("Arquivo grande demais","Máximo 10MB","e"); return; }
-  selectedFile = file;
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById("preview-img").src = e.target.result;
-    document.getElementById("preview-box").style.display = "block";
-    document.getElementById("preview-name").textContent = file.name;
-    document.getElementById("preview-size").textContent = (file.size/1024).toFixed(1)+" KB";
-    document.getElementById("btn-registrar").disabled = false;
-    document.getElementById("upload-zone").style.display = "none";
-  };
-  reader.readAsDataURL(file);
-}
-
-function limparForm(){
-  selectedFile = null;
-  document.getElementById("preview-box").style.display = "none";
-  document.getElementById("upload-zone").style.display = "block";
-  document.getElementById("file-input").value = "";
-  document.getElementById("steps").style.display = "none";
-  document.getElementById("r-resultado").style.display = "none";
-  document.getElementById("r-err").style.display = "none";
-  document.getElementById("btn-registrar").disabled = true;
-}
-
-function setStep(id,estado,desc){
-  const el=document.getElementById(id);
-  el.className="step "+estado;
-  if(desc) document.getElementById(id+"-desc").textContent=desc;
-}
-
-async function supabaseRegistrar(file){
-  const assinatura = await signer.signMessage("ArteChain upload autorizado");
-
-  const formData = new FormData();
-  formData.append("file", file);
-
-  const res = await fetch(SUPABASE_REGISTRAR_URL, {
-    method:"POST",
-    headers:{
-      "x-wallet-address": me,
-      "x-wallet-signature": assinatura,
-      "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-    },
-    body: formData
-  });
-
-  const data = await res.json();
-
-  if(!res.ok || !data.ok){
-    throw new Error(data.erro || data.error || "Erro Supabase");
-  }
-
-  const imageUrl = data.imageUrl;
-  const artworkId = data.artworkId || data.id || imageUrl;
-  const key = data.artworkKey || artworkKey(artworkId);
-
-  return {
-    artworkId,
-    artworkKey: key,
-    imageUrl,
-    phashNormal: data.phashNormal,
-    phashVariations: data.phashVariations || data.variacoes || [],
-    createdAt: data.createdAt
-  };
-}
-
-async function supabaseBuscarMatch({ artworkKey, imageUrl, tipoSelo }){
-  const res = await fetch(SUPABASE_ANALISAR_SELO_URL, {
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-      "x-wallet-address": me
-    },
-    body: JSON.stringify({
-      artworkKey,
-      imageUrl,
-      tipoSelo,
-      walletAddress: me
-    })
-  });
-
-  const data = await res.json();
-
-  if(!res.ok || !data.ok){
-    throw new Error(data.erro || data.error || "Erro ao buscar match");
-  }
-
-  return {
-    urlMatch: data.urlMatch || "",
-    score: Number(data.score || 0),
-    bestVariation: data.bestVariation || "",
-    matchArtworkId: data.matchArtworkId || null
-  };
-}
-
-async function registrarObra(){
-  if(!selectedFile){ toast("Selecione uma imagem","","e"); return; }
-  if(!CA){ toast("Contrato não conectado","","e"); return; }
-
-  document.getElementById("steps").style.display = "flex";
-  document.getElementById("r-err").style.display = "none";
-  document.getElementById("r-resultado").style.display = "none";
-  document.getElementById("btn-registrar").disabled = true;
-
-  try{
-    setStep("step-assinar","active","Confirme a assinatura...");
-    toast("MetaMask","Assine a mensagem de autorização","p");
-
-    setStep("step-supabase","active","Enviando imagem e calculando pHashes...");
-    const registro = await supabaseRegistrar(selectedFile);
-
-    setStep("step-assinar","done","Assinatura validada");
-    setStep("step-supabase","done",`Artwork: ${String(registro.artworkId).slice(0,22)}...`);
-    lg("Supabase OK","s");
-
-    setStep("step-tx","active","Confirme o registro on-chain...");
-    toast("MetaMask","Confirme a transação de registro","p");
-
-    const tx = await CA.registrarObra(registro.artworkKey, registro.imageUrl);
-    setStep("step-tx","active","Aguardando confirmação...");
-    await tx.wait();
-
-    setStep("step-tx","done","Tx: "+tx.hash.slice(0,16)+"...");
-    lg("Obra on-chain OK","s");
-
-    mostrarResultado(registro);
-    setTimeout(refresh, 1500);
-
-  }catch(e){
-    const msg=fe2(e);
-    const stepAtivo=["step-assinar","step-supabase","step-tx"].find(s=>document.getElementById(s).classList.contains("active"));
-    if(stepAtivo) setStep(stepAtivo,"error",msg);
-    document.getElementById("r-err").textContent=msg;
-    document.getElementById("r-err").style.display="block";
-    document.getElementById("btn-registrar").disabled=false;
-    lg("Erro: "+msg,"e");
-  }
-}
-
-function mostrarResultado(registro){
-  const el=document.getElementById("r-resultado");
-  el.innerHTML=`
-    <div class="notice">
-      ✅ Obra registrada no Supabase e on-chain.<br>
-      <strong>Artwork ID:</strong>
-      <code style="color:var(--gold);font-size:.72rem;word-break:break-all">${H(registro.artworkId)}</code><br>
-      <strong>Artwork key:</strong>
-      <code style="color:var(--gold);font-size:.72rem;word-break:break-all">${H(registro.artworkKey)}</code><br><br>
-      URL:
-      <code style="color:var(--gold);font-size:.72rem;word-break:break-all">${H(registro.imageUrl)}</code><br>
-      <a href="${H(registro.imageUrl)}" target="_blank" style="color:var(--gold);font-size:.78rem">Ver imagem →</a>
-    </div>
-  `;
-  el.style.display="block";
-}
-
-function preencherTiposSelo(){
-  const sel = document.getElementById("selo-tipo");
-  sel.innerHTML = SELOS.map(s => `<option value="${H(s.tipo)}">${H(s.label)} · ${H(s.tipo)}</option>`).join("");
-}
-
-function abrirCriarSelo(artworkId, uri){
-  tab("selos");
-  document.getElementById("selo-artwork").textContent = artworkId;
-  document.getElementById("selo-url").textContent = uri;
-  document.getElementById("selo-artwork-input").value = artworkId;
-  document.getElementById("selo-image-url-input").value = uri;
-  document.getElementById("selo-preview").style.display = "none";
-  document.getElementById("selo-err").style.display = "none";
-}
-
-async function buscarMatchECriarSelo(){
-  try{
-    document.getElementById("selo-err").style.display = "none";
-    document.getElementById("selo-preview").style.display = "none";
-
-    const artworkKeyValue = document.getElementById("selo-artwork-input").value.trim();
-    const imageUrl = document.getElementById("selo-image-url-input").value.trim();
-    const tipoSelo = document.getElementById("selo-tipo").value;
-
-    if(!artworkKeyValue || !artworkKeyValue.startsWith("0x")) throw new Error("Artwork key inválido");
-    if(!imageUrl) throw new Error("Image URL inválida");
-    if(!tipoSelo) throw new Error("Tipo de selo inválido");
-
-    toast("Supabase","Buscando match do selo...","p");
-    lg("Buscando match no Supabase...","p");
-
-    const match = await supabaseBuscarMatch({
-      artworkKey: artworkKeyValue,
-      imageUrl,
-      tipoSelo
-    });
-
-    document.getElementById("selo-preview").innerHTML = `
-      <div class="notice">
-        🔎 Match calculado pelo Supabase.<br>
-        <strong>Tipo:</strong> ${H(tipoSelo)}<br>
-        <strong>Score:</strong> ${H(match.score)}<br>
-        <strong>Variação:</strong> ${H(match.bestVariation || "—")}<br>
-        <strong>URL match:</strong>
-        <code style="color:var(--gold);font-size:.72rem;word-break:break-all">${H(match.urlMatch || "sem match")}</code>
-      </div>
-    `;
-    document.getElementById("selo-preview").style.display = "block";
-
-    toast("Contrato","Criando selo pendente...","p");
-    lg("Criando selo pendente on-chain...","p");
-
-    const tx = await CA.criarSeloPendente(
-      artworkKeyValue,
-      tipoSelo,
-      match.urlMatch || "",
-      Number(match.score || 0)
-    );
-
-    await tx.wait();
-
-    toast("Selo criado","Selo pendente registrado","s");
-    lg("Selo pendente criado ✅","s");
-
-    await refresh();
-  }catch(e){
-    const msg=fe2(e);
-    document.getElementById("selo-err").textContent=msg;
-    document.getElementById("selo-err").style.display="block";
-    toast("Erro",msg,"e");
-    lg("Erro: "+msg,"e");
-  }
-}
-
-async function conectar(){
-  if(!window.ethereum){ toast("MetaMask não encontrada","Instale a extensão","e"); return; }
-
-  try{
-    await window.ethereum.request({method:"eth_requestAccounts"});
-    prov = new ethers.BrowserProvider(window.ethereum);
-    signer = await prov.getSigner();
-    me = await signer.getAddress();
-
-    const chain = await prov.getNetwork();
-    document.getElementById("bnet").textContent = chain.name || `chain ${chain.chainId}`;
-    document.getElementById("bnet").style.display = "inline";
-    document.getElementById("bwallet").textContent = sh(me);
-    document.getElementById("bwallet").style.display = "inline";
-
-    const bal = await prov.getBalance(me);
-    document.getElementById("bbal").textContent = fe(bal)+" ETH";
-    document.getElementById("bbal").style.display = "inline";
-    document.getElementById("st-bal").textContent = fe(bal);
-
-    CA = new ethers.Contract(ARTE_ADDRESS, ABI_ARTE, signer);
-    CO = new ethers.Contract(ORACLE_ADDRESS, ABI_ORACLE, signer);
-
-    document.getElementById("splash").style.display = "none";
-    document.getElementById("main").style.display = "block";
-    lg("Conectado: "+sh(me),"s");
-
-    preencherTiposSelo();
-    await refresh();
-
-    toast("Pronto","ArteChain conectado","s");
-
-    window.ethereum.on("accountsChanged",()=>location.reload());
-    window.ethereum.on("chainChanged",()=>location.reload());
-  }catch(e){
-    lg("Erro: "+fe2(e),"e");
-    toast("Erro",fe2(e),"e");
-  }
-}
-
-async function configurarContratos(){
-  try{
-    if(!CA || !CO) throw new Error("Conecte primeiro");
-
-    let oracleNoArte = await CA.oracle().catch(()=>ethers.ZeroAddress);
-    if(!oracleNoArte || oracleNoArte === ethers.ZeroAddress){
-      toast("Config","Configurando oracle no Arte.sol...","p");
-      const tx1 = await CA.setOracle(ORACLE_ADDRESS);
-      await tx1.wait();
-      lg("Arte.setOracle OK","s");
+  </div>
+
+  <div id="statusbar" class="statusbar">
+    <span class="status-label">Status</span>
+    <span class="log info">Aguardando conexao...</span>
+  </div>
+
+  <script>
+    "use strict";
+
+    const ARTE_ADDRESS = "0x80Dc05845C4817edFFccd8c2A1d084E4199a9f4C";
+    const ORACLE_ADDRESS = "0xDB49fFD14e052a00b02381F1A76d0Dde8F390c50";
+
+    const SUPABASE_REGISTRAR_URL =
+      "https://tqsoopgmzdwttwvedngk.supabase.co/functions/v1/calcular-phash";
+
+    const SUPABASE_ANALISAR_SELO_URL =
+      "https://tqsoopgmzdwttwvedngk.supabase.co/functions/v1/analisar-selo";
+
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6InRxc29vcGdtemR3dHR3dmVkbmdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NjIxNTEsImV4cCI6MjA5NDUzODE1MX0.LaHuxJVFJI9SkGHFmapSpkUYBC5plB9oPuDXIXJXsN0";
+
+    const SEALS = [
+      {
+        key: "estrutural_basica",
+        title: "Estrutural basica",
+        summary: "Normal, espelho H/V, rotacao 180 e sem bordas.",
+      },
+      {
+        key: "regional",
+        title: "Regional",
+        summary: "Centro 50%, metades esquerda/direita/superior/inferior.",
+      },
+      {
+        key: "visual_perceptual",
+        title: "Visual perceptual",
+        summary: "Histograma, luminancia, contraste e conteudo recortado.",
+      },
+      {
+        key: "match_local",
+        title: "Match local",
+        summary: "Regioes inteligentes e melhor encaixe local.",
+      },
+    ];
+
+    const STATUS = {
+      0: "Inexistente",
+      1: "Pendente",
+      2: "Aprovado",
+      3: "Rejeitado",
+      4: "Manual",
+    };
+
+    const ABI_ARTE = [
+      "function owner() view returns (address)",
+      "function oracle() view returns (address)",
+      "function contratoOracle() view returns (address)",
+      "function totalObras() view returns (uint256)",
+      "function registrarObra(bytes32 artworkId,string uri)",
+      "function criarSeloPendente(bytes32 artworkId,string tipoSelo,string urlMatch,uint256 score)",
+      "function getObra(bytes32 artworkId) view returns (address autor,string uri,uint256 timestamp,bool existe)",
+      "function getSelo(bytes32 artworkId,string tipoSelo) view returns (string tipo,string urlMatch,uint256 score,uint8 status,string cidAnalise,uint256 timestampCriacao,uint256 timestampResolucao,bool existe)",
+      "function getObrasPorPagina(uint256 offset,uint256 limit) view returns (bytes32[])",
+      "function setOracle(address)",
+      "function setContratoOracle(address)",
+    ];
+
+    const ABI_ORACLE = [
+      "function owner() view returns (address)",
+      "function contratoArte() view returns (address)",
+      "function setContratoArte(address)",
+    ];
+
+    let provider = null;
+    let signer = null;
+    let account = "";
+    let arte = null;
+    let oracle = null;
+    let selectedFile = null;
+    let selectedArtworkId = "";
+    let selectedArtworkUri = "";
+    let artworks = [];
+
+    const $ = (id) => document.getElementById(id);
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
 
-    let arteNoOracle = await CO.contratoArte().catch(()=>ethers.ZeroAddress);
-    if(!arteNoOracle || arteNoOracle === ethers.ZeroAddress){
-      toast("Config","Configurando Arte no Oracle...","p");
-      const tx2 = await CO.setContratoArte(ARTE_ADDRESS);
-      await tx2.wait();
-      lg("Oracle.setContratoArte OK","s");
-    }
+    function shortAddress(value) {
+      const text = String(value || "");
 
-    toast("Configuração","Contratos conectados","s");
-    await refresh();
-  }catch(e){
-    toast("Erro",fe2(e),"e");
-    lg("Config erro: "+fe2(e),"e");
-  }
-}
-
-async function refresh(){
-  if(!CA) return;
-
-  try{
-    const total = Number(await CA.totalObras());
-    document.getElementById("st-obras").textContent = String(total);
-
-    const bal = await prov.getBalance(me);
-    document.getElementById("bbal").textContent = fe(bal)+" ETH";
-    document.getElementById("st-bal").textContent = fe(bal);
-
-    renderAdminInfo();
-
-    if(document.getElementById("tp-galeria").classList.contains("on")) await renderGaleria();
-    if(document.getElementById("tp-minha").classList.contains("on")) await renderMinhas();
-  }catch(e){
-    lg("Refresh erro: "+fe2(e),"e");
-  }
-}
-
-async function renderAdminInfo(){
-  let oracleNoArte = "—";
-  let arteNoOracle = "—";
-
-  try { oracleNoArte = await CA.oracle(); } catch {}
-  try { arteNoOracle = await CO.contratoArte(); } catch {}
-
-  document.getElementById("admin-info").innerHTML = `
-    <div class="cell"><div class="cell-l">Carteira</div><div class="cell-v">${H(me)}</div></div>
-    <div class="cell"><div class="cell-l">Arte.sol</div><div class="cell-v">${H(ARTE_ADDRESS)}</div></div>
-    <div class="cell"><div class="cell-l">ArteOracle</div><div class="cell-v">${H(ORACLE_ADDRESS)}</div></div>
-    <div class="cell"><div class="cell-l">Oracle no Arte</div><div class="cell-v">${H(oracleNoArte)}</div></div>
-    <div class="cell"><div class="cell-l">Arte no Oracle</div><div class="cell-v">${H(arteNoOracle)}</div></div>
-    <div class="cell"><div class="cell-l">Registrar</div><div class="cell-v">calcular-phash</div></div>
-    <div class="cell"><div class="cell-l">Analisar selo</div><div class="cell-v">analisar-selo</div></div>
-  `;
-}
-
-async function renderGaleria(){
-  const el=document.getElementById("galeria-lista");
-  try{
-    const total=Number(await CA.totalObras());
-    if(!total){
-      el.innerHTML=`<div class="empty"><div class="empty-ico">🖼</div>Nenhuma obra registrada ainda.</div>`;
-      return;
-    }
-    const ids = await CA.getObrasPorPagina(0, Math.min(total, 30));
-    await renderCards(el, ids);
-  }catch(e){
-    el.innerHTML=`<div class="empty">${H(fe2(e))}</div>`;
-  }
-}
-
-async function renderMinhas(){
-  const el=document.getElementById("minha-lista");
-  try{
-    const total=Number(await CA.totalObras());
-    if(!total){
-      el.innerHTML=`<div class="empty"><div class="empty-ico">🎨</div>Nenhuma obra registrada.</div>`;
-      document.getElementById("st-minhas").textContent = "0";
-      return;
-    }
-
-    const ids = await CA.getObrasPorPagina(0, Math.min(total, 60));
-    const minhas=[];
-
-    for(const id of ids){
-      const o = await CA.getObra(id).catch(()=>null);
-      if(o && o.existe && o.autor.toLowerCase() === me.toLowerCase()) minhas.push(id);
-    }
-
-    document.getElementById("st-minhas").textContent = String(minhas.length);
-
-    if(!minhas.length){
-      el.innerHTML=`<div class="empty"><div class="empty-ico">🎨</div>Você ainda não registrou obras.</div>`;
-      return;
-    }
-
-    await renderCards(el, minhas);
-  }catch(e){
-    el.innerHTML=`<div class="empty">${H(fe2(e))}</div>`;
-  }
-}
-
-async function seloChips(artworkId){
-  const chips=[];
-
-  for(const s of SELOS){
-    try{
-      const selo = await CA.getSelo(artworkId, s.tipo);
-      if(!selo || !selo.existe) {
-        chips.push(`<span class="chip chip-gray">${H(s.label)}: sem selo</span>`);
-        continue;
+      if (!text) {
+        return "-";
       }
 
-      const st = STATUS[Number(selo.status)] || STATUS[0];
-      let link = "";
-      if(selo.cidAnalise && selo.cidAnalise.length){
-        link = ` <a href="https://ipfs.io/ipfs/${H(selo.cidAnalise)}" target="_blank" style="color:inherit">CID</a>`;
+      return text.slice(0, 6) + "..." + text.slice(-4);
+    }
+
+    function formatEth(value) {
+      try {
+        return Number(ethers.formatEther(value || 0n)).toFixed(4);
+      } catch {
+        return "0.0000";
+      }
+    }
+
+    function formatTime(timestamp) {
+      const n = Number(timestamp || 0);
+
+      if (!n) {
+        return "-";
       }
 
-      const matchTxt = selo.urlMatch && selo.urlMatch.length ? `Match: ${selo.urlMatch}` : "Sem match";
-      chips.push(`<span class="chip ${st.chip}" title="Score ${selo.score} · ${H(matchTxt)}">${H(s.label)}: ${st.label}${link}</span>`);
-    }catch{
-      chips.push(`<span class="chip chip-gray">${H(s.label)}: erro</span>`);
+      return new Date(n * 1000).toLocaleString("pt-BR");
     }
-  }
 
-  return chips.join("");
-}
+    function fileNameFromUrl(url) {
+      try {
+        return decodeURIComponent(String(url || "").split("/").pop() || url || "-");
+      } catch {
+        return String(url || "").split("/").pop() || "-";
+      }
+    }
 
-async function renderCards(el, ids){
-  const cards = await Promise.all(ids.map(async id => {
-    const o = await CA.getObra(id).catch(()=>null);
-    if(!o || !o.existe) return "";
+    function ipfsUrl(cid) {
+      return cid ? "https://ipfs.io/ipfs/" + cid : "";
+    }
 
-    const uri = o.uri;
-    const ehMeu = o.autor.toLowerCase() === me.toLowerCase();
-    const chips = await seloChips(id);
+    function statusClass(status) {
+      if (status === 1) return "amber";
+      if (status === 2) return "green";
+      if (status === 3) return "red";
+      if (status === 4) return "blue";
+      return "";
+    }
 
-    let btn = "";
-    if(ehMeu){
-      const idSafe = String(id);
-      const uriSafe = String(uri).replace(/'/g,"\\'");
-      btn = `
-        <button class="btn btn-sm" onclick="abrirCriarSelo('${idSafe}','${uriSafe}')"
-          style="margin-top:8px;width:100%;background:linear-gradient(135deg,var(--amber),#c47a1f);color:#0c0c0e;font-weight:800">
-          🔎 Analisar selo
-        </button>
+    function scoreClass(score) {
+      const n = Number(score || 0);
+
+      if (n >= 70) return "red";
+      if (n >= 50) return "amber";
+      return "green";
+    }
+
+    function errorText(error) {
+      return (
+        error?.shortMessage ||
+        error?.reason ||
+        error?.info?.error?.message ||
+        error?.message ||
+        String(error)
+      );
+    }
+
+    function log(message, type = "info") {
+      const item = document.createElement("span");
+      item.className = "log " + type;
+      item.textContent = message;
+
+      const bar = $("statusbar");
+      bar.insertBefore(item, bar.children[1]);
+
+      while (bar.children.length > 10) {
+        bar.removeChild(bar.lastChild);
+      }
+    }
+
+    function toast(title, message, type = "info") {
+      const item = document.createElement("div");
+      item.className = "toast " + (type === "err" ? "err" : type === "ok" ? "ok" : "warn");
+      item.innerHTML =
+        "<b>" +
+        escapeHtml(title) +
+        "</b><span>" +
+        escapeHtml(message) +
+        "</span>";
+
+      $("toast").appendChild(item);
+
+      setTimeout(() => item.remove(), 5200);
+    }
+
+    function openTab(name) {
+      document.querySelectorAll(".tab").forEach((button) => button.classList.remove("on"));
+      document.querySelectorAll(".panel-tab").forEach((panel) => panel.classList.remove("on"));
+
+      const names = ["registrar", "galeria", "minhas", "selo", "auditoria", "admin"];
+      const index = names.indexOf(name);
+
+      if (index >= 0) {
+        document.querySelectorAll(".tab")[index].classList.add("on");
+      }
+
+      $("tab-" + name).classList.add("on");
+
+      if (name === "galeria") renderGallery();
+      if (name === "minhas") renderMine();
+      if (name === "auditoria") renderAudit();
+      if (name === "admin") refreshAdmin();
+    }
+
+    function dragOver(event) {
+      event.preventDefault();
+      $("upload-zone").classList.add("drag");
+    }
+
+    function dragLeave() {
+      $("upload-zone").classList.remove("drag");
+    }
+
+    function dragDrop(event) {
+      event.preventDefault();
+      dragLeave();
+
+      const file = event.dataTransfer.files[0];
+
+      if (file) {
+        selectFile(file);
+      }
+    }
+
+    function selectFile(file) {
+      if (!file) {
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        toast("Arquivo invalido", "Selecione uma imagem.", "err");
+        return;
+      }
+
+      selectedFile = file;
+
+      $("preview-img").src = URL.createObjectURL(file);
+      $("preview-name").textContent = file.name;
+      $("preview-size").textContent = (file.size / 1024).toFixed(1) + " KB";
+      $("preview").style.display = "block";
+      $("upload-zone").style.display = "none";
+      $("register-button").disabled = false;
+    }
+
+    function resetRegister() {
+      selectedFile = null;
+      $("file-input").value = "";
+      $("preview").style.display = "none";
+      $("upload-zone").style.display = "flex";
+      $("register-button").disabled = true;
+      $("register-steps").style.display = "none";
+      $("register-result").style.display = "none";
+      $("register-artwork-id").textContent = "gerado apos upload";
+    }
+
+    function setStep(id, state, text) {
+      const box = $(id);
+      box.className = "step " + state;
+      $(id + "-text").textContent = text;
+    }
+
+    async function connectWallet() {
+      try {
+        if (!window.ethereum) {
+          throw new Error("MetaMask nao encontrada.");
+        }
+
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = await provider.getSigner();
+        account = await signer.getAddress();
+        arte = new ethers.Contract(ARTE_ADDRESS, ABI_ARTE, signer);
+        oracle = new ethers.Contract(ORACLE_ADDRESS, ABI_ORACLE, signer);
+
+        const network = await provider.getNetwork();
+        const balance = await provider.getBalance(account);
+
+        $("net-badge").textContent = network.name || String(network.chainId);
+        $("net-badge").className = "badge ok";
+        $("wallet-badge").textContent = shortAddress(account);
+        $("wallet-badge").className = "badge ok";
+        $("eth-badge").textContent = formatEth(balance) + " ETH";
+        $("register-wallet").textContent = account;
+        $("register-contract").textContent = ARTE_ADDRESS;
+
+        $("hero").style.display = "none";
+        $("main").style.display = "block";
+
+        log("Conectado: " + shortAddress(account), "ok");
+        await refreshAll();
+
+        if (window.ethereum?.on) {
+          window.ethereum.on("accountsChanged", () => location.reload());
+          window.ethereum.on("chainChanged", () => location.reload());
+        }
+      } catch (error) {
+        toast("Erro", errorText(error), "err");
+        log("Erro: " + errorText(error), "err");
+      }
+    }
+
+    async function refreshAll() {
+      if (!arte) {
+        return;
+      }
+
+      try {
+        const balance = await provider.getBalance(account);
+
+        $("eth-badge").textContent = formatEth(balance) + " ETH";
+        $("stat-eth").textContent = formatEth(balance);
+
+        await loadArtworks();
+        updateStats();
+        renderGallery();
+        renderMine();
+        renderAudit();
+        renderSelectedSealPreview();
+        refreshAdmin();
+
+        log("Painel atualizado", "ok");
+      } catch (error) {
+        toast("Erro ao atualizar", errorText(error), "err");
+        log("Erro refresh: " + errorText(error), "err");
+      }
+    }
+
+    async function loadArtworks() {
+      const total = Number(await arte.totalObras());
+      const ids = total ? await arte.getObrasPorPagina(0, Math.min(total, 500)) : [];
+      const rows = [];
+
+      for (const id of ids) {
+        try {
+          const rawArtwork = await arte.getObra(id);
+          const seals = {};
+
+          for (const seal of SEALS) {
+            seals[seal.key] = await readSeal(id, seal.key);
+          }
+
+          rows.push({
+            id: String(id),
+            autor: rawArtwork.autor || rawArtwork[0],
+            uri: rawArtwork.uri || rawArtwork[1],
+            timestamp: Number(rawArtwork.timestamp ?? rawArtwork[2] ?? 0),
+            existe: Boolean(rawArtwork.existe ?? rawArtwork[3]),
+            seals,
+          });
+        } catch (error) {
+          log("Falha lendo obra " + shortAddress(id) + ": " + errorText(error), "err");
+        }
+      }
+
+      artworks = rows;
+    }
+
+    async function readSeal(artworkId, sealType) {
+      try {
+        const rawSeal = await arte.getSelo(artworkId, sealType);
+
+        return {
+          tipo: rawSeal.tipo || rawSeal[0] || sealType,
+          urlMatch: rawSeal.urlMatch || rawSeal[1] || "",
+          score: Number(rawSeal.score ?? rawSeal[2] ?? 0),
+          status: Number(rawSeal.status ?? rawSeal[3] ?? 0),
+          cidAnalise: rawSeal.cidAnalise || rawSeal[4] || "",
+          timestampCriacao: Number(rawSeal.timestampCriacao ?? rawSeal[5] ?? 0),
+          timestampResolucao: Number(rawSeal.timestampResolucao ?? rawSeal[6] ?? 0),
+          existe: Boolean(rawSeal.existe ?? rawSeal[7]),
+        };
+      } catch {
+        return emptySeal(sealType);
+      }
+    }
+
+    function emptySeal(sealType) {
+      return {
+        tipo: sealType,
+        urlMatch: "",
+        score: 0,
+        status: 0,
+        cidAnalise: "",
+        timestampCriacao: 0,
+        timestampResolucao: 0,
+        existe: false,
+      };
+    }
+
+    function updateStats() {
+      const mine = artworks.filter((item) => item.autor.toLowerCase() === account.toLowerCase());
+      const allSeals = flattenSeals();
+
+      $("stat-total").textContent = artworks.length;
+      $("stat-mine").textContent = mine.length;
+      $("stat-seals").textContent = allSeals.filter((item) => item.seal.existe).length;
+    }
+
+    function flattenSeals() {
+      const rows = [];
+
+      for (const artwork of artworks) {
+        for (const meta of SEALS) {
+          rows.push({
+            artwork,
+            meta,
+            seal: artwork.seals[meta.key] || emptySeal(meta.key),
+          });
+        }
+      }
+
+      return rows;
+    }
+
+    function renderGallery() {
+      renderCards("gallery-grid", artworks);
+    }
+
+    function renderMine() {
+      const mine = artworks.filter((item) => item.autor.toLowerCase() === account.toLowerCase());
+      renderCards("mine-grid", mine);
+    }
+
+    function renderCards(targetId, list) {
+      const target = $(targetId);
+
+      if (!list.length) {
+        target.innerHTML = '<div class="empty">Nenhuma obra encontrada.</div>';
+        return;
+      }
+
+      target.innerHTML = list.map(renderArtworkCard).join("");
+    }
+
+    function renderArtworkCard(artwork) {
+      const mine = artwork.autor.toLowerCase() === account.toLowerCase();
+      const selected = artwork.id.toLowerCase() === selectedArtworkId.toLowerCase();
+      const sealCards = SEALS.map((meta) => renderSealMini(meta, artwork.seals[meta.key])).join("");
+
+      return `
+        <article class="card ${selected ? "selected" : ""}">
+          <div class="thumb-wrap">
+            <img class="thumb" src="${escapeHtml(artwork.uri)}" alt="Obra" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+            <div class="thumb-placeholder">Imagem indisponivel</div>
+          </div>
+          <div class="card-body">
+            <div>
+              <div class="title">${escapeHtml(fileNameFromUrl(artwork.uri))}</div>
+              <div class="chip-row" style="margin-top: 8px;">
+                <span class="chip blue">on-chain</span>
+                ${mine ? '<span class="chip green">minha obra</span>' : '<span class="chip">terceiro</span>'}
+                <span class="chip">${escapeHtml(formatTime(artwork.timestamp))}</span>
+              </div>
+            </div>
+
+            <div class="chain-box">
+              <div class="kv"><b>ArtworkId</b><code>${escapeHtml(artwork.id)}</code></div>
+              <div class="kv"><b>Autor</b><code>${escapeHtml(artwork.autor)}</code></div>
+              <div class="kv"><b>URI</b><a href="${escapeHtml(artwork.uri)}" target="_blank">${escapeHtml(artwork.uri)}</a></div>
+              <div class="kv"><b>Existe</b><code>${artwork.existe ? "sim" : "nao"}</code></div>
+            </div>
+
+            <div class="seal-list">${sealCards}</div>
+
+            <div class="actions">
+              <button class="btn btn-sm" onclick="selectArtwork('${escapeHtml(artwork.id)}')">Analisar selo</button>
+              <button class="btn btn-sm btn-gold" onclick="openDossier('${escapeHtml(artwork.id)}')">Dossie completo</button>
+              <a class="btn btn-sm" href="${escapeHtml(artwork.uri)}" target="_blank">Abrir imagem</a>
+            </div>
+          </div>
+        </article>
       `;
     }
 
-    return `
-      <div class="obra-card">
-        <img class="obra-thumb" src="${H(uri)}" alt="obra" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-        <div class="obra-thumb-placeholder" style="display:none">🖼</div>
-        <div class="obra-info">
-          <div class="obra-titulo">${H(nomeDoArquivo(uri))}</div>
-          <div class="obra-id">${H(id)}</div>
-          <div class="obra-autor">${sh(o.autor)} · ${new Date(Number(o.timestamp)*1000).toLocaleString()}</div>
-          <div class="chips"><span class="chip chip-blue">⛓ registrada</span>${chips}</div>
-          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
-            <a href="${H(uri)}" target="_blank" style="font-size:.72rem;color:var(--gold);text-decoration:none">🔗 Ver obra</a>
+    function renderSealMini(meta, seal) {
+      const current = seal || emptySeal(meta.key);
+      const cid = ipfsUrl(current.cidAnalise);
+
+      return `
+        <div class="seal-mini">
+          <div class="seal-mini-head">
+            <h4>${escapeHtml(meta.title)}</h4>
+            <span class="chip ${statusClass(current.status)}">${escapeHtml(STATUS[current.status] || "Status " + current.status)}</span>
           </div>
-          ${btn}
+          <div class="seal-data">
+            <div class="kv"><b>Existe</b><code>${current.existe ? "sim" : "nao"}</code></div>
+            <div class="kv"><b>Score</b><code>${current.score}</code></div>
+            <div class="kv"><b>Criado</b><code>${escapeHtml(formatTime(current.timestampCriacao))}</code></div>
+            <div class="kv"><b>Resolvido</b><code>${escapeHtml(formatTime(current.timestampResolucao))}</code></div>
+          </div>
+          <div class="kv" style="margin-top: 8px;"><b>Match</b>${current.urlMatch ? `<a href="${escapeHtml(current.urlMatch)}" target="_blank">${escapeHtml(current.urlMatch)}</a>` : "<code>-</code>"}</div>
+          <div class="kv" style="margin-top: 8px;"><b>CID</b>${cid ? `<a href="${escapeHtml(cid)}" target="_blank">${escapeHtml(current.cidAnalise)}</a>` : "<code>-</code>"}</div>
         </div>
-      </div>
-    `;
-  }));
+      `;
+    }
 
-  el.innerHTML = `<div class="obras-grid">${cards.join("")}</div>`;
-}
+    function selectArtwork(artworkId) {
+      const artwork = findArtwork(artworkId);
 
-function tab(n){
-  const ns=["registrar","galeria","minha","selos","admin"];
-  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("on",ns[i]===n));
-  document.querySelectorAll(".tc").forEach(c=>c.classList.remove("on"));
-  document.getElementById("tp-"+n).classList.add("on");
-  if(n==="galeria") renderGaleria();
-  if(n==="minha") renderMinhas();
-}
+      if (!artwork) {
+        toast("Obra nao encontrada", "Atualize o painel e tente novamente.", "err");
+        return;
+      }
 
-preencherTiposSelo();
-</script>
+      selectedArtworkId = artwork.id;
+      selectedArtworkUri = artwork.uri;
+
+      $("selected-id").textContent = artwork.id;
+      $("selected-author").textContent = artwork.autor;
+      $("selected-uri").textContent = artwork.uri;
+      $("selected-created").textContent = formatTime(artwork.timestamp);
+
+      renderSelectedSealPreview();
+      openTab("selo");
+    }
+
+    function clearSelectedArtwork() {
+      selectedArtworkId = "";
+      selectedArtworkUri = "";
+      $("selected-id").textContent = "nenhuma obra selecionada";
+      $("selected-author").textContent = "-";
+      $("selected-uri").textContent = "-";
+      $("selected-created").textContent = "-";
+      $("selected-seal-preview").innerHTML = "";
+      $("match-result").style.display = "none";
+    }
+
+    function findArtwork(artworkId) {
+      return artworks.find((item) => item.id.toLowerCase() === String(artworkId).toLowerCase());
+    }
+
+    function renderSelectedSealPreview() {
+      if (!selectedArtworkId) {
+        $("selected-seal-preview").innerHTML = '<div class="empty">Selecione uma obra na galeria.</div>';
+        return;
+      }
+
+      const artwork = findArtwork(selectedArtworkId);
+
+      if (!artwork) {
+        $("selected-seal-preview").innerHTML = '<div class="empty">Obra nao carregada.</div>';
+        return;
+      }
+
+      const sealType = $("seal-type").value;
+      const meta = SEALS.find((item) => item.key === sealType);
+      const seal = artwork.seals[sealType] || emptySeal(sealType);
+
+      $("selected-seal-preview").innerHTML = renderSealMini(meta, seal);
+    }
+
+    async function registerInSupabase(file) {
+      const signature = await signer.signMessage("ArteChain upload autorizado");
+      const form = new FormData();
+      form.append("file", file);
+
+      const response = await fetch(SUPABASE_REGISTRAR_URL, {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + SUPABASE_ANON_KEY,
+          "x-wallet-address": account,
+          "x-wallet-signature": signature,
+        },
+        body: form,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.erro || data.error || "Erro no Supabase");
+      }
+
+      return data;
+    }
+
+    async function registerArtwork() {
+      try {
+        if (!selectedFile) {
+          throw new Error("Selecione uma imagem.");
+        }
+
+        $("register-steps").style.display = "flex";
+        $("register-result").style.display = "none";
+        setStep("step-sign", "active", "assine na carteira");
+        setStep("step-supabase", "", "aguardando");
+        setStep("step-chain", "", "aguardando");
+
+        const upload = await registerInSupabase(selectedFile);
+        const artworkId = ethers.keccak256(ethers.toUtf8Bytes(upload.imageUrl));
+
+        $("register-artwork-id").textContent = artworkId;
+        setStep("step-sign", "done", "assinatura validada");
+        setStep("step-supabase", "done", "imagem, storage_path e pHashes salvos");
+        setStep("step-chain", "active", "confirme a transacao");
+
+        const transaction = await arte.registrarObra(artworkId, upload.imageUrl);
+        await transaction.wait();
+
+        setStep("step-chain", "done", "obra registrada on-chain");
+
+        $("register-result").innerHTML = `
+          <b>Obra registrada com sucesso</b>
+          <div class="chain-box" style="margin-top: 10px;">
+            <div class="kv"><b>ArtworkId</b><code>${escapeHtml(artworkId)}</code></div>
+            <div class="kv"><b>Image URL</b><a href="${escapeHtml(upload.imageUrl)}" target="_blank">${escapeHtml(upload.imageUrl)}</a></div>
+            <div class="kv"><b>Storage path</b><code>${escapeHtml(upload.storagePath || "-")}</code></div>
+            <div class="kv"><b>pHash normal</b><code>${escapeHtml(upload.variacoes?.[0] || "-")}</code></div>
+          </div>
+        `;
+        $("register-result").style.display = "block";
+
+        toast("Registrado", "Obra salva no Supabase e no contrato.", "ok");
+        log("Registro on-chain confirmado", "ok");
+
+        await refreshAll();
+      } catch (error) {
+        setStep("step-chain", "error", errorText(error));
+        toast("Erro", errorText(error), "err");
+        log("Erro: " + errorText(error), "err");
+      }
+    }
+
+    async function searchMatchAndCreateSeal() {
+      try {
+        if (!selectedArtworkId || !selectedArtworkUri) {
+          throw new Error("Selecione uma obra primeiro.");
+        }
+
+        const sealType = $("seal-type").value;
+        const artwork = findArtwork(selectedArtworkId);
+
+        if (!artwork) {
+          throw new Error("Obra nao carregada no painel.");
+        }
+
+        log("Buscando match no Supabase...", "warn");
+        toast("Supabase", "Buscando maior score para o selo.", "warn");
+
+        const response = await fetch(SUPABASE_ANALISAR_SELO_URL, {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + SUPABASE_ANON_KEY,
+            "Content-Type": "application/json",
+            "x-wallet-address": account,
+          },
+          body: JSON.stringify({
+            imageUrl: selectedArtworkUri,
+            tipoSelo: sealType,
+            walletAddress: account,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.erro || data.error || "Erro na Edge Function analisar-selo");
+        }
+
+        renderMatchResult(data);
+
+        log("Criando selo pendente on-chain...", "warn");
+
+        const transaction = await arte.criarSeloPendente(
+          selectedArtworkId,
+          sealType,
+          data.urlMatch || "",
+          Number(data.score || 0)
+        );
+
+        await transaction.wait();
+
+        toast("Selo criado", "Selo pendente registrado on-chain.", "ok");
+        log("Selo pendente criado", "ok");
+
+        await refreshAll();
+        selectArtwork(artwork.id);
+      } catch (error) {
+        toast("Erro", errorText(error), "err");
+        log("Erro: " + errorText(error), "err");
+      }
+    }
+
+    function renderMatchResult(data) {
+      const score = Number(data.score || 0);
+      const details = Array.isArray(data.detalhes) ? data.detalhes : [];
+      const rows = details
+        .slice(0, 12)
+        .map((item) => {
+          return `
+            <tr>
+              <td>${escapeHtml(item.grupo || "-")}</td>
+              <td>${escapeHtml(item.nome || item.descricao || "-")}</td>
+              <td>${escapeHtml(item.score ?? "-")}</td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      $("match-result").innerHTML = `
+        <b>Match calculado pelo Supabase</b>
+        <div class="match-layout">
+          <div class="score-card">
+            <div class="sub">Score final</div>
+            <div class="score ${scoreClass(score)}">${score}%</div>
+          </div>
+          <div class="score-card">
+            <div class="sub">Tipo do selo</div>
+            <div class="mono">${escapeHtml(data.tipoSelo || "-")}</div>
+          </div>
+          <div class="score-card">
+            <div class="sub">Melhor variacao</div>
+            <div class="mono">${escapeHtml(data.bestVariation || "-")}</div>
+          </div>
+        </div>
+        <div class="chain-box" style="margin-top: 12px;">
+          <div class="kv"><b>URL match</b>${data.urlMatch ? `<a href="${escapeHtml(data.urlMatch)}" target="_blank">${escapeHtml(data.urlMatch)}</a>` : "<code>sem match</code>"}</div>
+          <div class="kv"><b>Match artwork id</b><code>${escapeHtml(data.matchArtworkId || "-")}</code></div>
+          <div class="kv"><b>Desempate vermelho</b><code>${escapeHtml(data.redWeight ?? "-")}</code></div>
+          <div class="kv"><b>Desempate amarelo</b><code>${escapeHtml(data.yellowWeight ?? "-")}</code></div>
+        </div>
+        <div class="table-wrap" style="margin-top: 12px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Grupo</th>
+                <th>Analise</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody>${rows || '<tr><td colspan="3">Sem detalhes retornados.</td></tr>'}</tbody>
+          </table>
+        </div>
+      `;
+      $("match-result").style.display = "block";
+    }
+
+    function renderAudit() {
+      const rows = flattenSeals();
+      const pending = rows.filter((row) => row.seal.status === 1).length;
+      const approved = rows.filter((row) => row.seal.status === 2).length;
+      const rejected = rows.filter((row) => row.seal.status === 3 || row.seal.status === 4).length;
+
+      $("audit-artworks").textContent = artworks.length;
+      $("audit-pending").textContent = pending;
+      $("audit-approved").textContent = approved;
+      $("audit-rejected").textContent = rejected;
+
+      $("audit-body").innerHTML = rows
+        .map((row) => {
+          const cid = ipfsUrl(row.seal.cidAnalise);
+          const match = row.seal.urlMatch
+            ? `<a href="${escapeHtml(row.seal.urlMatch)}" target="_blank">${escapeHtml(row.seal.urlMatch)}</a>`
+            : "-";
+          const cidLink = cid
+            ? `<a href="${escapeHtml(cid)}" target="_blank">${escapeHtml(row.seal.cidAnalise)}</a>`
+            : "-";
+
+          return `
+            <tr>
+              <td>
+                <b>${escapeHtml(fileNameFromUrl(row.artwork.uri))}</b><br />
+                ${escapeHtml(row.artwork.id)}<br />
+                ${escapeHtml(shortAddress(row.artwork.autor))}
+              </td>
+              <td>${escapeHtml(row.meta.title)}<br />${escapeHtml(row.meta.key)}</td>
+              <td><span class="chip ${statusClass(row.seal.status)}">${escapeHtml(STATUS[row.seal.status] || row.seal.status)}</span><br />existe: ${row.seal.existe ? "sim" : "nao"}</td>
+              <td>${escapeHtml(row.seal.score)}</td>
+              <td>${match}</td>
+              <td>${cidLink}</td>
+              <td>${escapeHtml(formatTime(row.seal.timestampCriacao))}</td>
+              <td>${escapeHtml(formatTime(row.seal.timestampResolucao))}</td>
+              <td>
+                <button class="btn btn-sm" onclick="selectArtwork('${escapeHtml(row.artwork.id)}')">Selecionar</button>
+                <button class="btn btn-sm btn-gold" onclick="openDossier('${escapeHtml(row.artwork.id)}')">Dossie</button>
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+    }
+
+    function exportAuditJson() {
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        chain: "sepolia",
+        arte: ARTE_ADDRESS,
+        oracle: ORACLE_ADDRESS,
+        artworks,
+      };
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "artechain-auditoria.json";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function openSelectedDossier() {
+      if (!selectedArtworkId) {
+        toast("Selecione uma obra", "Abra a galeria e escolha uma obra.", "err");
+        return;
+      }
+
+      openDossier(selectedArtworkId);
+    }
+
+    function openDossier(artworkId) {
+      const artwork = findArtwork(artworkId);
+
+      if (!artwork) {
+        toast("Obra nao encontrada", "Atualize o painel e tente novamente.", "err");
+        return;
+      }
+
+      const sealBlocks = SEALS.map((meta) => {
+        const seal = artwork.seals[meta.key] || emptySeal(meta.key);
+        const cid = ipfsUrl(seal.cidAnalise);
+
+        return `
+          <div class="section" style="padding: 18px;">
+            <div class="section-head" style="margin-bottom: 12px;">
+              <div>
+                <h2 style="font-size: 1.15rem;">${escapeHtml(meta.title)}</h2>
+                <p class="sub">${escapeHtml(meta.summary)}</p>
+              </div>
+              <span class="chip ${statusClass(seal.status)}">${escapeHtml(STATUS[seal.status] || seal.status)}</span>
+            </div>
+            <div class="form-grid">
+              <div class="field"><label>Tipo salvo</label><code>${escapeHtml(seal.tipo)}</code></div>
+              <div class="field"><label>Existe</label><code>${seal.existe ? "sim" : "nao"}</code></div>
+              <div class="field"><label>Status enum</label><code>${escapeHtml(seal.status)}</code></div>
+              <div class="field"><label>Status texto</label><code>${escapeHtml(STATUS[seal.status] || "-")}</code></div>
+              <div class="field"><label>Score</label><code>${escapeHtml(seal.score)}</code></div>
+              <div class="field"><label>Criado em</label><code>${escapeHtml(formatTime(seal.timestampCriacao))}</code></div>
+              <div class="field"><label>Resolvido em</label><code>${escapeHtml(formatTime(seal.timestampResolucao))}</code></div>
+              <div class="field"><label>CID analise</label><code>${escapeHtml(seal.cidAnalise || "-")}</code></div>
+            </div>
+            <div class="field" style="margin-top: 12px;">
+              <label>URL match salva on-chain</label>
+              ${seal.urlMatch ? `<a href="${escapeHtml(seal.urlMatch)}" target="_blank">${escapeHtml(seal.urlMatch)}</a>` : "<code>sem match</code>"}
+            </div>
+            <div class="field" style="margin-top: 12px;">
+              <label>Relatorio IPFS</label>
+              ${cid ? `<a href="${escapeHtml(cid)}" target="_blank">${escapeHtml(cid)}</a>` : "<code>sem CID ainda - selo pendente ou nao resolvido</code>"}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      $("dossier-body").innerHTML = `
+        <div class="two-col" style="margin-top: 16px;">
+          <div class="section" style="padding: 18px;">
+            <h2 style="font-size: 1.15rem;">Imagem</h2>
+            <div class="thumb-wrap" style="height: 320px; border: 1px solid var(--line); border-radius: 14px;">
+              <img class="thumb" src="${escapeHtml(artwork.uri)}" alt="Obra" style="object-fit: contain;" />
+            </div>
+            <div class="actions">
+              <a class="btn btn-sm btn-gold" href="${escapeHtml(artwork.uri)}" target="_blank">Abrir imagem</a>
+            </div>
+          </div>
+          <div class="section" style="padding: 18px;">
+            <h2 style="font-size: 1.15rem;">Obra salva on-chain</h2>
+            <div class="field"><label>ArtworkId bytes32</label><code>${escapeHtml(artwork.id)}</code></div>
+            <div class="field"><label>Autor</label><code>${escapeHtml(artwork.autor)}</code></div>
+            <div class="field"><label>Timestamp</label><code>${escapeHtml(formatTime(artwork.timestamp))}</code></div>
+            <div class="field"><label>Existe</label><code>${artwork.existe ? "sim" : "nao"}</code></div>
+            <div class="field"><label>URI</label><a href="${escapeHtml(artwork.uri)}" target="_blank">${escapeHtml(artwork.uri)}</a></div>
+          </div>
+        </div>
+        <div style="margin-top: 16px;">${sealBlocks}</div>
+      `;
+
+      $("dossier").classList.add("open");
+    }
+
+    function closeDossier() {
+      $("dossier").classList.remove("open");
+    }
+
+    async function callOptional(contract, names, args = []) {
+      for (const name of names) {
+        try {
+          if (typeof contract[name] === "function") {
+            return await contract[name](...args);
+          }
+        } catch {
+          // tenta o proximo nome
+        }
+      }
+
+      return null;
+    }
+
+    async function configureContracts() {
+      try {
+        const setArteOracle = await callOptional(arte, ["setOracle", "setContratoOracle"], [ORACLE_ADDRESS]);
+
+        if (setArteOracle?.wait) {
+          await setArteOracle.wait();
+        }
+
+        const setOracleArte = await oracle.setContratoArte(ARTE_ADDRESS);
+
+        if (setOracleArte?.wait) {
+          await setOracleArte.wait();
+        }
+
+        toast("Configurado", "Arte e Oracle foram conectados.", "ok");
+        log("Contratos configurados", "ok");
+        await refreshAdmin();
+      } catch (error) {
+        toast("Erro config", errorText(error), "err");
+        log("Erro config: " + errorText(error), "err");
+      }
+    }
+
+    async function refreshAdmin() {
+      if (!arte || !oracle) {
+        return;
+      }
+
+      let arteOwner = "-";
+      let oracleOwner = "-";
+      let oracleOnArte = "-";
+      let arteOnOracle = "-";
+
+      try {
+        arteOwner = await arte.owner();
+      } catch {}
+
+      try {
+        oracleOwner = await oracle.owner();
+      } catch {}
+
+      oracleOnArte = await callOptional(arte, ["oracle", "contratoOracle"]) || "-";
+
+      try {
+        arteOnOracle = await oracle.contratoArte();
+      } catch {}
+
+      const adminItems = [
+        ["Carteira conectada", account],
+        ["Arte.sol", ARTE_ADDRESS],
+        ["Arte owner", arteOwner],
+        ["ArteOracle", ORACLE_ADDRESS],
+        ["Oracle owner", oracleOwner],
+        ["Oracle no Arte", oracleOnArte],
+        ["Arte no Oracle", arteOnOracle],
+        ["Edge calcular-phash", SUPABASE_REGISTRAR_URL],
+        ["Edge analisar-selo", SUPABASE_ANALISAR_SELO_URL],
+        ["Supabase anon key", SUPABASE_ANON_KEY.slice(0, 24) + "..."],
+      ];
+
+      $("admin-grid").innerHTML = adminItems
+        .map(([label, value]) => {
+          return `
+            <div class="field">
+              <label>${escapeHtml(label)}</label>
+              <code>${escapeHtml(value)}</code>
+            </div>
+          `;
+        })
+        .join("");
+
+      $("raw-state").innerHTML = `<pre style="white-space: pre-wrap; font-family: Space Mono, monospace; font-size: .75rem;">${escapeHtml(JSON.stringify({
+        account,
+        arte: ARTE_ADDRESS,
+        oracle: ORACLE_ADDRESS,
+        totalArtworks: artworks.length,
+        artworks,
+      }, null, 2))}</pre>`;
+    }
+  </script>
 </body>
 </html>
