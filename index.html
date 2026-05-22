@@ -25,9 +25,9 @@ header{position:sticky;top:0;z-index:50;background:rgba(12,12,14,.93);backdrop-f
 .btn:hover{transform:translateY(-1px);opacity:.92}.btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
 .btn-sm{padding:7px 11px;font-size:.73rem;border-radius:9px}
 #splash{min-height:78vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:22px}
-.splash-icon{width:88px;height:88px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.4rem;box-shadow:0 0 55px rgba(200,169,110,.14)}
+.splash-icon{width:88px;height:88px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.4rem}
 #splash h1{font-family:'Playfair Display',serif;font-size:3.1rem;line-height:1.08}#splash h1 em{color:var(--gold);font-style:italic}
-#splash p{max-width:490px;color:var(--muted2);line-height:1.75}.splash-pills{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
+#splash p{max-width:520px;color:var(--muted2);line-height:1.75}.splash-pills{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
 .pill{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--muted2);border:1px solid var(--border2);border-radius:20px;padding:5px 12px}
 #main{display:none}.tabs{display:flex;gap:4px;margin-bottom:24px;background:var(--surface);padding:5px;border-radius:var(--r);width:max-content;max-width:100%;overflow:auto}
 .tab{padding:8px 18px;border-radius:8px;border:0;background:transparent;color:var(--muted2);cursor:pointer;font-weight:600}
@@ -40,17 +40,43 @@ header{position:sticky;top:0;z-index:50;background:rgba(12,12,14,.93);backdrop-f
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
 .upload-zone{border:2px dashed var(--border2);border-radius:16px;padding:38px 20px;text-align:center;cursor:pointer;background:var(--surface);position:relative}
 .upload-zone:hover,.upload-zone.drag{border-color:var(--gold);background:rgba(200,169,110,.04)}
-.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}.upload-icon{font-size:2.6rem;margin-bottom:10px}.upload-text{color:var(--muted2);font-size:.88rem;line-height:1.6}.upload-text strong{color:var(--gold)}
-.preview-box{display:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface)}.preview-box img{width:100%;max-height:310px;object-fit:contain;background:#0c0c0e;display:block}.preview-info{padding:12px 14px;display:flex;justify-content:space-between;gap:10px}.preview-name,.preview-size{font-family:'Space Mono',monospace;font-size:.75rem;color:var(--muted2)}
-.steps{display:none;flex-direction:column;gap:8px;margin:16px 0}.step{display:flex;gap:12px;align-items:center;padding:10px 13px;border-radius:8px;background:var(--surface);border:1px solid var(--border);font-size:.82rem}.step.active{border-color:var(--gold);background:rgba(200,169,110,.06)}.step.done{border-color:var(--green);background:rgba(78,203,141,.06)}.step.error{border-color:var(--red);background:rgba(224,92,92,.06)}.step-icon{width:24px;text-align:center}.step-label{font-weight:700}.step-desc{font-family:'Space Mono',monospace;color:var(--muted2);font-size:.73rem;margin-top:2px}
-.obras-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}.obra-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}.obra-card:hover{border-color:var(--gold)}.obra-thumb{width:100%;height:205px;object-fit:cover;background:var(--card);display:block}.obra-thumb-placeholder{width:100%;height:205px;background:linear-gradient(135deg,var(--card),var(--surface));display:flex;align-items:center;justify-content:center;font-size:2.4rem}
-.obra-info{padding:14px}.obra-titulo{font-family:'Playfair Display',serif;font-size:.95rem;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.obra-autor,.obra-id{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--muted2);margin-bottom:7px;word-break:break-all}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.chip{font-size:.66rem;padding:3px 8px;border-radius:20px;font-weight:700}.chip-green{background:rgba(78,203,141,.1);color:var(--green);border:1px solid rgba(78,203,141,.25)}.chip-amber{background:rgba(232,154,58,.1);color:var(--amber);border:1px solid rgba(232,154,58,.25)}.chip-blue{background:rgba(91,138,240,.1);color:var(--blue);border:1px solid rgba(91,138,240,.25)}.chip-red{background:rgba(224,92,92,.1);color:var(--red);border:1px solid rgba(224,92,92,.25)}.chip-gray{background:rgba(146,143,160,.1);color:var(--muted2);border:1px solid rgba(146,143,160,.25)}
-.alert-err{display:none;background:rgba(224,92,92,.06);border:1px solid rgba(224,92,92,.2);border-left:3px solid var(--red);padding:10px 13px;border-radius:8px;color:var(--red);font-size:.82rem}.notice{background:rgba(255,255,255,.02);border:1px dashed var(--border2);border-radius:8px;padding:11px 13px;color:var(--muted2);font-size:.82rem;line-height:1.6}.empty{text-align:center;padding:38px;color:var(--muted);font-size:.85rem}.empty-ico{font-size:2.6rem;margin-bottom:10px}
-.cells{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}.cell{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px}.cell-l{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700}.cell-v{font-family:'Space Mono',monospace;font-size:.8rem;word-break:break-all;margin-top:4px}
-.fg{margin-bottom:10px}.fg label{font-size:.68rem;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;font-weight:700;letter-spacing:.5px}.fg input,.fg select{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:8px;color:var(--text);padding:10px 11px;font-family:'Space Mono',monospace;font-size:.8rem}.fg input:focus,.fg select:focus{outline:none;border-color:var(--gold)}
-#toast-c{position:fixed;top:74px;right:16px;z-index:300;display:flex;flex-direction:column;gap:8px}.toast{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 15px;font-size:.82rem;max-width:340px;display:flex;gap:10px}.toast.ts{border-color:var(--green)}.toast.te{border-color:var(--red)}.toast.tp{border-color:var(--gold)}.toast-title{font-size:.72rem;font-weight:800;text-transform:uppercase;margin-bottom:2px}
-#statusbar{position:fixed;bottom:0;left:0;right:0;background:rgba(19,19,22,.96);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:9px 22px;display:flex;gap:12px;z-index:200;min-height:44px}.sbl{font-size:.67rem;text-transform:uppercase;font-weight:800;color:var(--muted);letter-spacing:.6px;white-space:nowrap}#sbm{flex:1;display:flex;gap:6px;overflow:auto}.sbe{font-family:'Space Mono',monospace;font-size:.72rem;white-space:nowrap;padding:3px 10px;border-radius:20px}.sbe-i{background:rgba(91,138,240,.12);color:var(--blue)}.sbe-s{background:rgba(78,203,141,.12);color:var(--green)}.sbe-e{background:rgba(224,92,92,.12);color:var(--red)}.sbe-p{background:rgba(200,169,110,.12);color:var(--gold)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:2.6rem;margin-bottom:10px}.upload-text{color:var(--muted2);font-size:.88rem;line-height:1.6}.upload-text strong{color:var(--gold)}
+.preview-box{display:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface)}
+.preview-box img{width:100%;max-height:310px;object-fit:contain;background:#0c0c0e;display:block}
+.preview-info{padding:12px 14px;display:flex;justify-content:space-between;gap:10px}.preview-name,.preview-size{font-family:'Space Mono',monospace;font-size:.75rem;color:var(--muted2)}
+.steps{display:none;flex-direction:column;gap:8px;margin:16px 0}
+.step{display:flex;gap:12px;align-items:center;padding:10px 13px;border-radius:8px;background:var(--surface);border:1px solid var(--border);font-size:.82rem}
+.step.active{border-color:var(--gold);background:rgba(200,169,110,.06)}.step.done{border-color:var(--green);background:rgba(78,203,141,.06)}.step.error{border-color:var(--red);background:rgba(224,92,92,.06)}
+.step-icon{width:24px;text-align:center}.step-label{font-weight:700}.step-desc{font-family:'Space Mono',monospace;color:var(--muted2);font-size:.73rem;margin-top:2px}
+.obras-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}
+.obra-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}.obra-card:hover{border-color:var(--gold)}
+.obra-thumb{width:100%;height:205px;object-fit:cover;background:var(--card);display:block}.obra-thumb-placeholder{width:100%;height:205px;background:linear-gradient(135deg,var(--card),var(--surface));display:flex;align-items:center;justify-content:center;font-size:2.4rem}
+.obra-info{padding:14px}.obra-titulo{font-family:'Playfair Display',serif;font-size:.95rem;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.obra-autor,.obra-id{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--muted2);margin-bottom:7px;word-break:break-all}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.chip{font-size:.66rem;padding:3px 8px;border-radius:20px;font-weight:700}
+.chip-green{background:rgba(78,203,141,.1);color:var(--green);border:1px solid rgba(78,203,141,.25)}
+.chip-amber{background:rgba(232,154,58,.1);color:var(--amber);border:1px solid rgba(232,154,58,.25)}
+.chip-blue{background:rgba(91,138,240,.1);color:var(--blue);border:1px solid rgba(91,138,240,.25)}
+.chip-red{background:rgba(224,92,92,.1);color:var(--red);border:1px solid rgba(224,92,92,.25)}
+.chip-gray{background:rgba(146,143,160,.1);color:var(--muted2);border:1px solid rgba(146,143,160,.25)}
+.alert-err{display:none;background:rgba(224,92,92,.06);border:1px solid rgba(224,92,92,.2);border-left:3px solid var(--red);padding:10px 13px;border-radius:8px;color:var(--red);font-size:.82rem}
+.notice{background:rgba(255,255,255,.02);border:1px dashed var(--border2);border-radius:8px;padding:11px 13px;color:var(--muted2);font-size:.82rem;line-height:1.6}
+.empty{text-align:center;padding:38px;color:var(--muted);font-size:.85rem}.empty-ico{font-size:2.6rem;margin-bottom:10px}
+.cells{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.cell{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.cell-l{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+.cell-v{font-family:'Space Mono',monospace;font-size:.8rem;word-break:break-all;margin-top:4px}
+.fg{margin-bottom:10px}.fg label{font-size:.68rem;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;font-weight:700;letter-spacing:.5px}
+.fg input,.fg select{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:8px;color:var(--text);padding:10px 11px;font-family:'Space Mono',monospace;font-size:.8rem}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--gold)}
+#toast-c{position:fixed;top:74px;right:16px;z-index:300;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 15px;font-size:.82rem;max-width:340px;display:flex;gap:10px}
+.toast.ts{border-color:var(--green)}.toast.te{border-color:var(--red)}.toast.tp{border-color:var(--gold)}.toast-title{font-size:.72rem;font-weight:800;text-transform:uppercase;margin-bottom:2px}
+#statusbar{position:fixed;bottom:0;left:0;right:0;background:rgba(19,19,22,.96);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:9px 22px;display:flex;gap:12px;z-index:200;min-height:44px}
+.sbl{font-size:.67rem;text-transform:uppercase;font-weight:800;color:var(--muted);letter-spacing:.6px;white-space:nowrap}
+#sbm{flex:1;display:flex;gap:6px;overflow:auto}.sbe{font-family:'Space Mono',monospace;font-size:.72rem;white-space:nowrap;padding:3px 10px;border-radius:20px}
+.sbe-i{background:rgba(91,138,240,.12);color:var(--blue)}.sbe-s{background:rgba(78,203,141,.12);color:var(--green)}.sbe-e{background:rgba(224,92,92,.12);color:var(--red)}.sbe-p{background:rgba(200,169,110,.12);color:var(--gold)}
 @media(max-width:650px){#splash h1{font-size:2.25rem}.tabs{width:100%}.tab{white-space:nowrap}.preview-info{flex-direction:column}}
 </style>
 </head>
@@ -70,10 +96,10 @@ header{position:sticky;top:0;z-index:50;background:rgba(12,12,14,.93);backdrop-f
   <section id="splash">
     <div class="splash-icon">🎨</div>
     <h1>Obras verificadas<br>por <em>selos</em></h1>
-    <p>Registro no Supabase, obra on-chain, selos pendentes e decisão via Chainlink/Gemini.</p>
+    <p>Registro no Supabase, obra on-chain, busca de match pelo Supabase e selos resolvidos via Chainlink/Gemini.</p>
     <div class="splash-pills">
       <span class="pill">🖼 Supabase Storage</span>
-      <span class="pill">🔑 pHash off-chain</span>
+      <span class="pill">🔎 Match no Supabase</span>
       <span class="pill">🏅 Selos on-chain</span>
       <span class="pill">🤖 Chainlink/Gemini</span>
     </div>
@@ -91,7 +117,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(12,12,14,.93);backdrop-f
       <button class="tab on" onclick="tab('registrar')">🎨 Registrar</button>
       <button class="tab" onclick="tab('galeria')">🖼 Galeria</button>
       <button class="tab" onclick="tab('minha')">📁 Minhas</button>
-      <button class="tab" onclick="tab('selos')">🏅 Criar selo</button>
+      <button class="tab" onclick="tab('selos')">🏅 Analisar selo</button>
       <button class="tab" onclick="tab('admin')">⚙️ Admin</button>
     </div>
 
@@ -142,7 +168,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(12,12,14,.93);backdrop-f
     <div id="tp-galeria" class="tc">
       <div class="sec">
         <div class="sec-title">Galeria de obras</div>
-        <div class="sec-sub">Obras registradas no contrato. Os pHashes ficam no Supabase.</div>
+        <div class="sec-sub">Obras registradas no contrato. Os pHashes e a busca de match ficam no Supabase.</div>
         <div id="galeria-lista"><div class="empty"><div class="empty-ico">🖼</div>Carregando obras...</div></div>
       </div>
     </div>
@@ -150,15 +176,15 @@ header{position:sticky;top:0;z-index:50;background:rgba(12,12,14,.93);backdrop-f
     <div id="tp-minha" class="tc">
       <div class="sec">
         <div class="sec-title">Minhas obras</div>
-        <div class="sec-sub">Crie selos pendentes para as suas obras.</div>
+        <div class="sec-sub">Escolha uma obra sua e peça ao Supabase para buscar o match do selo.</div>
         <div id="minha-lista"><div class="empty"><div class="empty-ico">🎨</div>Nenhuma obra encontrada.</div></div>
       </div>
     </div>
 
     <div id="tp-selos" class="tc">
       <div class="sec">
-        <div class="sec-title">Criar selo pendente</div>
-        <div class="sec-sub">V1 manual: informe a obra, o tipo de selo, a URL do match e o score calculado pelo ArteChain/Supabase.</div>
+        <div class="sec-title">Analisar selo</div>
+        <div class="sec-sub">Escolha o tipo do selo. O Supabase procura o match e retorna URL + score. Se não houver match, cria selo sem URL de match.</div>
 
         <div class="cells" style="margin-bottom:12px">
           <div class="cell"><div class="cell-l">Obra selecionada</div><div class="cell-v" id="selo-artwork">—</div></div>
@@ -171,21 +197,18 @@ header{position:sticky;top:0;z-index:50;background:rgba(12,12,14,.93);backdrop-f
         </div>
 
         <div class="fg">
+          <label>Image URL</label>
+          <input id="selo-image-url-input" placeholder="https://..." />
+        </div>
+
+        <div class="fg">
           <label>Tipo do selo</label>
           <select id="selo-tipo"></select>
         </div>
 
-        <div class="fg">
-          <label>URL do match</label>
-          <input id="selo-match" placeholder="https://.../match.png" />
-        </div>
+        <button class="btn btn-gold" onclick="buscarMatchECriarSelo()">🔎 Buscar match e criar selo pendente</button>
 
-        <div class="fg">
-          <label>Score matemático</label>
-          <input id="selo-score" type="number" min="0" max="100" placeholder="0-100" />
-        </div>
-
-        <button class="btn btn-gold" onclick="criarSeloPendente()">🏅 Criar selo pendente</button>
+        <div id="selo-preview" style="display:none;margin-top:12px"></div>
         <div id="selo-err" class="alert-err" style="margin-top:12px"></div>
       </div>
     </div>
@@ -215,13 +238,18 @@ header{position:sticky;top:0;z-index:50;background:rgba(12,12,14,.93);backdrop-f
 "use strict";
 
 /*
-  Troque estes endereços se você redeployou os contratos novos.
+  Atualize com os contratos novos.
 */
-const ARTE_ADDRESS   = "0xEC427165B9463Be0A82460B0d38B464d72789CbD";
-const ORACLE_ADDRESS = "0xd92518355902Ef9065940e9a19c465F742CB64e3";
+const ARTE_ADDRESS   = "COLE_ENDERECO_NOVO_ARTE";
+const ORACLE_ADDRESS = "COLE_ENDERECO_NOVO_ORACLE";
 
-const SUPABASE_URL      = "https://tqsoopgmzdwttwvedngk.supabase.co/functions/v1/calcular-phash";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxc29vcGdtemR3dHR3dmVkbmdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NjIxNTEsImV4cCI6MjA5NDUzODE1MX0.LaHuxJVFJI9SkGHFmapSpkUYBC5plB9oPuDXIXJXsN0";
+const SUPABASE_REGISTRAR_URL =
+  "https://tqsoopgmzdwttwvedngk.supabase.co/functions/v1/calcular-phash";
+
+const SUPABASE_ANALISAR_SELO_URL =
+  "https://tqsoopgmzdwttwvedngk.supabase.co/functions/v1/analisar-selo";
+
+const SUPABASE_ANON_KEY = "COLE_SUA_ANON_KEY_AQUI";
 
 const SELOS = [
   { tipo:"estrutural_basica",  label:"🥉 Estrutural básica" },
@@ -342,7 +370,7 @@ async function supabaseRegistrar(file){
   const formData = new FormData();
   formData.append("file", file);
 
-  const res = await fetch(SUPABASE_URL, {
+  const res = await fetch(SUPABASE_REGISTRAR_URL, {
     method:"POST",
     headers:{
       "x-wallet-address": me,
@@ -369,6 +397,36 @@ async function supabaseRegistrar(file){
     phashNormal: data.phashNormal,
     phashVariations: data.phashVariations || data.variacoes || [],
     createdAt: data.createdAt
+  };
+}
+
+async function supabaseBuscarMatch({ artworkKey, imageUrl, tipoSelo }){
+  const res = await fetch(SUPABASE_ANALISAR_SELO_URL, {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+      "x-wallet-address": me
+    },
+    body: JSON.stringify({
+      artworkKey,
+      imageUrl,
+      tipoSelo,
+      walletAddress: me
+    })
+  });
+
+  const data = await res.json();
+
+  if(!res.ok || !data.ok){
+    throw new Error(data.erro || data.error || "Erro ao buscar match");
+  }
+
+  return {
+    urlMatch: data.urlMatch || "",
+    score: Number(data.score || 0),
+    bestVariation: data.bestVariation || "",
+    matchArtworkId: data.matchArtworkId || null
   };
 }
 
@@ -443,28 +501,55 @@ function abrirCriarSelo(artworkId, uri){
   document.getElementById("selo-artwork").textContent = artworkId;
   document.getElementById("selo-url").textContent = uri;
   document.getElementById("selo-artwork-input").value = artworkId;
-  document.getElementById("selo-match").value = "";
-  document.getElementById("selo-score").value = "";
+  document.getElementById("selo-image-url-input").value = uri;
+  document.getElementById("selo-preview").style.display = "none";
+  document.getElementById("selo-err").style.display = "none";
 }
 
-async function criarSeloPendente(){
+async function buscarMatchECriarSelo(){
   try{
     document.getElementById("selo-err").style.display = "none";
+    document.getElementById("selo-preview").style.display = "none";
 
-    const artworkId = document.getElementById("selo-artwork-input").value.trim();
+    const artworkKeyValue = document.getElementById("selo-artwork-input").value.trim();
+    const imageUrl = document.getElementById("selo-image-url-input").value.trim();
     const tipoSelo = document.getElementById("selo-tipo").value;
-    const urlMatch = document.getElementById("selo-match").value.trim();
-    const score = Number(document.getElementById("selo-score").value);
 
-    if(!artworkId || !artworkId.startsWith("0x")) throw new Error("Artwork key inválido");
+    if(!artworkKeyValue || !artworkKeyValue.startsWith("0x")) throw new Error("Artwork key inválido");
+    if(!imageUrl) throw new Error("Image URL inválida");
     if(!tipoSelo) throw new Error("Tipo de selo inválido");
-    if(!urlMatch) throw new Error("Informe a URL do match");
-    if(!Number.isFinite(score) || score < 0 || score > 100) throw new Error("Score precisa ser 0 a 100");
 
-    toast("Selo","Criando selo pendente on-chain...","p");
-    lg("Criando selo pendente...","p");
+    toast("Supabase","Buscando match do selo...","p");
+    lg("Buscando match no Supabase...","p");
 
-    const tx = await CA.criarSeloPendente(artworkId, tipoSelo, urlMatch, score);
+    const match = await supabaseBuscarMatch({
+      artworkKey: artworkKeyValue,
+      imageUrl,
+      tipoSelo
+    });
+
+    document.getElementById("selo-preview").innerHTML = `
+      <div class="notice">
+        🔎 Match calculado pelo Supabase.<br>
+        <strong>Tipo:</strong> ${H(tipoSelo)}<br>
+        <strong>Score:</strong> ${H(match.score)}<br>
+        <strong>Variação:</strong> ${H(match.bestVariation || "—")}<br>
+        <strong>URL match:</strong>
+        <code style="color:var(--gold);font-size:.72rem;word-break:break-all">${H(match.urlMatch || "sem match")}</code>
+      </div>
+    `;
+    document.getElementById("selo-preview").style.display = "block";
+
+    toast("Contrato","Criando selo pendente...","p");
+    lg("Criando selo pendente on-chain...","p");
+
+    const tx = await CA.criarSeloPendente(
+      artworkKeyValue,
+      tipoSelo,
+      match.urlMatch || "",
+      Number(match.score || 0)
+    );
+
     await tx.wait();
 
     toast("Selo criado","Selo pendente registrado","s");
@@ -581,7 +666,8 @@ async function renderAdminInfo(){
     <div class="cell"><div class="cell-l">ArteOracle</div><div class="cell-v">${H(ORACLE_ADDRESS)}</div></div>
     <div class="cell"><div class="cell-l">Oracle no Arte</div><div class="cell-v">${H(oracleNoArte)}</div></div>
     <div class="cell"><div class="cell-l">Arte no Oracle</div><div class="cell-v">${H(arteNoOracle)}</div></div>
-    <div class="cell"><div class="cell-l">Edge Function</div><div class="cell-v">calcular-phash</div></div>
+    <div class="cell"><div class="cell-l">Registrar</div><div class="cell-v">calcular-phash</div></div>
+    <div class="cell"><div class="cell-l">Analisar selo</div><div class="cell-v">analisar-selo</div></div>
   `;
 }
 
@@ -648,7 +734,8 @@ async function seloChips(artworkId){
         link = ` <a href="https://ipfs.io/ipfs/${H(selo.cidAnalise)}" target="_blank" style="color:inherit">CID</a>`;
       }
 
-      chips.push(`<span class="chip ${st.chip}" title="Score ${selo.score} · Match: ${H(selo.urlMatch)}">${H(s.label)}: ${st.label}${link}</span>`);
+      const matchTxt = selo.urlMatch && selo.urlMatch.length ? `Match: ${selo.urlMatch}` : "Sem match";
+      chips.push(`<span class="chip ${st.chip}" title="Score ${selo.score} · ${H(matchTxt)}">${H(s.label)}: ${st.label}${link}</span>`);
     }catch{
       chips.push(`<span class="chip chip-gray">${H(s.label)}: erro</span>`);
     }
@@ -673,7 +760,7 @@ async function renderCards(el, ids){
       btn = `
         <button class="btn btn-sm" onclick="abrirCriarSelo('${idSafe}','${uriSafe}')"
           style="margin-top:8px;width:100%;background:linear-gradient(135deg,var(--amber),#c47a1f);color:#0c0c0e;font-weight:800">
-          🏅 Criar selo pendente
+          🔎 Analisar selo
         </button>
       `;
     }
