@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ArteChain - Obras, Selos e Auditoria</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -1348,7 +1349,6 @@
     <span class="log info">Aguardando conexao...</span>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
   <script>
     "use strict";
 
@@ -1415,11 +1415,52 @@
       "function setContratoArte(address)",
     ];
 
+    const ABI_ARTE_LIST_URLS = [
+      "function getObrasPorPagina(uint256 offset,uint256 limit) view returns (string[])",
+    ];
+
+    const ABI_ARTE_LIST_IDS = [
+      "function getObrasPorPagina(uint256 offset,uint256 limit) view returns (bytes32[])",
+    ];
+
+    const ABI_ARTE_GET_BYTES32 = [
+      "function getObra(bytes32 artworkId) view returns (address autor,string uri,uint256 timestamp,bool existe)",
+    ];
+
+    const ABI_ARTE_GET_STRING_LEGACY = [
+      "function getObra(string imageUrl) view returns (address autor,string[] pHashes,string cidAnalise,bool aprovada,uint256 timestamp,bool pendente)",
+    ];
+
+    const ABI_ARTE_SEAL_BYTES32 = [
+      "function getSelo(bytes32 artworkId,string tipoSelo) view returns (string tipo,string urlMatch,uint256 score,uint8 status,string cidAnalise,uint256 timestampCriacao,uint256 timestampResolucao,bool existe)",
+      "function criarSeloPendente(bytes32 artworkId,string tipoSelo,string urlMatch,uint256 score)",
+    ];
+
+    const ABI_ARTE_SEAL_STRING = [
+      "function getSelo(string imageUrl,string tipoSelo) view returns (string tipo,string urlMatch,uint256 score,uint8 status,string cidAnalise,uint256 timestampCriacao,uint256 timestampResolucao,bool existe)",
+      "function criarSeloPendente(string imageUrl,string tipoSelo,string urlMatch,uint256 score)",
+    ];
+
+    const ABI_ARTE_REGISTER = [
+      "function registrarObra(bytes32 artworkId,string uri)",
+      "function registrarObra(string uri)",
+      "function registrar(string uri,string[] pHashes)",
+      "function registrar(string uri)",
+    ];
+
     let provider = null;
     let signer = null;
     let account = "";
     let arte = null;
     let oracle = null;
+    let arteListUrls = null;
+    let arteListIds = null;
+    let arteGetBytes32 = null;
+    let arteGetStringLegacy = null;
+    let arteSealBytes32 = null;
+    let arteSealString = null;
+    let arteRegister = null;
+    let listMode = "auto";
     let selectedFile = null;
     let selectedArtworkId = "";
     let selectedArtworkUri = "";
@@ -1618,6 +1659,13 @@
         account = await signer.getAddress();
         arte = new ethers.Contract(ARTE_ADDRESS, ABI_ARTE, signer);
         oracle = new ethers.Contract(ORACLE_ADDRESS, ABI_ORACLE, signer);
+        arteListUrls = new ethers.Contract(ARTE_ADDRESS, ABI_ARTE_LIST_URLS, signer);
+        arteListIds = new ethers.Contract(ARTE_ADDRESS, ABI_ARTE_LIST_IDS, signer);
+        arteGetBytes32 = new ethers.Contract(ARTE_ADDRESS, ABI_ARTE_GET_BYTES32, signer);
+        arteGetStringLegacy = new ethers.Contract(ARTE_ADDRESS, ABI_ARTE_GET_STRING_LEGACY, signer);
+        arteSealBytes32 = new ethers.Contract(ARTE_ADDRESS, ABI_ARTE_SEAL_BYTES32, signer);
+        arteSealString = new ethers.Contract(ARTE_ADDRESS, ABI_ARTE_SEAL_STRING, signer);
+        arteRegister = new ethers.Contract(ARTE_ADDRESS, ABI_ARTE_REGISTER, signer);
 
         const network = await provider.getNetwork();
         const balance = await provider.getBalance(account);
@@ -1672,39 +1720,197 @@
       }
     }
 
+    function isUrl(value) {
+      return /^https?:\/\//i.test(String(value || ""));
+    }
+
+    function isLikelyAbiOffset(value) {
+      try {
+        const n = BigInt(String(value || "0"));
+        return n > 0n && n < 1000000n;
+      } catch {
+        return false;
+      }
+    }
+
+    function artworkIdFromUri(uri) {
+      return ethers.keccak256(ethers.toUtf8Bytes(String(uri || "")));
+    }
+
+    function uploadImageUrl(upload) {
+      return String(
+        upload?.imageUrl ||
+        upload?.image_url ||
+        upload?.publicUrl ||
+        upload?.url ||
+        ""
+      );
+    }
+
+    function uploadStoragePath(upload) {
+      return String(
+        upload?.storagePath ||
+        upload?.storage_path ||
+        upload?.path ||
+        ""
+      );
+    }
+
+    function uploadPHashes(upload) {
+      const raw =
+        upload?.variacoes ||
+        upload?.phashVariations ||
+        upload?.phash_variations ||
+        upload?.pHashes ||
+        upload?.phashes ||
+        [];
+
+      if (!Array.isArray(raw)) {
+        return [];
+      }
+
+      return raw
+        .map((item) => {
+          if (typeof item === "string") {
+            return item;
+          }
+
+          if (item && typeof item === "object") {
+            return String(item.hash || item.phash || item.value || "");
+          }
+
+          return "";
+        })
+        .filter(Boolean);
+    }
+
+    async function getArtworkEntries(total) {
+      const limit = Math.min(total, 500);
+
+      if (!limit) {
+        return [];
+      }
+
+      try {
+        const urls = await arteListUrls.getObrasPorPagina(0, limit);
+
+        if (Array.isArray(urls) && urls.length && urls.some(isUrl)) {
+          listMode = "url";
+          return urls.map((uri) => ({
+            mode: "url",
+            id: artworkIdFromUri(uri),
+            uri: String(uri),
+          }));
+        }
+      } catch {
+        // tenta o modo bytes32 abaixo
+      }
+
+      try {
+        const ids = await arteListIds.getObrasPorPagina(0, limit);
+
+        if (Array.isArray(ids) && ids.length && !ids.every(isLikelyAbiOffset)) {
+          listMode = "bytes32";
+          return ids.map((id) => ({
+            mode: "bytes32",
+            id: String(id),
+            uri: "",
+          }));
+        }
+      } catch {
+        // tenta fallback string abaixo
+      }
+
+      const urls = await arteListUrls.getObrasPorPagina(0, limit);
+      listMode = "url";
+
+      return urls.map((uri) => ({
+        mode: "url",
+        id: artworkIdFromUri(uri),
+        uri: String(uri),
+      }));
+    }
+
+    async function readArtwork(entry) {
+      if (entry.mode === "bytes32") {
+        const raw = await arteGetBytes32.getObra(entry.id);
+
+        return {
+          id: entry.id,
+          autor: raw.autor || raw[0],
+          uri: raw.uri || raw[1],
+          timestamp: Number(raw.timestamp ?? raw[2] ?? 0),
+          existe: Boolean(raw.existe ?? raw[3]),
+          sourceMode: "bytes32",
+        };
+      }
+
+      try {
+        const raw = await arteGetBytes32.getObra(entry.id);
+        const uri = raw.uri || raw[1] || entry.uri;
+
+        if (raw.existe || raw[3] || isUrl(uri)) {
+          return {
+            id: entry.id,
+            autor: raw.autor || raw[0],
+            uri,
+            timestamp: Number(raw.timestamp ?? raw[2] ?? 0),
+            existe: Boolean(raw.existe ?? raw[3] ?? true),
+            sourceMode: "url+bytes32",
+          };
+        }
+      } catch {
+        // contrato antigo pode ter getObra(string)
+      }
+
+      const legacy = await arteGetStringLegacy.getObra(entry.uri);
+
+      return {
+        id: entry.id,
+        autor: legacy.autor || legacy[0],
+        uri: entry.uri,
+        timestamp: Number(legacy.timestamp ?? legacy[4] ?? 0),
+        existe: Number(legacy.timestamp ?? legacy[4] ?? 0) > 0,
+        cidAnaliseLegado: legacy.cidAnalise || legacy[2] || "",
+        aprovadaLegado: Boolean(legacy.aprovada ?? legacy[3]),
+        pendenteLegado: Boolean(legacy.pendente ?? legacy[5]),
+        sourceMode: "url",
+      };
+    }
+
     async function loadArtworks() {
       const total = Number(await arte.totalObras());
-      const ids = total ? await arte.getObrasPorPagina(0, Math.min(total, 500)) : [];
+      const entries = await getArtworkEntries(total);
       const rows = [];
 
-      for (const id of ids) {
+      for (const entry of entries) {
         try {
-          const rawArtwork = await arte.getObra(id);
+          const artwork = await readArtwork(entry);
           const seals = {};
 
           for (const seal of SEALS) {
-            seals[seal.key] = await readSeal(id, seal.key);
+            seals[seal.key] = await readSeal(artwork, seal.key);
           }
 
           rows.push({
-            id: String(id),
-            autor: rawArtwork.autor || rawArtwork[0],
-            uri: rawArtwork.uri || rawArtwork[1],
-            timestamp: Number(rawArtwork.timestamp ?? rawArtwork[2] ?? 0),
-            existe: Boolean(rawArtwork.existe ?? rawArtwork[3]),
+            ...artwork,
             seals,
           });
         } catch (error) {
-          log("Falha lendo obra " + shortAddress(id) + ": " + errorText(error), "err");
+          log("Falha lendo obra " + shortAddress(entry.id || entry.uri) + ": " + errorText(error), "err");
         }
       }
 
       artworks = rows;
     }
 
-    async function readSeal(artworkId, sealType) {
+    async function readSeal(artworkOrId, sealType) {
+      const artwork = typeof artworkOrId === "object"
+        ? artworkOrId
+        : { id: String(artworkOrId), uri: "" };
+
       try {
-        const rawSeal = await arte.getSelo(artworkId, sealType);
+        const rawSeal = await arteSealBytes32.getSelo(artwork.id, sealType);
 
         return {
           tipo: rawSeal.tipo || rawSeal[0] || sealType,
@@ -1717,6 +1923,25 @@
           existe: Boolean(rawSeal.existe ?? rawSeal[7]),
         };
       } catch {
+        if (artwork.uri) {
+          try {
+            const rawSeal = await arteSealString.getSelo(artwork.uri, sealType);
+
+            return {
+              tipo: rawSeal.tipo || rawSeal[0] || sealType,
+              urlMatch: rawSeal.urlMatch || rawSeal[1] || "",
+              score: Number(rawSeal.score ?? rawSeal[2] ?? 0),
+              status: Number(rawSeal.status ?? rawSeal[3] ?? 0),
+              cidAnalise: rawSeal.cidAnalise || rawSeal[4] || "",
+              timestampCriacao: Number(rawSeal.timestampCriacao ?? rawSeal[5] ?? 0),
+              timestampResolucao: Number(rawSeal.timestampResolucao ?? rawSeal[6] ?? 0),
+              existe: Boolean(rawSeal.existe ?? rawSeal[7]),
+            };
+          } catch {
+            // sem selo string
+          }
+        }
+
         return emptySeal(sealType);
       }
     }
@@ -1735,7 +1960,7 @@
     }
 
     function updateStats() {
-      const mine = artworks.filter((item) => item.autor.toLowerCase() === account.toLowerCase());
+      const mine = artworks.filter((item) => String(item.autor || "").toLowerCase() === account.toLowerCase());
       const allSeals = flattenSeals();
 
       $("stat-total").textContent = artworks.length;
@@ -1764,7 +1989,7 @@
     }
 
     function renderMine() {
-      const mine = artworks.filter((item) => item.autor.toLowerCase() === account.toLowerCase());
+      const mine = artworks.filter((item) => String(item.autor || "").toLowerCase() === account.toLowerCase());
       renderCards("mine-grid", mine);
     }
 
@@ -1780,8 +2005,8 @@
     }
 
     function renderArtworkCard(artwork) {
-      const mine = artwork.autor.toLowerCase() === account.toLowerCase();
-      const selected = artwork.id.toLowerCase() === selectedArtworkId.toLowerCase();
+      const mine = String(artwork.autor || "").toLowerCase() === account.toLowerCase();
+      const selected = String(artwork.id || "").toLowerCase() === selectedArtworkId.toLowerCase();
       const sealCards = SEALS.map((meta) => renderSealMini(meta, artwork.seals[meta.key])).join("");
 
       return `
@@ -1920,6 +2145,46 @@
       return data;
     }
 
+    async function sendFirstWorkingTransaction(calls) {
+      let lastError = null;
+      const failures = [];
+
+      for (const item of calls) {
+        try {
+          if (item.canRun && !item.canRun()) {
+            throw new Error(item.skipReason || "Chamada sem dados suficientes.");
+          }
+
+          log("Simulando contrato: " + item.label, "warn");
+
+          if (item.simulate) {
+            await item.simulate();
+          }
+
+          log("Enviando contrato: " + item.label, "warn");
+          const transaction = await item.run();
+
+          if (transaction?.wait) {
+            await transaction.wait();
+          }
+
+          return item.label;
+        } catch (error) {
+          lastError = error;
+          failures.push(item.label + ": " + errorText(error));
+          log("Nao serve " + item.label + ": " + errorText(error), "err");
+        }
+      }
+
+      const message = failures.length
+        ? "Contrato nao aceitou nenhuma assinatura conhecida. " + failures.join(" | ")
+        : "Nenhuma chamada do contrato funcionou.";
+
+      throw lastError
+        ? new Error(message + " | Ultimo erro: " + errorText(lastError))
+        : new Error(message);
+    }
+
     async function registerArtwork() {
       try {
         if (!selectedFile) {
@@ -1933,25 +2198,66 @@
         setStep("step-chain", "", "aguardando");
 
         const upload = await registerInSupabase(selectedFile);
-        const artworkId = ethers.keccak256(ethers.toUtf8Bytes(upload.imageUrl));
+        const imageUrl = uploadImageUrl(upload);
+        const storagePath = uploadStoragePath(upload);
+        const phashes = uploadPHashes(upload);
+
+        if (!imageUrl) {
+          throw new Error("A Edge calcular-phash nao retornou imageUrl.");
+        }
+
+        const artworkId = artworkIdFromUri(imageUrl);
 
         $("register-artwork-id").textContent = artworkId;
         setStep("step-sign", "done", "assinatura validada");
-        setStep("step-supabase", "done", "imagem, storage_path e pHashes salvos");
+        setStep("step-supabase", "done", "imagem, storage_path e " + phashes.length + " pHashes salvos");
         setStep("step-chain", "active", "confirme a transacao");
 
-        const transaction = await arte.registrarObra(artworkId, upload.imageUrl);
-        await transaction.wait();
+        const registerCallsV2 = [
+          {
+            label: "registrarObra(bytes32,string)",
+            simulate: () => arteRegister["registrarObra(bytes32,string)"].staticCall(artworkId, imageUrl),
+            run: () => arteRegister["registrarObra(bytes32,string)"](artworkId, imageUrl),
+          },
+          {
+            label: "registrar(string,string[])",
+            canRun: () => phashes.length === 10,
+            skipReason: "A Edge nao retornou 10 pHashes para o contrato legado.",
+            simulate: () => arteRegister["registrar(string,string[])"].staticCall(imageUrl, phashes),
+            run: () => arteRegister["registrar(string,string[])"](imageUrl, phashes),
+          },
+          {
+            label: "registrarObra(string)",
+            simulate: () => arteRegister["registrarObra(string)"].staticCall(imageUrl),
+            run: () => arteRegister["registrarObra(string)"](imageUrl),
+          },
+          {
+            label: "registrar(string)",
+            simulate: () => arteRegister["registrar(string)"].staticCall(imageUrl),
+            run: () => arteRegister["registrar(string)"](imageUrl),
+          },
+        ];
 
-        setStep("step-chain", "done", "obra registrada on-chain");
+        const registerCallsLegacy = [
+          registerCallsV2[1],
+          registerCallsV2[0],
+          registerCallsV2[2],
+          registerCallsV2[3],
+        ];
+
+        const usedRegister = await sendFirstWorkingTransaction(
+          listMode === "url" ? registerCallsLegacy : registerCallsV2
+        );
+
+        setStep("step-chain", "done", "obra registrada on-chain via " + usedRegister);
 
         $("register-result").innerHTML = `
           <b>Obra registrada com sucesso</b>
           <div class="chain-box" style="margin-top: 10px;">
             <div class="kv"><b>ArtworkId</b><code>${escapeHtml(artworkId)}</code></div>
-            <div class="kv"><b>Image URL</b><a href="${escapeHtml(upload.imageUrl)}" target="_blank">${escapeHtml(upload.imageUrl)}</a></div>
-            <div class="kv"><b>Storage path</b><code>${escapeHtml(upload.storagePath || "-")}</code></div>
-            <div class="kv"><b>pHash normal</b><code>${escapeHtml(upload.variacoes?.[0] || "-")}</code></div>
+            <div class="kv"><b>Image URL</b><a href="${escapeHtml(imageUrl)}" target="_blank">${escapeHtml(imageUrl)}</a></div>
+            <div class="kv"><b>Storage path</b><code>${escapeHtml(storagePath || "-")}</code></div>
+            <div class="kv"><b>pHash normal</b><code>${escapeHtml(phashes[0] || "-")}</code></div>
           </div>
         `;
         $("register-result").style.display = "block";
@@ -2007,17 +2313,45 @@
 
         log("Criando selo pendente on-chain...", "warn");
 
-        const transaction = await arte.criarSeloPendente(
-          selectedArtworkId,
-          sealType,
-          data.urlMatch || "",
-          Number(data.score || 0)
+        const sealCallsV2 = [
+          {
+            label: "criarSeloPendente(bytes32,string,string,uint256)",
+            simulate: () => arteSealBytes32["criarSeloPendente(bytes32,string,string,uint256)"].staticCall(
+              selectedArtworkId,
+              sealType,
+              data.urlMatch || "",
+              Number(data.score || 0)
+            ),
+            run: () => arteSealBytes32["criarSeloPendente(bytes32,string,string,uint256)"](
+              selectedArtworkId,
+              sealType,
+              data.urlMatch || "",
+              Number(data.score || 0)
+            ),
+          },
+          {
+            label: "criarSeloPendente(string,string,string,uint256)",
+            simulate: () => arteSealString["criarSeloPendente(string,string,string,uint256)"].staticCall(
+              selectedArtworkUri,
+              sealType,
+              data.urlMatch || "",
+              Number(data.score || 0)
+            ),
+            run: () => arteSealString["criarSeloPendente(string,string,string,uint256)"](
+              selectedArtworkUri,
+              sealType,
+              data.urlMatch || "",
+              Number(data.score || 0)
+            ),
+          },
+        ];
+
+        const usedSealCall = await sendFirstWorkingTransaction(
+          artwork.sourceMode === "url" ? [sealCallsV2[1], sealCallsV2[0]] : sealCallsV2
         );
 
-        await transaction.wait();
-
-        toast("Selo criado", "Selo pendente registrado on-chain.", "ok");
-        log("Selo pendente criado", "ok");
+        toast("Selo criado", "Selo pendente registrado on-chain via " + usedSealCall + ".", "ok");
+        log("Selo pendente criado via " + usedSealCall, "ok");
 
         await refreshAll();
         selectArtwork(artwork.id);
@@ -2324,4 +2658,3 @@
   </script>
 </body>
 </html>
-
