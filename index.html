@@ -3,247 +3,55 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ArteChain — Registro Descentralizado de Arte</title>
+<title>ArteChain - Obras e Selos</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet"/>
 <style>
-:root {
-  --bg:       #0c0c0e;
-  --surface:  #131316;
-  --card:     #1a1a1f;
-  --border:   #2a2a32;
-  --border2:  #3a3a48;
-  --gold:     #c8a96e;
-  --gold2:    #e8c98e;
-  --green:    #4ecb8d;
-  --red:      #e05c5c;
-  --amber:    #e89a3a;
-  --blue:     #5b8af0;
-  --text:     #e8e4dc;
-  --muted:    #6b6878;
-  --muted2:   #928fa0;
-  --r:        12px;
+:root{
+  --bg:#0c0c0e;--surface:#131316;--card:#1a1a1f;--border:#2a2a32;--border2:#3a3a48;
+  --gold:#c8a96e;--gold2:#e8c98e;--green:#4ecb8d;--red:#e05c5c;--amber:#e89a3a;--blue:#5b8af0;
+  --text:#e8e4dc;--muted:#6b6878;--muted2:#928fa0;--r:12px
 }
-* { margin:0; padding:0; box-sizing:border-box }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 80% 50% at 20% 20%, rgba(200,169,110,.04) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(155,110,243,.04) 0%, transparent 60%);
-  pointer-events: none;
-  z-index: 0;
-}
-header {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(12,12,14,.92);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  padding: 0 32px; height: 64px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; letter-spacing: -.02em; }
-.logo span { color: var(--gold); font-style: italic; }
-.hright { display: flex; gap: 8px; align-items: center; }
-.badge {
-  font-family: 'Space Mono', monospace;
-  font-size: .68rem;
-  background: var(--card);
-  border: 1px solid var(--border);
-  padding: 5px 10px; border-radius: 20px;
-  display: none; color: var(--muted2);
-}
-.btn {
-  padding: 10px 20px; border: none; border-radius: var(--r);
-  cursor: pointer; font-size: .85rem; font-weight: 500;
-  font-family: 'DM Sans', sans-serif; transition: all .15s;
-}
-.btn-gold {
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  color: #0c0c0e; font-weight: 700;
-}
-.btn-gold:hover { opacity: .9; transform: translateY(-1px); }
-.btn-ghost {
-  background: transparent;
-  border: 1px solid var(--border2); color: var(--text);
-}
-.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
-.btn:disabled { opacity: .35; cursor: not-allowed; transform: none !important; }
-.btn-sm { padding: 6px 12px; font-size: .75rem; }
-#app { max-width: 1100px; margin: 0 auto; padding: 32px 20px 80px; position: relative; z-index: 1; }
-#splash {
-  min-height: 82vh;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 24px; text-align: center;
-}
-.splash-icon {
-  width: 90px; height: 90px;
-  border: 1px solid var(--gold);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2.4rem;
-  box-shadow: 0 0 60px rgba(200,169,110,.12);
-}
-#splash h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 3.2rem; line-height: 1.1; letter-spacing: -.03em;
-}
-#splash h1 em { color: var(--gold); font-style: italic; }
-#splash p { color: var(--muted2); max-width: 420px; line-height: 1.8; font-size: .95rem; }
-.splash-pills { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-.pill {
-  font-size: .72rem; padding: 5px 14px;
-  border: 1px solid var(--border2); border-radius: 20px;
-  color: var(--muted2); font-family: 'Space Mono', monospace;
-}
-#main { display: none; }
-.tabs {
-  display: flex; gap: 4px; margin-bottom: 28px;
-  background: var(--surface); padding: 5px;
-  border-radius: var(--r); width: fit-content;
-}
-.tab {
-  padding: 8px 22px; border-radius: 8px;
-  cursor: pointer; font-size: .84rem; font-weight: 500;
-  color: var(--muted2); border: none; background: transparent;
-  font-family: 'DM Sans', sans-serif;
-}
-.tab.on {
-  background: var(--card); color: var(--text);
-  border: 1px solid var(--border2); font-weight: 600;
-}
-.tc { display: none; } .tc.on { display: block; }
-.statbar {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr));
-  gap: 12px; margin-bottom: 28px;
-}
-.stat {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 16px 18px;
-}
-.stat-v { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold); }
-.stat-l { font-size: .68rem; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-top: 3px; }
-.sec {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 16px; padding: 24px; margin-bottom: 18px;
-}
-.sec-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 4px; }
-.sec-sub { color: var(--muted2); font-size: .82rem; line-height: 1.6; margin-bottom: 18px; }
-.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
-.upload-zone {
-  border: 2px dashed var(--border2);
-  border-radius: 16px; padding: 40px 20px;
-  text-align: center; cursor: pointer;
-  transition: all .2s; position: relative;
-  background: var(--surface);
-}
-.upload-zone:hover, .upload-zone.drag { border-color: var(--gold); background: rgba(200,169,110,.04); }
-.upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-.upload-icon { font-size: 2.8rem; margin-bottom: 10px; }
-.upload-text { color: var(--muted2); font-size: .88rem; line-height: 1.6; }
-.upload-text strong { color: var(--gold); }
-.preview-box {
-  display: none; border-radius: 12px; overflow: hidden;
-  border: 1px solid var(--border); background: var(--surface);
-}
-.preview-box img { width: 100%; max-height: 320px; object-fit: contain; display: block; background: #0c0c0e; }
-.preview-info { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
-.preview-name { font-size: .82rem; color: var(--muted2); font-family: 'Space Mono', monospace; }
-.preview-size { font-size: .75rem; color: var(--muted); }
-.steps { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
-.step {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 14px; border-radius: 8px;
-  background: var(--surface); border: 1px solid var(--border);
-  font-size: .82rem; transition: all .3s;
-}
-.step.active { border-color: var(--gold); background: rgba(200,169,110,.06); }
-.step.done   { border-color: var(--green); background: rgba(78,203,141,.06); }
-.step.error  { border-color: var(--red); background: rgba(224,92,92,.06); }
-.step-icon { font-size: 1rem; width: 24px; text-align: center; }
-.step-text { flex: 1; }
-.step-label { font-weight: 600; color: var(--text); }
-.step-desc  { color: var(--muted2); font-size: .75rem; margin-top: 1px; font-family: 'Space Mono', monospace; }
-.obras-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
-  gap: 20px;
-}
-.obra-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 14px; overflow: hidden;
-  transition: all .2s;
-}
-.obra-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
-.obra-thumb { width: 100%; height: 200px; object-fit: cover; background: var(--card); display: block; }
-.obra-thumb-placeholder {
-  width: 100%; height: 200px;
-  background: linear-gradient(135deg, var(--card), var(--surface));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2.4rem;
-}
-.obra-info { padding: 14px; }
-.obra-titulo { font-family: 'Playfair Display', serif; font-size: .95rem; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.obra-autor { font-family: 'Space Mono', monospace; font-size: .7rem; color: var(--muted2); margin-bottom: 8px; }
-.obra-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
-.chip { font-size: .68rem; padding: 3px 8px; border-radius: 20px; font-weight: 600; }
-.chip-green { background: rgba(78,203,141,.1); color: var(--green); border: 1px solid rgba(78,203,141,.25); }
-.chip-amber { background: rgba(232,154,58,.1); color: var(--amber); border: 1px solid rgba(232,154,58,.25); }
-.chip-blue  { background: rgba(91,138,240,.1); color: var(--blue); border: 1px solid rgba(91,138,240,.25); }
-.chip-red   { background: rgba(224,92,92,.1); color: var(--red); border: 1px solid rgba(224,92,92,.25); }
-.alert-err {
-  background: rgba(224,92,92,.06); border: 1px solid rgba(224,92,92,.2);
-  border-left: 3px solid var(--red); padding: 10px 14px;
-  border-radius: 8px; font-size: .82rem; color: var(--red);
-}
-.notice {
-  background: rgba(255,255,255,.02); border: 1px dashed var(--border2);
-  border-radius: 8px; padding: 11px 14px;
-  color: var(--muted2); font-size: .82rem; line-height: 1.6;
-}
-.cells { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 8px; margin: 10px 0; }
-.cell { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
-.cell-l { font-size: .67rem; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; margin-bottom: 3px; }
-.cell-v { font-size: .84rem; word-break: break-all; font-family: 'Space Mono', monospace; }
-#toast-c { position: fixed; top: 72px; right: 16px; display: flex; flex-direction: column; gap: 8px; z-index: 300; }
-.toast {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 14px; padding: 12px 16px; font-size: .82rem;
-  max-width: 320px; display: flex; align-items: flex-start; gap: 10px;
-}
-.toast.ts { border-color: var(--green); }
-.toast.te { border-color: var(--red); }
-.toast.tp { border-color: var(--gold); }
-.toast-title { font-weight: 700; font-size: .73rem; text-transform: uppercase; margin-bottom: 2px; }
-#statusbar {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: rgba(19,19,22,.96); backdrop-filter: blur(12px);
-  border-top: 1px solid var(--border);
-  padding: 9px 24px; display: flex; align-items: center; gap: 12px;
-  z-index: 200; min-height: 44px;
-}
-.sbl { font-size: .67rem; text-transform: uppercase; font-weight: 700; color: var(--muted); letter-spacing: .6px; white-space: nowrap; }
-#sbm { flex:1; overflow-x: auto; display: flex; gap: 6px; scrollbar-width: none; }
-.sbe { font-size: .75rem; white-space: nowrap; padding: 3px 10px; border-radius: 20px; font-family: 'Space Mono', monospace; }
-.sbe-i { background: rgba(91,138,240,.12); color: var(--blue); }
-.sbe-s { background: rgba(78,203,141,.12); color: var(--green); }
-.sbe-e { background: rgba(224,92,92,.12); color: var(--red); }
-.sbe-p { background: rgba(200,169,110,.12); color: var(--gold); }
-.empty { text-align: center; padding: 40px; color: var(--muted); font-size: .85rem; }
-.empty-ico { font-size: 2.8rem; margin-bottom: 10px; }
-@media(max-width:640px) {
-  #splash h1 { font-size: 2.2rem; }
-  .tabs { width: 100%; overflow-x: auto; }
-  .tab { white-space: nowrap; }
-}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+body:before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% 20%,rgba(200,169,110,.05),transparent 60%);pointer-events:none}
+header{position:sticky;top:0;z-index:50;background:rgba(12,12,14,.93);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);height:64px;padding:0 28px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Playfair Display',serif;font-size:1.45rem}.logo span{color:var(--gold);font-style:italic}
+.hright{display:flex;gap:8px;align-items:center}.badge{display:none;font-family:'Space Mono',monospace;font-size:.68rem;background:var(--card);border:1px solid var(--border);padding:5px 10px;border-radius:20px;color:var(--muted2)}
+#app{max-width:1120px;margin:0 auto;padding:30px 20px 82px;position:relative}
+.btn{padding:10px 18px;border:0;border-radius:var(--r);cursor:pointer;font-size:.84rem;font-weight:600;font-family:'DM Sans',sans-serif;transition:.15s}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0c0c0e}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text)}
+.btn:hover{transform:translateY(-1px);opacity:.92}.btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.btn-sm{padding:7px 11px;font-size:.73rem;border-radius:9px}
+#splash{min-height:78vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:22px}
+.splash-icon{width:88px;height:88px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.4rem;box-shadow:0 0 55px rgba(200,169,110,.14)}
+#splash h1{font-family:'Playfair Display',serif;font-size:3.1rem;line-height:1.08}#splash h1 em{color:var(--gold);font-style:italic}
+#splash p{max-width:490px;color:var(--muted2);line-height:1.75}.splash-pills{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
+.pill{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--muted2);border:1px solid var(--border2);border-radius:20px;padding:5px 12px}
+#main{display:none}.tabs{display:flex;gap:4px;margin-bottom:24px;background:var(--surface);padding:5px;border-radius:var(--r);width:max-content;max-width:100%;overflow:auto}
+.tab{padding:8px 18px;border-radius:8px;border:0;background:transparent;color:var(--muted2);cursor:pointer;font-weight:600}
+.tab.on{background:var(--card);color:var(--text);border:1px solid var(--border2)}
+.tc{display:none}.tc.on{display:block}
+.statbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px}.stat-v{font-family:'Playfair Display',serif;font-size:2rem;color:var(--gold)}.stat-l{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.sec{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:18px}
+.sec-title{font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:4px}.sec-sub{color:var(--muted2);font-size:.83rem;line-height:1.6;margin-bottom:17px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.upload-zone{border:2px dashed var(--border2);border-radius:16px;padding:38px 20px;text-align:center;cursor:pointer;background:var(--surface);position:relative}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--gold);background:rgba(200,169,110,.04)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}.upload-icon{font-size:2.6rem;margin-bottom:10px}.upload-text{color:var(--muted2);font-size:.88rem;line-height:1.6}.upload-text strong{color:var(--gold)}
+.preview-box{display:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface)}.preview-box img{width:100%;max-height:310px;object-fit:contain;background:#0c0c0e;display:block}.preview-info{padding:12px 14px;display:flex;justify-content:space-between;gap:10px}.preview-name,.preview-size{font-family:'Space Mono',monospace;font-size:.75rem;color:var(--muted2)}
+.steps{display:none;flex-direction:column;gap:8px;margin:16px 0}.step{display:flex;gap:12px;align-items:center;padding:10px 13px;border-radius:8px;background:var(--surface);border:1px solid var(--border);font-size:.82rem}.step.active{border-color:var(--gold);background:rgba(200,169,110,.06)}.step.done{border-color:var(--green);background:rgba(78,203,141,.06)}.step.error{border-color:var(--red);background:rgba(224,92,92,.06)}.step-icon{width:24px;text-align:center}.step-label{font-weight:700}.step-desc{font-family:'Space Mono',monospace;color:var(--muted2);font-size:.73rem;margin-top:2px}
+.obras-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}.obra-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}.obra-card:hover{border-color:var(--gold)}.obra-thumb{width:100%;height:205px;object-fit:cover;background:var(--card);display:block}.obra-thumb-placeholder{width:100%;height:205px;background:linear-gradient(135deg,var(--card),var(--surface));display:flex;align-items:center;justify-content:center;font-size:2.4rem}
+.obra-info{padding:14px}.obra-titulo{font-family:'Playfair Display',serif;font-size:.95rem;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.obra-autor,.obra-id{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--muted2);margin-bottom:7px;word-break:break-all}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.chip{font-size:.66rem;padding:3px 8px;border-radius:20px;font-weight:700}.chip-green{background:rgba(78,203,141,.1);color:var(--green);border:1px solid rgba(78,203,141,.25)}.chip-amber{background:rgba(232,154,58,.1);color:var(--amber);border:1px solid rgba(232,154,58,.25)}.chip-blue{background:rgba(91,138,240,.1);color:var(--blue);border:1px solid rgba(91,138,240,.25)}.chip-red{background:rgba(224,92,92,.1);color:var(--red);border:1px solid rgba(224,92,92,.25)}.chip-gray{background:rgba(146,143,160,.1);color:var(--muted2);border:1px solid rgba(146,143,160,.25)}
+.alert-err{display:none;background:rgba(224,92,92,.06);border:1px solid rgba(224,92,92,.2);border-left:3px solid var(--red);padding:10px 13px;border-radius:8px;color:var(--red);font-size:.82rem}.notice{background:rgba(255,255,255,.02);border:1px dashed var(--border2);border-radius:8px;padding:11px 13px;color:var(--muted2);font-size:.82rem;line-height:1.6}.empty{text-align:center;padding:38px;color:var(--muted);font-size:.85rem}.empty-ico{font-size:2.6rem;margin-bottom:10px}
+.cells{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}.cell{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px}.cell-l{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700}.cell-v{font-family:'Space Mono',monospace;font-size:.8rem;word-break:break-all;margin-top:4px}
+.fg{margin-bottom:10px}.fg label{font-size:.68rem;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;font-weight:700;letter-spacing:.5px}.fg input,.fg select{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:8px;color:var(--text);padding:10px 11px;font-family:'Space Mono',monospace;font-size:.8rem}.fg input:focus,.fg select:focus{outline:none;border-color:var(--gold)}
+#toast-c{position:fixed;top:74px;right:16px;z-index:300;display:flex;flex-direction:column;gap:8px}.toast{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 15px;font-size:.82rem;max-width:340px;display:flex;gap:10px}.toast.ts{border-color:var(--green)}.toast.te{border-color:var(--red)}.toast.tp{border-color:var(--gold)}.toast-title{font-size:.72rem;font-weight:800;text-transform:uppercase;margin-bottom:2px}
+#statusbar{position:fixed;bottom:0;left:0;right:0;background:rgba(19,19,22,.96);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:9px 22px;display:flex;gap:12px;z-index:200;min-height:44px}.sbl{font-size:.67rem;text-transform:uppercase;font-weight:800;color:var(--muted);letter-spacing:.6px;white-space:nowrap}#sbm{flex:1;display:flex;gap:6px;overflow:auto}.sbe{font-family:'Space Mono',monospace;font-size:.72rem;white-space:nowrap;padding:3px 10px;border-radius:20px}.sbe-i{background:rgba(91,138,240,.12);color:var(--blue)}.sbe-s{background:rgba(78,203,141,.12);color:var(--green)}.sbe-e{background:rgba(224,92,92,.12);color:var(--red)}.sbe-p{background:rgba(200,169,110,.12);color:var(--gold)}
+@media(max-width:650px){#splash h1{font-size:2.25rem}.tabs{width:100%}.tab{white-space:nowrap}.preview-info{flex-direction:column}}
 </style>
 </head>
 <body>
@@ -255,120 +63,147 @@ header {
     <span class="badge" id="bwallet"></span>
   </div>
 </header>
+
 <div id="toast-c"></div>
 
 <div id="app">
+  <section id="splash">
+    <div class="splash-icon">🎨</div>
+    <h1>Obras verificadas<br>por <em>selos</em></h1>
+    <p>Registro no Supabase, obra on-chain, selos pendentes e decisão via Chainlink/Gemini.</p>
+    <div class="splash-pills">
+      <span class="pill">🖼 Supabase Storage</span>
+      <span class="pill">🔑 pHash off-chain</span>
+      <span class="pill">🏅 Selos on-chain</span>
+      <span class="pill">🤖 Chainlink/Gemini</span>
+    </div>
+    <button class="btn btn-gold" style="font-size:.95rem;padding:13px 36px;margin-top:8px" onclick="conectar()">Conectar MetaMask</button>
+  </section>
 
-<section id="splash">
-  <div class="splash-icon">🎨</div>
-  <h1>Registro Descentralizado<br>de <em>Arte Digital</em></h1>
-  <p>Upload no Supabase. 10 variações pHash. Hamming on-chain. Gemini Vision via Chainlink.</p>
-  <div class="splash-pills">
-    <span class="pill">🖼 Supabase Storage</span>
-    <span class="pill">🔑 10 variações pHash</span>
-    <span class="pill">⛓ Hamming Solidity</span>
-    <span class="pill">🤖 Gemini Vision</span>
-  </div>
-  <button class="btn btn-gold" style="font-size:.95rem;padding:13px 36px;margin-top:8px" onclick="conectar()">Conectar MetaMask</button>
-</section>
+  <main id="main">
+    <div class="statbar">
+      <div class="stat"><div class="stat-v" id="st-obras">—</div><div class="stat-l">Obras on-chain</div></div>
+      <div class="stat"><div class="stat-v" id="st-minhas">—</div><div class="stat-l">Minhas obras</div></div>
+      <div class="stat"><div class="stat-v" id="st-bal" style="color:var(--green)">—</div><div class="stat-l">Saldo ETH</div></div>
+    </div>
 
-<main id="main">
-  <div class="statbar">
-    <div class="stat"><div class="stat-v" id="st-obras">—</div><div class="stat-l">Obras registradas</div></div>
-    <div class="stat"><div class="stat-v" id="st-minhas">—</div><div class="stat-l">Minhas obras</div></div>
-    <div class="stat"><div class="stat-v" id="st-bal" style="color:var(--green)">—</div><div class="stat-l">Saldo ETH</div></div>
-  </div>
+    <div class="tabs">
+      <button class="tab on" onclick="tab('registrar')">🎨 Registrar</button>
+      <button class="tab" onclick="tab('galeria')">🖼 Galeria</button>
+      <button class="tab" onclick="tab('minha')">📁 Minhas</button>
+      <button class="tab" onclick="tab('selos')">🏅 Criar selo</button>
+      <button class="tab" onclick="tab('admin')">⚙️ Admin</button>
+    </div>
 
-  <div class="tabs">
-    <button class="tab on" onclick="tab('registrar')">🎨 Registrar obra</button>
-    <button class="tab" onclick="tab('galeria')">🖼 Galeria</button>
-    <button class="tab" onclick="tab('minha')">📁 Minhas obras</button>
-    <button class="tab" onclick="tab('admin')">⚙️ Admin</button>
-  </div>
+    <div id="tp-registrar" class="tc on">
+      <div class="sec">
+        <div class="sec-title">Registrar nova obra</div>
+        <div class="sec-sub">A Edge Function sobe a imagem, calcula os pHashes e salva no Supabase. O contrato recebe apenas o ID da obra e a URL.</div>
 
-  <div id="tp-registrar" class="tc on">
-    <div class="sec">
-      <div class="sec-title">Registrar nova obra</div>
-      <div class="sec-sub">Upload no Supabase. Edge Function calcula 10 variações de pHash. Tudo salvo on-chain.</div>
-
-      <div class="upload-zone" id="upload-zone" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event)">
-        <input type="file" accept="image/*" id="file-input" onchange="arquivoSelecionado(this.files[0])"/>
-        <div class="upload-icon">🖼</div>
-        <div class="upload-text">
-          <strong>Arraste sua obra aqui</strong><br>
-          ou clique para selecionar · PNG, JPG, GIF, WEBP · máx 10MB
+        <div class="upload-zone" id="upload-zone" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event)">
+          <input type="file" accept="image/*" id="file-input" onchange="arquivoSelecionado(this.files[0])"/>
+          <div class="upload-icon">🖼</div>
+          <div class="upload-text"><strong>Arraste sua obra aqui</strong><br>ou clique para selecionar · PNG, JPG, GIF, WEBP · máx 10MB</div>
         </div>
-      </div>
 
-      <div class="preview-box" id="preview-box" style="margin-top:14px">
-        <img id="preview-img" src="" alt="preview"/>
-        <div class="preview-info">
-          <span class="preview-name" id="preview-name">—</span>
-          <span class="preview-size" id="preview-size">—</span>
-        </div>
-      </div>
-
-      <div class="steps" id="steps" style="display:none">
-        <div class="step" id="step-assinar">
-          <span class="step-icon">✍️</span>
-          <div class="step-text">
-            <div class="step-label">Assinar mensagem na wallet</div>
-            <div class="step-desc" id="step-assinar-desc">Aguardando...</div>
+        <div class="preview-box" id="preview-box" style="margin-top:14px">
+          <img id="preview-img" src="" alt="preview"/>
+          <div class="preview-info">
+            <span class="preview-name" id="preview-name">—</span>
+            <span class="preview-size" id="preview-size">—</span>
           </div>
         </div>
-        <div class="step" id="step-supabase">
-          <span class="step-icon">☁️</span>
-          <div class="step-text">
-            <div class="step-label">Supabase: upload + 10 hashes</div>
-            <div class="step-desc" id="step-supabase-desc">Aguardando...</div>
+
+        <div class="steps" id="steps">
+          <div class="step" id="step-assinar">
+            <span class="step-icon">✍️</span>
+            <div><div class="step-label">Assinar autorização</div><div class="step-desc" id="step-assinar-desc">Aguardando...</div></div>
+          </div>
+          <div class="step" id="step-supabase">
+            <span class="step-icon">☁️</span>
+            <div><div class="step-label">Supabase: upload + pHash</div><div class="step-desc" id="step-supabase-desc">Aguardando...</div></div>
+          </div>
+          <div class="step" id="step-tx">
+            <span class="step-icon">⛓</span>
+            <div><div class="step-label">Registrar obra on-chain</div><div class="step-desc" id="step-tx-desc">Aguardando...</div></div>
           </div>
         </div>
-        <div class="step" id="step-tx">
-          <span class="step-icon">⛓</span>
-          <div class="step-text">
-            <div class="step-label">Registrar on-chain</div>
-            <div class="step-desc" id="step-tx-desc">Aguardando...</div>
-          </div>
+
+        <div id="r-resultado" style="display:none;margin-top:14px"></div>
+        <div id="r-err" class="alert-err" style="margin-top:12px"></div>
+
+        <div class="row" style="margin-top:16px">
+          <button class="btn btn-gold" id="btn-registrar" onclick="registrarObra()" disabled>🎨 Registrar obra</button>
+          <button class="btn btn-ghost" onclick="limparForm()">↺ Limpar</button>
         </div>
       </div>
+    </div>
 
-      <div id="r-resultado" style="display:none;margin-top:14px"></div>
-      <div id="r-err" class="alert-err" style="display:none;margin-top:12px"></div>
-
-      <div class="row" style="margin-top:16px">
-        <button class="btn btn-gold" id="btn-registrar" onclick="registrarObra()" disabled>🎨 Registrar obra</button>
-        <button class="btn btn-ghost" onclick="limparForm()">↺ Limpar</button>
+    <div id="tp-galeria" class="tc">
+      <div class="sec">
+        <div class="sec-title">Galeria de obras</div>
+        <div class="sec-sub">Obras registradas no contrato. Os pHashes ficam no Supabase.</div>
+        <div id="galeria-lista"><div class="empty"><div class="empty-ico">🖼</div>Carregando obras...</div></div>
       </div>
     </div>
-  </div>
 
-  <div id="tp-galeria" class="tc">
-    <div class="sec">
-      <div class="sec-title">Galeria de obras registradas</div>
-      <div id="galeria-lista"><div class="empty"><div class="empty-ico">🖼</div>Carregando obras...</div></div>
-    </div>
-  </div>
-
-  <div id="tp-minha" class="tc">
-    <div class="sec">
-      <div class="sec-title">Minhas obras</div>
-      <div id="minha-lista"><div class="empty"><div class="empty-ico">🎨</div>Nenhuma obra encontrada.</div></div>
-    </div>
-  </div>
-
-  <div id="tp-admin" class="tc">
-    <div class="sec">
-      <div class="sec-title">⚙️ Configuração</div>
-      <div class="cells" id="admin-info"></div>
-    </div>
-    <div class="sec">
-      <div class="sec-title">Utilitários</div>
-      <div class="row">
-        <button class="btn btn-ghost" style="font-size:.78rem" onclick="refresh()">↻ Atualizar</button>
+    <div id="tp-minha" class="tc">
+      <div class="sec">
+        <div class="sec-title">Minhas obras</div>
+        <div class="sec-sub">Crie selos pendentes para as suas obras.</div>
+        <div id="minha-lista"><div class="empty"><div class="empty-ico">🎨</div>Nenhuma obra encontrada.</div></div>
       </div>
     </div>
-  </div>
-</main>
+
+    <div id="tp-selos" class="tc">
+      <div class="sec">
+        <div class="sec-title">Criar selo pendente</div>
+        <div class="sec-sub">V1 manual: informe a obra, o tipo de selo, a URL do match e o score calculado pelo ArteChain/Supabase.</div>
+
+        <div class="cells" style="margin-bottom:12px">
+          <div class="cell"><div class="cell-l">Obra selecionada</div><div class="cell-v" id="selo-artwork">—</div></div>
+          <div class="cell"><div class="cell-l">URL da obra</div><div class="cell-v" id="selo-url">—</div></div>
+        </div>
+
+        <div class="fg">
+          <label>Artwork key bytes32</label>
+          <input id="selo-artwork-input" placeholder="0x..." />
+        </div>
+
+        <div class="fg">
+          <label>Tipo do selo</label>
+          <select id="selo-tipo"></select>
+        </div>
+
+        <div class="fg">
+          <label>URL do match</label>
+          <input id="selo-match" placeholder="https://.../match.png" />
+        </div>
+
+        <div class="fg">
+          <label>Score matemático</label>
+          <input id="selo-score" type="number" min="0" max="100" placeholder="0-100" />
+        </div>
+
+        <button class="btn btn-gold" onclick="criarSeloPendente()">🏅 Criar selo pendente</button>
+        <div id="selo-err" class="alert-err" style="margin-top:12px"></div>
+      </div>
+    </div>
+
+    <div id="tp-admin" class="tc">
+      <div class="sec">
+        <div class="sec-title">Configuração</div>
+        <div class="cells" id="admin-info"></div>
+      </div>
+      <div class="sec">
+        <div class="sec-title">Utilitários</div>
+        <div class="row">
+          <button class="btn btn-ghost" onclick="refresh()">↻ Atualizar</button>
+          <button class="btn btn-ghost" onclick="configurarContratos()">🔗 Configurar Arte ↔ Oracle</button>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>
 
 <div id="statusbar">
@@ -379,26 +214,44 @@ header {
 <script>
 "use strict";
 
+/*
+  Troque estes endereços se você redeployou os contratos novos.
+*/
 const ARTE_ADDRESS   = "0x80Dc05845C4817edFFccd8c2A1d084E4199a9f4C";
 const ORACLE_ADDRESS = "0xDB49fFD14e052a00b02381F1A76d0Dde8F390c50";
 
 const SUPABASE_URL      = "https://tqsoopgmzdwttwvedngk.supabase.co/functions/v1/calcular-phash";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxc29vcGdtemR3dHR3dmVkbmdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NjIxNTEsImV4cCI6MjA5NDUzODE1MX0.LaHuxJVFJI9SkGHFmapSpkUYBC5plB9oPuDXIXJXsN0";
+const SUPABASE_ANON_KEY = "COLE_SUA_ANON_KEY_AQUI";
+
+const SELOS = [
+  { tipo:"estrutural_basica",  label:"🥉 Estrutural básica" },
+  { tipo:"regional",           label:"🥈 Regional" },
+  { tipo:"visual_perceptual",  label:"🥇 Visual perceptual" },
+  { tipo:"match_local",        label:"🏅 Match local" }
+];
+
+const STATUS = {
+  0: { label:"Inexistente", chip:"chip-gray" },
+  1: { label:"Pendente",    chip:"chip-amber" },
+  2: { label:"Aprovado",    chip:"chip-green" },
+  3: { label:"Rejeitado",   chip:"chip-red" },
+  4: { label:"Manual",      chip:"chip-blue" }
+};
 
 const ABI_ARTE = [
   "function owner() view returns (address)",
-  "function contratoOracle() view returns (address)",
+  "function oracle() view returns (address)",
   "function totalObras() view returns (uint256)",
-  "function registrar(string imageUrl, string[] pHashes)",
-  "function analisarObra(string imageUrl)",
-  "function getObra(string imageUrl) view returns (address autor, string[] pHashes, string cidAnalise, bool aprovada, uint256 timestamp, bool pendente)",
-  "function getPHashes(string imageUrl) view returns (string[])",
-  "function getObrasPorPagina(uint256 offset, uint256 limit) view returns (string[])",
-  "function calcularMatch(string imageUrl) view returns (string urlMatch, uint256 score, uint8 variacao1, uint8 variacao2)",
-  "function setContratoOracle(address)",
-  "event ObraRegistrada(string indexed imageUrl, address indexed autor)",
-  "event ObraAprovada(string indexed imageUrl, string cidAnalise)",
-  "event ObraRejeitada(string indexed imageUrl, string cidAnalise)"
+  "function registrarObra(bytes32 artworkId, string uri)",
+  "function criarSeloPendente(bytes32 artworkId, string tipoSelo, string urlMatch, uint256 score)",
+  "function getObra(bytes32 artworkId) view returns (address autor, string uri, uint256 timestamp, bool existe)",
+  "function getSelo(bytes32 artworkId, string tipoSelo) view returns (string nome, string urlMatch, uint256 score, uint8 status, string cidAnalise, uint256 timestampCriacao, uint256 timestampResolucao, bool existe)",
+  "function getTiposSelos(bytes32 artworkId) view returns (bytes32[])",
+  "function getObrasPorPagina(uint256 offset, uint256 limit) view returns (bytes32[])",
+  "function setOracle(address)",
+  "event ObraRegistrada(bytes32 indexed artworkId, address indexed autor, string uri, uint256 timestamp)",
+  "event SeloPendente(bytes32 indexed artworkId, bytes32 indexed tipoSeloHash, string tipoSelo, string urlMatch, uint256 score)",
+  "event SeloResolvido(bytes32 indexed artworkId, bytes32 indexed tipoSeloHash, string tipoSelo, uint8 status, string cidAnalise)"
 ];
 
 const ABI_ORACLE = [
@@ -411,55 +264,49 @@ let prov, signer, me = "";
 let CA = null, CO = null;
 let selectedFile = null;
 
-const H  = v => String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-const sh = a => (!a||a==="0x0000000000000000000000000000000000000000")?"—":a.slice(0,6)+"…"+a.slice(-4);
-const fe = w => { try{return Number(ethers.formatEther(w)).toFixed(4)}catch{return"0"} };
-
-function nomeDoArquivo(url) {
-  if (!url) return "—";
-  const parts = url.split("/");
-  return parts[parts.length - 1] || url;
-}
+const H = v => String(v ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const sh = a => (!a || a === ethers.ZeroAddress) ? "—" : String(a).slice(0,6)+"…"+String(a).slice(-4);
+const fe = w => { try { return Number(ethers.formatEther(w)).toFixed(4); } catch { return "0"; } };
+const nomeDoArquivo = url => (String(url||"").split("/").pop() || "obra");
+const artworkKey = id => ethers.id(String(id));
 
 function fe2(e){
   if(!e) return "Erro desconhecido";
   if(String(e.code)==="4001") return "Recusado no MetaMask.";
-  const r = e.shortMessage||e.reason||e.info?.error?.message||e.message||String(e);
-  return String(r).replace(/^execution reverted:\s*/i,"").trim();
+  return String(e.shortMessage || e.reason || e.info?.error?.message || e.message || e)
+    .replace(/^execution reverted:\s*/i,"")
+    .trim();
 }
 
-function lg(m, t="i"){
+function lg(m,t="i"){
   const b = document.getElementById("sbm");
   const el = document.createElement("span");
-  el.className = "sbe sbe-"+t;
+  el.className = "sbe sbe-" + t;
   el.textContent = m;
-  b.insertBefore(el, b.firstChild);
-  while(b.children.length > 8) b.removeChild(b.lastChild);
+  b.insertBefore(el,b.firstChild);
+  while(b.children.length > 9) b.removeChild(b.lastChild);
 }
 
-function toast(title, msg, type="i"){
-  const icons = {i:"ℹ️",s:"✅",e:"❌",p:"⏳"};
-  const map   = {s:"ts",e:"te",p:"tp"};
-  const c = document.getElementById("toast-c");
-  const el = document.createElement("div");
-  el.className = "toast "+(map[type]||"");
-  el.innerHTML = `<span>${icons[type]||"ℹ️"}</span><div><div class="toast-title">${H(title)}</div><div style="color:var(--muted2);font-size:.79rem">${H(msg)}</div></div>`;
+function toast(title,msg,type="i"){
+  const icons={i:"ℹ️",s:"✅",e:"❌",p:"⏳"};
+  const map={s:"ts",e:"te",p:"tp"};
+  const c=document.getElementById("toast-c");
+  const el=document.createElement("div");
+  el.className="toast "+(map[type]||"");
+  el.innerHTML=`<span>${icons[type]||"ℹ️"}</span><div><div class="toast-title">${H(title)}</div><div style="color:var(--muted2);font-size:.79rem">${H(msg)}</div></div>`;
   c.appendChild(el);
-  setTimeout(()=>el.remove(), 5000);
+  setTimeout(()=>el.remove(),5000);
 }
 
 function dragOver(e){ e.preventDefault(); document.getElementById("upload-zone").classList.add("drag"); }
 function dragLeave(){ document.getElementById("upload-zone").classList.remove("drag"); }
-function dragDrop(e){
-  e.preventDefault(); dragLeave();
-  const f = e.dataTransfer.files[0];
-  if(f) arquivoSelecionado(f);
-}
+function dragDrop(e){ e.preventDefault(); dragLeave(); const f=e.dataTransfer.files[0]; if(f) arquivoSelecionado(f); }
 
 function arquivoSelecionado(file){
   if(!file || !file.type.startsWith("image/")){ toast("Arquivo inválido","Apenas imagens","e"); return; }
   if(file.size > 10*1024*1024){ toast("Arquivo grande demais","Máximo 10MB","e"); return; }
   selectedFile = file;
+
   const reader = new FileReader();
   reader.onload = e => {
     document.getElementById("preview-img").src = e.target.result;
@@ -483,283 +330,385 @@ function limparForm(){
   document.getElementById("btn-registrar").disabled = true;
 }
 
-function setStep(id, estado, desc){
-  const el = document.getElementById(id);
-  el.className = "step " + estado;
-  if(desc) document.getElementById(id+"-desc").textContent = desc;
+function setStep(id,estado,desc){
+  const el=document.getElementById(id);
+  el.className="step "+estado;
+  if(desc) document.getElementById(id+"-desc").textContent=desc;
 }
 
 async function supabaseRegistrar(file){
-  const mensagem = "ArteChain upload autorizado";
-  const assinatura = await signer.signMessage(mensagem);
+  const assinatura = await signer.signMessage("ArteChain upload autorizado");
 
   const formData = new FormData();
   formData.append("file", file);
 
   const res = await fetch(SUPABASE_URL, {
-    method: "POST",
-    headers: {
-      "x-wallet-address":   me,
+    method:"POST",
+    headers:{
+      "x-wallet-address": me,
       "x-wallet-signature": assinatura,
-      "Authorization":      `Bearer ${SUPABASE_ANON_KEY}`
+      "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
     },
     body: formData
   });
 
   const data = await res.json();
+
   if(!res.ok || !data.ok){
     throw new Error(data.erro || data.error || "Erro Supabase");
   }
-  return { imageUrl: data.imageUrl, variacoes: data.variacoes };
+
+  const imageUrl = data.imageUrl;
+  const artworkId = data.artworkId || data.id || imageUrl;
+  const key = data.artworkKey || artworkKey(artworkId);
+
+  return {
+    artworkId,
+    artworkKey: key,
+    imageUrl,
+    phashNormal: data.phashNormal,
+    phashVariations: data.phashVariations || data.variacoes || [],
+    createdAt: data.createdAt
+  };
 }
 
 async function registrarObra(){
   if(!selectedFile){ toast("Selecione uma imagem","","e"); return; }
+  if(!CA){ toast("Contrato não conectado","","e"); return; }
 
   document.getElementById("steps").style.display = "flex";
   document.getElementById("r-err").style.display = "none";
   document.getElementById("r-resultado").style.display = "none";
   document.getElementById("btn-registrar").disabled = true;
 
-  try {
-    setStep("step-assinar","active","Confirme no MetaMask...");
+  try{
+    setStep("step-assinar","active","Confirme a assinatura...");
     toast("MetaMask","Assine a mensagem de autorização","p");
 
-    setStep("step-supabase","active","Enviando pra Supabase + 10 hashes...");
-    const { imageUrl, variacoes } = await supabaseRegistrar(selectedFile);
+    setStep("step-supabase","active","Enviando imagem e calculando pHashes...");
+    const registro = await supabaseRegistrar(selectedFile);
+
     setStep("step-assinar","done","Assinatura validada");
-    setStep("step-supabase","done",`pHash[0]: ${variacoes[0].slice(0,16)}...`);
+    setStep("step-supabase","done",`Artwork: ${String(registro.artworkId).slice(0,22)}...`);
     lg("Supabase OK","s");
 
-    setStep("step-tx","active","Confirme no MetaMask...");
+    setStep("step-tx","active","Confirme o registro on-chain...");
     toast("MetaMask","Confirme a transação de registro","p");
-    const tx = await CA.registrar(imageUrl, variacoes);
+
+    const tx = await CA.registrarObra(registro.artworkKey, registro.imageUrl);
     setStep("step-tx","active","Aguardando confirmação...");
     await tx.wait();
+
     setStep("step-tx","done","Tx: "+tx.hash.slice(0,16)+"...");
-    lg("On-chain OK","s");
+    lg("Obra on-chain OK","s");
 
-    mostrarResultado(imageUrl);
+    mostrarResultado(registro);
+    setTimeout(refresh, 1500);
 
-    setTimeout(() => {
-      refresh();
-      if(document.getElementById("tp-minha").classList.contains("on")) renderMinhas();
-    }, 2000);
-
-  } catch(e) {
-    const msg = fe2(e);
-    const stepAtivo = ["step-assinar","step-supabase","step-tx"].find(s => document.getElementById(s).classList.contains("active"));
+  }catch(e){
+    const msg=fe2(e);
+    const stepAtivo=["step-assinar","step-supabase","step-tx"].find(s=>document.getElementById(s).classList.contains("active"));
     if(stepAtivo) setStep(stepAtivo,"error",msg);
-    document.getElementById("r-err").textContent = msg;
-    document.getElementById("r-err").style.display = "block";
-    document.getElementById("btn-registrar").disabled = false;
+    document.getElementById("r-err").textContent=msg;
+    document.getElementById("r-err").style.display="block";
+    document.getElementById("btn-registrar").disabled=false;
     lg("Erro: "+msg,"e");
   }
 }
 
-function mostrarResultado(imageUrl){
-  const el = document.getElementById("r-resultado");
-  el.innerHTML = `
+function mostrarResultado(registro){
+  const el=document.getElementById("r-resultado");
+  el.innerHTML=`
     <div class="notice">
-      ✅ Obra registrada on-chain.<br>
-      <strong>Vá em "Minhas obras" e clique em "🔍 Analisar obra"</strong>.<br><br>
-      URL: <code style="color:var(--gold);font-size:.72rem;word-break:break-all">${H(imageUrl)}</code><br>
-      <a href="${H(imageUrl)}" target="_blank" style="color:var(--gold);font-size:.78rem">Ver imagem →</a>
+      ✅ Obra registrada no Supabase e on-chain.<br>
+      <strong>Artwork ID:</strong>
+      <code style="color:var(--gold);font-size:.72rem;word-break:break-all">${H(registro.artworkId)}</code><br>
+      <strong>Artwork key:</strong>
+      <code style="color:var(--gold);font-size:.72rem;word-break:break-all">${H(registro.artworkKey)}</code><br><br>
+      URL:
+      <code style="color:var(--gold);font-size:.72rem;word-break:break-all">${H(registro.imageUrl)}</code><br>
+      <a href="${H(registro.imageUrl)}" target="_blank" style="color:var(--gold);font-size:.78rem">Ver imagem →</a>
     </div>
   `;
-  el.style.display = "block";
+  el.style.display="block";
 }
 
-async function analisarObra(imageUrl){
-  try {
-    toast("Chainlink","Disparando análise...","p");
-    lg(`Analisando ${nomeDoArquivo(imageUrl).slice(0,20)}...`, "p");
+function preencherTiposSelo(){
+  const sel = document.getElementById("selo-tipo");
+  sel.innerHTML = SELOS.map(s => `<option value="${H(s.tipo)}">${H(s.label)} · ${H(s.tipo)}</option>`).join("");
+}
 
-    const tx = await CA.analisarObra(imageUrl);
-    lg("Tx enviada","p");
+function abrirCriarSelo(artworkId, uri){
+  tab("selos");
+  document.getElementById("selo-artwork").textContent = artworkId;
+  document.getElementById("selo-url").textContent = uri;
+  document.getElementById("selo-artwork-input").value = artworkId;
+  document.getElementById("selo-match").value = "";
+  document.getElementById("selo-score").value = "";
+}
+
+async function criarSeloPendente(){
+  try{
+    document.getElementById("selo-err").style.display = "none";
+
+    const artworkId = document.getElementById("selo-artwork-input").value.trim();
+    const tipoSelo = document.getElementById("selo-tipo").value;
+    const urlMatch = document.getElementById("selo-match").value.trim();
+    const score = Number(document.getElementById("selo-score").value);
+
+    if(!artworkId || !artworkId.startsWith("0x")) throw new Error("Artwork key inválido");
+    if(!tipoSelo) throw new Error("Tipo de selo inválido");
+    if(!urlMatch) throw new Error("Informe a URL do match");
+    if(!Number.isFinite(score) || score < 0 || score > 100) throw new Error("Score precisa ser 0 a 100");
+
+    toast("Selo","Criando selo pendente on-chain...","p");
+    lg("Criando selo pendente...","p");
+
+    const tx = await CA.criarSeloPendente(artworkId, tipoSelo, urlMatch, score);
     await tx.wait();
-    lg("Análise disparada ✅","s");
-    toast("Análise iniciada","Aguarde 1-2 minutos pelo Gemini","s");
 
-    setTimeout(() => {
-      refresh();
-      if(document.getElementById("tp-minha").classList.contains("on")) renderMinhas();
-      if(document.getElementById("tp-galeria").classList.contains("on")) renderGaleria();
-    }, 3000);
-  } catch(e){
-    toast("Erro",fe2(e),"e");
-    lg("Erro: "+fe2(e),"e");
+    toast("Selo criado","Selo pendente registrado","s");
+    lg("Selo pendente criado ✅","s");
+
+    await refresh();
+  }catch(e){
+    const msg=fe2(e);
+    document.getElementById("selo-err").textContent=msg;
+    document.getElementById("selo-err").style.display="block";
+    toast("Erro",msg,"e");
+    lg("Erro: "+msg,"e");
   }
 }
 
 async function conectar(){
   if(!window.ethereum){ toast("MetaMask não encontrada","Instale a extensão","e"); return; }
-  try {
+
+  try{
     await window.ethereum.request({method:"eth_requestAccounts"});
-    prov   = new ethers.BrowserProvider(window.ethereum);
+    prov = new ethers.BrowserProvider(window.ethereum);
     signer = await prov.getSigner();
-    me     = await signer.getAddress();
+    me = await signer.getAddress();
+
     const chain = await prov.getNetwork();
-    document.getElementById("bnet").textContent = chain.name;
+    document.getElementById("bnet").textContent = chain.name || `chain ${chain.chainId}`;
     document.getElementById("bnet").style.display = "inline";
     document.getElementById("bwallet").textContent = sh(me);
     document.getElementById("bwallet").style.display = "inline";
+
     const bal = await prov.getBalance(me);
     document.getElementById("bbal").textContent = fe(bal)+" ETH";
     document.getElementById("bbal").style.display = "inline";
-    lg("Conectado: "+sh(me),"s");
+    document.getElementById("st-bal").textContent = fe(bal);
 
-    CA = new ethers.Contract(ARTE_ADDRESS,   ABI_ARTE,   signer);
+    CA = new ethers.Contract(ARTE_ADDRESS, ABI_ARTE, signer);
     CO = new ethers.Contract(ORACLE_ADDRESS, ABI_ORACLE, signer);
 
-    try {
-      const oracleNoArte = await CA.contratoOracle();
-      if(!oracleNoArte || oracleNoArte === ethers.ZeroAddress) {
-        lg("Configurando Oracle no Arte...","p");
-        const tx1 = await CA.setContratoOracle(ORACLE_ADDRESS);
-        await tx1.wait();
-        lg("Oracle configurado ✅","s");
-      }
-      const arteNoOracle = await CO.contratoArte();
-      if(!arteNoOracle || arteNoOracle === ethers.ZeroAddress) {
-        lg("Configurando Arte no Oracle...","p");
-        const tx2 = await CO.setContratoArte(ARTE_ADDRESS);
-        await tx2.wait();
-        lg("Arte configurado ✅","s");
-      }
-    } catch(configErr) {
-      lg("Config: "+fe2(configErr),"i");
-    }
-
     document.getElementById("splash").style.display = "none";
-    document.getElementById("main").style.display  = "block";
+    document.getElementById("main").style.display = "block";
+    lg("Conectado: "+sh(me),"s");
+
+    preencherTiposSelo();
     await refresh();
-    toast("Pronto!","Contratos conectados 🎨","s");
+
+    toast("Pronto","ArteChain conectado","s");
 
     window.ethereum.on("accountsChanged",()=>location.reload());
     window.ethereum.on("chainChanged",()=>location.reload());
+  }catch(e){
+    lg("Erro: "+fe2(e),"e");
+    toast("Erro",fe2(e),"e");
+  }
+}
 
-  } catch(e){ lg("Erro: "+fe2(e),"e"); toast("Erro",fe2(e),"e"); }
+async function configurarContratos(){
+  try{
+    if(!CA || !CO) throw new Error("Conecte primeiro");
+
+    let oracleNoArte = await CA.oracle().catch(()=>ethers.ZeroAddress);
+    if(!oracleNoArte || oracleNoArte === ethers.ZeroAddress){
+      toast("Config","Configurando oracle no Arte.sol...","p");
+      const tx1 = await CA.setOracle(ORACLE_ADDRESS);
+      await tx1.wait();
+      lg("Arte.setOracle OK","s");
+    }
+
+    let arteNoOracle = await CO.contratoArte().catch(()=>ethers.ZeroAddress);
+    if(!arteNoOracle || arteNoOracle === ethers.ZeroAddress){
+      toast("Config","Configurando Arte no Oracle...","p");
+      const tx2 = await CO.setContratoArte(ARTE_ADDRESS);
+      await tx2.wait();
+      lg("Oracle.setContratoArte OK","s");
+    }
+
+    toast("Configuração","Contratos conectados","s");
+    await refresh();
+  }catch(e){
+    toast("Erro",fe2(e),"e");
+    lg("Config erro: "+fe2(e),"e");
+  }
 }
 
 async function refresh(){
   if(!CA) return;
-  try {
-    const total = await CA.totalObras();
-    document.getElementById("st-obras").textContent = total.toString();
+
+  try{
+    const total = Number(await CA.totalObras());
+    document.getElementById("st-obras").textContent = String(total);
+
     const bal = await prov.getBalance(me);
     document.getElementById("bbal").textContent = fe(bal)+" ETH";
     document.getElementById("st-bal").textContent = fe(bal);
+
     renderAdminInfo();
+
     if(document.getElementById("tp-galeria").classList.contains("on")) await renderGaleria();
-    if(document.getElementById("tp-minha").classList.contains("on"))   await renderMinhas();
-  } catch(e){ lg("Refresh erro: "+fe2(e),"e"); }
+    if(document.getElementById("tp-minha").classList.contains("on")) await renderMinhas();
+  }catch(e){
+    lg("Refresh erro: "+fe2(e),"e");
+  }
 }
 
-function renderAdminInfo(){
+async function renderAdminInfo(){
+  let oracleNoArte = "—";
+  let arteNoOracle = "—";
+
+  try { oracleNoArte = await CA.oracle(); } catch {}
+  try { arteNoOracle = await CO.contratoArte(); } catch {}
+
   document.getElementById("admin-info").innerHTML = `
-    <div class="cell"><div class="cell-l">Carteira</div><div class="cell-v">${sh(me)}</div></div>
-    <div class="cell"><div class="cell-l">Arte.sol</div><div class="cell-v">${sh(ARTE_ADDRESS)}</div></div>
-    <div class="cell"><div class="cell-l">Oracle</div><div class="cell-v">${sh(ORACLE_ADDRESS)}</div></div>
+    <div class="cell"><div class="cell-l">Carteira</div><div class="cell-v">${H(me)}</div></div>
+    <div class="cell"><div class="cell-l">Arte.sol</div><div class="cell-v">${H(ARTE_ADDRESS)}</div></div>
+    <div class="cell"><div class="cell-l">ArteOracle</div><div class="cell-v">${H(ORACLE_ADDRESS)}</div></div>
+    <div class="cell"><div class="cell-l">Oracle no Arte</div><div class="cell-v">${H(oracleNoArte)}</div></div>
+    <div class="cell"><div class="cell-l">Arte no Oracle</div><div class="cell-v">${H(arteNoOracle)}</div></div>
     <div class="cell"><div class="cell-l">Edge Function</div><div class="cell-v">calcular-phash</div></div>
-    <div class="cell"><div class="cell-l">Bucket</div><div class="cell-v">artes</div></div>
   `;
 }
 
 async function renderGaleria(){
-  const el = document.getElementById("galeria-lista");
-  try {
-    const total = Number(await CA.totalObras());
-    if(!total){ el.innerHTML = `<div class="empty"><div class="empty-ico">🖼</div>Nenhuma obra registrada ainda.</div>`; return; }
-    const urls = await CA.getObrasPorPagina(0, Math.min(total, 30));
-    await renderCards(el, urls);
-  } catch(e){ el.innerHTML = `<div class="empty">${H(fe2(e))}</div>`; }
+  const el=document.getElementById("galeria-lista");
+  try{
+    const total=Number(await CA.totalObras());
+    if(!total){
+      el.innerHTML=`<div class="empty"><div class="empty-ico">🖼</div>Nenhuma obra registrada ainda.</div>`;
+      return;
+    }
+    const ids = await CA.getObrasPorPagina(0, Math.min(total, 30));
+    await renderCards(el, ids);
+  }catch(e){
+    el.innerHTML=`<div class="empty">${H(fe2(e))}</div>`;
+  }
 }
 
 async function renderMinhas(){
-  const el = document.getElementById("minha-lista");
-  try {
-    const total = Number(await CA.totalObras());
-    if(!total){ el.innerHTML = `<div class="empty"><div class="empty-ico">🎨</div>Nenhuma obra registrada.</div>`; return; }
-    const todas = await CA.getObrasPorPagina(0, Math.min(total, 50));
-    const minhas = [];
-    for(const url of todas){
-      const o = await CA.getObra(url);
-      if(o.autor.toLowerCase() === me.toLowerCase()) minhas.push(url);
+  const el=document.getElementById("minha-lista");
+  try{
+    const total=Number(await CA.totalObras());
+    if(!total){
+      el.innerHTML=`<div class="empty"><div class="empty-ico">🎨</div>Nenhuma obra registrada.</div>`;
+      document.getElementById("st-minhas").textContent = "0";
+      return;
     }
-    document.getElementById("st-minhas").textContent = minhas.length;
-    if(!minhas.length){ el.innerHTML = `<div class="empty"><div class="empty-ico">🎨</div>Você ainda não registrou obras.</div>`; return; }
+
+    const ids = await CA.getObrasPorPagina(0, Math.min(total, 60));
+    const minhas=[];
+
+    for(const id of ids){
+      const o = await CA.getObra(id).catch(()=>null);
+      if(o && o.existe && o.autor.toLowerCase() === me.toLowerCase()) minhas.push(id);
+    }
+
+    document.getElementById("st-minhas").textContent = String(minhas.length);
+
+    if(!minhas.length){
+      el.innerHTML=`<div class="empty"><div class="empty-ico">🎨</div>Você ainda não registrou obras.</div>`;
+      return;
+    }
+
     await renderCards(el, minhas);
-  } catch(e){ el.innerHTML = `<div class="empty">${H(fe2(e))}</div>`; }
+  }catch(e){
+    el.innerHTML=`<div class="empty">${H(fe2(e))}</div>`;
+  }
 }
 
-async function renderCards(el, urls){
-  const cards = await Promise.all(urls.map(async url => {
-    const o = await CA.getObra(url).catch(()=>null);
-    if(!o) return "";
+async function seloChips(artworkId){
+  const chips=[];
 
-    const isPendente  = o.pendente;
-    const isAprovada  = !isPendente && o.aprovada;
-    const isRejeitada = !isPendente && !o.aprovada && o.cidAnalise && o.cidAnalise.length > 0;
-    const ehMeu       = o.autor.toLowerCase() === me.toLowerCase();
+  for(const s of SELOS){
+    try{
+      const selo = await CA.getSelo(artworkId, s.tipo);
+      if(!selo || !selo.existe) {
+        chips.push(`<span class="chip chip-gray">${H(s.label)}: sem selo</span>`);
+        continue;
+      }
 
-    let chipHtml = "";
-    let borderColor = "var(--border)";
+      const st = STATUS[Number(selo.status)] || STATUS[0];
+      let link = "";
+      if(selo.cidAnalise && selo.cidAnalise.length){
+        link = ` <a href="https://ipfs.io/ipfs/${H(selo.cidAnalise)}" target="_blank" style="color:inherit">CID</a>`;
+      }
 
-    if(isAprovada) {
-      chipHtml = `<span class="chip chip-green">✅ Aprovada</span>`;
-      borderColor = "var(--green)";
-    } else if(isRejeitada) {
-      chipHtml = `<span class="chip chip-red">❌ Rejeitada</span>`;
-      borderColor = "var(--red)";
-    } else {
-      chipHtml = `<span class="chip chip-amber">⏳ Pendente</span>`;
-      borderColor = "var(--amber)";
+      chips.push(`<span class="chip ${st.chip}" title="Score ${selo.score} · Match: ${H(selo.urlMatch)}">${H(s.label)}: ${st.label}${link}</span>`);
+    }catch{
+      chips.push(`<span class="chip chip-gray">${H(s.label)}: erro</span>`);
     }
+  }
 
-    let analisarBtn = "";
-    if(isPendente && ehMeu){
-      const urlSafe = url.replace(/'/g, "\\'");
-      analisarBtn = `
-        <button class="btn btn-sm" onclick="analisarObra('${urlSafe}')"
-          style="margin-top:8px;width:100%;background:linear-gradient(135deg, var(--amber), #c47a1f);color:#0c0c0e;border:none;font-weight:700">
-          🔍 Analisar obra
+  return chips.join("");
+}
+
+async function renderCards(el, ids){
+  const cards = await Promise.all(ids.map(async id => {
+    const o = await CA.getObra(id).catch(()=>null);
+    if(!o || !o.existe) return "";
+
+    const uri = o.uri;
+    const ehMeu = o.autor.toLowerCase() === me.toLowerCase();
+    const chips = await seloChips(id);
+
+    let btn = "";
+    if(ehMeu){
+      const idSafe = String(id);
+      const uriSafe = String(uri).replace(/'/g,"\\'");
+      btn = `
+        <button class="btn btn-sm" onclick="abrirCriarSelo('${idSafe}','${uriSafe}')"
+          style="margin-top:8px;width:100%;background:linear-gradient(135deg,var(--amber),#c47a1f);color:#0c0c0e;font-weight:800">
+          🏅 Criar selo pendente
         </button>
       `;
     }
 
-    const analiseLink = o.cidAnalise ? `https://ipfs.io/ipfs/${o.cidAnalise}` : null;
-    const phashesChip = o.pHashes && o.pHashes.length === 10
-      ? `<span class="chip chip-blue" title="${o.pHashes.join(', ')}">🔑 10 hashes</span>`
-      : "";
-
     return `
-      <div class="obra-card" style="border-left: 3px solid ${borderColor}">
-        <img class="obra-thumb" src="${H(url)}" alt="obra" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+      <div class="obra-card">
+        <img class="obra-thumb" src="${H(uri)}" alt="obra" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
         <div class="obra-thumb-placeholder" style="display:none">🖼</div>
         <div class="obra-info">
-          <div class="obra-titulo">${H(nomeDoArquivo(url))}</div>
-          <div class="obra-autor">${sh(o.autor)}</div>
-          <div class="obra-chips">${chipHtml}${phashesChip}</div>
-          <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
-            <a href="${H(url)}" target="_blank" style="font-size:.72rem;color:var(--gold);text-decoration:none">🔗 Ver obra</a>
-            ${analiseLink?`<a href="${analiseLink}" target="_blank" style="font-size:.72rem;color:var(--muted2);text-decoration:none">📋 Análise</a>`:""}
+          <div class="obra-titulo">${H(nomeDoArquivo(uri))}</div>
+          <div class="obra-id">${H(id)}</div>
+          <div class="obra-autor">${sh(o.autor)} · ${new Date(Number(o.timestamp)*1000).toLocaleString()}</div>
+          <div class="chips"><span class="chip chip-blue">⛓ registrada</span>${chips}</div>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+            <a href="${H(uri)}" target="_blank" style="font-size:.72rem;color:var(--gold);text-decoration:none">🔗 Ver obra</a>
           </div>
-          ${analisarBtn}
+          ${btn}
         </div>
-      </div>`;
+      </div>
+    `;
   }));
+
   el.innerHTML = `<div class="obras-grid">${cards.join("")}</div>`;
 }
 
 function tab(n){
-  const ns = ["registrar","galeria","minha","admin"];
+  const ns=["registrar","galeria","minha","selos","admin"];
   document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("on",ns[i]===n));
   document.querySelectorAll(".tc").forEach(c=>c.classList.remove("on"));
   document.getElementById("tp-"+n).classList.add("on");
   if(n==="galeria") renderGaleria();
-  if(n==="minha")   renderMinhas();
+  if(n==="minha") renderMinhas();
 }
+
+preencherTiposSelo();
 </script>
 </body>
 </html>
